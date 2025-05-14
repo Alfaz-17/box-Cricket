@@ -5,7 +5,7 @@ const bookingSchema = new mongoose.Schema({
     box: { type: mongoose.Schema.Types.ObjectId, ref: "CricketBox", required: true },
     date: { type: String, required: true },
     startTime: { type: String, required: true },
-    endTime: { type: String, required: true },
+    duration: { type: Number, required: true },
     amountPaid: { type: Number, required: true , default:500},
     paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
     paymentIntentId: { type: String },

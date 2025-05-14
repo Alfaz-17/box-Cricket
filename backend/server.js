@@ -8,7 +8,7 @@ import boxRoutes from "./routes/boxRoutes.js";
 import bookingRoutes from './routes/bookingRoutes.js'
 import ownerRoutes from './routes/ownerRoutes.js'
 import publicRoutes from "./routes/publicRoutes.js";
-
+import cors from 'cors'
 dotenv.config();
 const app = express();
 
@@ -18,15 +18,39 @@ app.use(
     express.raw({ type: "application/json" }),
     bookingRoutes
   );
+  app.use(cors({origin:"http://localhost:5173",credentials:true}))
 
+// --- GLOBAL JSON ERROR HANDLER ---
+app.use((err, req, res, next) => {
+  console.error('🔥 Unhandled error:', err);
 
-app.use(cookieParser())
+  // Build a real string from whatever was thrown
+  let message;
+  if (typeof err === 'string') {
+    message = err;
+  } else if (err instanceof Error) {
+    message = err.message;
+  } else {
+    // Could be a plain object from multer/cloudinary
+    try {
+      message = JSON.stringify(err);
+    } catch {
+      message = String(err);
+    }
+  }
+
+  res
+    .status(err.status || 500)
+    .json({ success: false, message });
+});
+
+app.use(cookieParser());
 app.use(express.json());
 const PORT = process.env.PORT || 5000
 
 
 app.use("/api/auth", authRoutes);
-app.use("/api/box", boxRoutes);
+app.use("/api/boxes", boxRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/owners", ownerRoutes);
 app.use("/api/public", publicRoutes);

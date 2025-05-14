@@ -8,7 +8,7 @@ import dotenv from 'dotenv'
 dotenv.config();
 // Check slot availability
 export const checkSlotAvailability = async (req, res) => {
-  const { boxId, date, startTime, endTime } = req.body;
+  const { boxId, date, startTime, duration } = req.body;
 
   const box = await CricketBox.findById(boxId);
   if (!box) return res.status(404).json({ message: "Box not found" });
@@ -16,15 +16,15 @@ export const checkSlotAvailability = async (req, res) => {
   const overlappingBooking = await Booking.findOne({
     box: boxId,
     date,
-    startTime: { $lt: endTime },
-    endTime: { $gt: startTime },
+    startTime: { $lt: duration },
+    duration: { $gt: startTime },
     paymentStatus: "paid",
   });
 
   const blocked = box.blockedSlots.some(slot =>
     slot.date === date &&
-    slot.startTime < endTime &&
-    slot.endTime > startTime
+    slot.startTime < duration &&
+    slot.duration > startTime
   );
 
   if (overlappingBooking || blocked) {
@@ -36,7 +36,7 @@ export const checkSlotAvailability = async (req, res) => {
 
 // Create Stripe Checkout session
 export const createStripeCheckout = async (req, res) => {
-  const { boxId, date, startTime, endTime ,contactNumber} = req.body;
+  const { boxId, date, startTime, duration ,contactNumber} = req.body;
   const box = await CricketBox.findById(boxId);
   if (!box) return res.status(404).json({ message: "Box not found" });
 
@@ -60,7 +60,7 @@ export const createStripeCheckout = async (req, res) => {
       boxId,
       date,
       startTime,
-      endTime,
+      duration,
     contactNumber
     },
   });
@@ -87,7 +87,7 @@ export const stripeWebhook = async (req, res) => {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const { userId, boxId, date, startTime, endTime, contactNumber } = session.metadata;
+    const { userId, boxId, date, startTime, duration, contactNumber } = session.metadata;
 
     try {
       const booking = await Booking.create({
@@ -95,7 +95,7 @@ export const stripeWebhook = async (req, res) => {
         box: boxId,
         date,
         startTime,
-        endTime,
+        duration,
         contactNumber,
         amountPaid: session.amount_total / 100,
         paymentStatus: 'paid',
@@ -134,13 +134,13 @@ export const getBlockedAndBookedSlots = async (req, res) => {
     const bookedSlots = bookings.map(b => ({
       date: b.date,
       startTime: b.startTime,
-      endTime: b.endTime,
+      duration: b.duration,
     }));
 
     const blockedSlots = box.blockedSlots.map(slot => ({
       date: slot.date,
       startTime: slot.startTime,
-      endTime: slot.endTime,
+      duration: slot.duration,
     }));
 
     res.json({ bookedSlots, blockedSlots });
