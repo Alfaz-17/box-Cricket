@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -14,58 +13,85 @@ const CreateBox = () => {
     name: '',
     description: '',
     location: '',
+    address:'',
     hourlyRate: '',
     features: '',
     mobileNumber: '',
-    image: null, // Main image is required
-    images: [] // Optional additional images
+    image: '', // Main image in Base64
+    images: [], // Optional additional images in Base64
+    imagePreview: null, // Preview for the main image
+    imagesPreview: [] // Previews for additional images
   });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (name === 'image') {
-      setFormData(prev => ({ ...prev, image: files[0] }));
+      const file = files[0];
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        setFormData(prev => ({
+          ...prev,
+          image: reader.result, // Store Base64 string
+          imagePreview: URL.createObjectURL(file) // Preview URL
+        }));
+      };
+      reader.readAsDataURL(file);
     } else if (name === 'images') {
-      setFormData(prev => ({ ...prev, images: files }));
+      const filesArray = Array.from(files);
+      const previews = filesArray.map(file => URL.createObjectURL(file)); // Generate previews for each image
+
+      const readers = filesArray.map((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setFormData(prev => ({
+            ...prev,
+            images: [...prev.images, reader.result] // Store Base64 strings for multiple images
+          }));
+        };
+        reader.readAsDataURL(file);
+      });
+      
+      setFormData(prev => ({
+        ...prev,
+        imagesPreview: previews
+      }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
 
   try {
-    const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("location", formData.location);
-    formDataToSend.append("address", formData.address);
-    formDataToSend.append("hourlyRate", formData.hourlyRate);
-    formDataToSend.append("mobileNumber", formData.mobileNumber);
-    formDataToSend.append("features", formData.features);
-    formDataToSend.append("facilities", formData.facilities);
-
-    if (formData.image) {
-      formDataToSend.append("image", formData.image);
-    }
-
-    for (let i = 0; i < formData.images.length; i++) {
-      formDataToSend.append("images", formData.images[i]);
-    }
+    const payload = {
+      name: formData.name,
+      description: formData.description,
+      location: formData.location,
+      address:formData.address,
+      hourlyRate: formData.hourlyRate,
+      mobileNumber: formData.mobileNumber,
+      features: formData.features,
+      image: formData.image,        // Base64 main image
+      images: formData.images       // Array of Base64 additional images
+    };
 
     const response = await fetch("http://localhost:5001/api/boxes/create", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       credentials: "include",
-      body: formDataToSend,
+      body: JSON.stringify(payload)
     });
 
-
-    const data = await response.json(); // Use json() here
+    const data = await response.json();
 
     if (!response.ok) {
-      console.error("Upload Error:", data);  // Log error from backend
+      console.error("Upload Error:", data);
       toast.error(data?.message || "Something went wrong");
       return;
     }
@@ -112,6 +138,14 @@ const CreateBox = () => {
             label="Location"
             name="location"
             value={formData.location}
+            onChange={handleChange}
+            required
+          />
+          
+          <Input
+            label="Address"
+            name="address"
+            value={formData.address}
             onChange={handleChange}
             required
           />
@@ -168,14 +202,11 @@ const CreateBox = () => {
                       className="sr-only"
                       onChange={handleChange}
                       accept="image/*"
-                     
                     />
                   </label>
                 </div>
-                {formData.image && (
-                  <p className="text-sm text-green-600 dark:text-green-400">
-                    Selected: {formData.image.name}
-                  </p>
+                {formData.imagePreview && (
+                  <img src={formData.imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded-md" />
                 )}
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   PNG, JPG, GIF up to 10MB
@@ -204,10 +235,12 @@ const CreateBox = () => {
                     />
                   </label>
                 </div>
-                {formData.images.length > 0 && (
-                  <p className="text-sm text-green-600 dark:text-green-400">
-                    {formData.images.length} images selected
-                  </p>
+                {formData.imagesPreview.length > 0 && (
+                  <div className="flex mt-2">
+                    {formData.imagesPreview.map((preview, index) => (
+                      <img key={index} src={preview} alt={`Preview ${index}`} className="w-16 h-16 object-cover rounded-md mr-2" />
+                    ))}
+                  </div>
                 )}
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   PNG, JPG, GIF up to 10MB each
@@ -237,4 +270,4 @@ const CreateBox = () => {
   );
 };
 
-export default CreateBox; 
+export default CreateBox;

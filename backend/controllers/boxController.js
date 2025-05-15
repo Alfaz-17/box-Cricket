@@ -14,35 +14,34 @@ export const createBox = async (req, res) => {
       mobileNumber,
       description,
       facilities,
-      features
+      features,
+      image,
+      images, // array of Base64 images
     } = req.body;
 
     const owner = req.user._id;
 
-    // Handle files
-    const mainImage = req.files?.image?.[0];
-    const galleryImages = req.files?.images || [];
+    let uploadedMainImage = "";
+    let uploadedGalleryImages = [];
 
     // Upload main image to Cloudinary
-    let mainImageUrl = "";
-    if (mainImage) {
-      const uploadedMain = await cloudinary.uploader.upload(mainImage.path, {
+    if (image) {
+      const uploadedMain = await cloudinary.uploader.upload(image, {
         folder: "cricket-boxes",
       });
-      mainImageUrl = uploadedMain.secure_url;
+      uploadedMainImage = uploadedMain.secure_url;
     }
 
-    // Upload gallery images
-    let galleryUrls = [];
-    if (galleryImages.length > 0) {
+    // Upload gallery images to Cloudinary
+    if (images && images.length > 0) {
       const uploads = await Promise.all(
-        galleryImages.map(image =>
-          cloudinary.uploader.upload(image.path, {
+        images.map(img =>
+          cloudinary.uploader.upload(img, {
             folder: "cricket-boxes",
           })
         )
       );
-      galleryUrls = uploads.map(upload => upload.secure_url);
+      uploadedGalleryImages = uploads.map(upload => upload.secure_url);
     }
 
     // Create cricket box
@@ -53,8 +52,8 @@ export const createBox = async (req, res) => {
       hourlyRate,
       mobileNumber,
       description,
-      image: mainImageUrl,
-      images: galleryUrls,
+      image: uploadedMainImage,
+      images: uploadedGalleryImages,
       facilities: facilities ? facilities.split(',').map(f => f.trim()) : [],
       features: features ? features.split(',').map(f => f.trim()) : [],
       owner,
@@ -84,26 +83,51 @@ export const updateBox = async (req, res) => {
     const { id } = req.params;
     const ownerId = req.user._id;
 
-    const updates = { ...req.body };
+    // Destructure the request body
+    const {
+      name,
+      location,
+      address,
+      hourlyRate,
+      mobileNumber,
+      description,
+      facilities,
+      features,
+      image,  // Main image URL sent from frontend
+      images,  // Gallery image URLs sent from frontend
+    } = req.body;
 
-    // Handle main image replacement
-    if (req.file) {
-      const uploaded = await cloudinary.uploader.upload(req.file.path);
-      updates.image = uploaded.secure_url;
+    const updates = { ...req.body }; // Spread the updates
+
+    // Handle main image (if provided) and update the URL
+    if (image) {
+      const uploadedMain = await cloudinary.uploader.upload(image, {
+        folder: "cricket-boxes",
+      });
+      updates.image = uploadedMain.secure_url; // Use the uploaded image URL
     }
 
-    // Handle additional images
-    if (req.files?.images) {
+    // Handle gallery images (if provided) and update the URLs
+    if (images && images.length > 0) {
       const uploads = await Promise.all(
-        req.files.images.map(file => cloudinary.uploader.upload(file.path))
+        images.map(image =>
+          cloudinary.uploader.upload(image, {
+            folder: "cricket-boxes",
+          })
+        )
       );
-      updates.images = uploads.map(upload => upload.secure_url);
+      updates.images = uploads.map(upload => upload.secure_url); // Save the gallery image URLs
     }
 
-    if (updates.facilities && typeof updates.facilities === "string") {
-      updates.facilities = updates.facilities.split(',').map(f => f.trim());
+    // Split facilities and features if they are provided as a string
+    if (facilities && typeof facilities === "string") {
+      updates.facilities = facilities.split(',').map(f => f.trim());
+    }
+    if (features && typeof features === "string") {
+      updates.features = features.split(',').map(f => f.trim());
     }
 
+    // Update the box in the database
     const updated = await CricketBox.findOneAndUpdate(
       { _id: id, owner: ownerId },
       updates,
@@ -117,7 +141,6 @@ export const updateBox = async (req, res) => {
     res.status(500).json({ message: "Update failed" });
   }
 };
-
 
 
 export const deleteBox = async (req, res) => {

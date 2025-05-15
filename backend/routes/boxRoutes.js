@@ -1,7 +1,7 @@
 import express from 'express';
 import { protectedRoute } from '../middleware/auth.js';
 import { isOwner } from '../middleware/role.js';
-import upload from '../lib/multer.js'; 
+
 import {
   addReview,
   createBox,
@@ -17,10 +17,6 @@ router.post(
   "/create",
   protectedRoute,
   isOwner,
-  upload.fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'images', maxCount: 5 },
-  ]),
   createBox
 );
 router.put("/update/:id", protectedRoute, isOwner, updateBox);
