@@ -3,7 +3,6 @@ import CricketBox from "../models/CricketBox.js";
 import User from "../models/User.js";
 
 
-
 export const createBox = async (req, res) => {
   try {
     const {
@@ -16,35 +15,12 @@ export const createBox = async (req, res) => {
       facilities,
       features,
       image,
-      images, // array of Base64 images
+      images
     } = req.body;
 
     const owner = req.user._id;
 
-    let uploadedMainImage = "";
-    let uploadedGalleryImages = [];
 
-    // Upload main image to Cloudinary
-    if (image) {
-      const uploadedMain = await cloudinary.uploader.upload(image, {
-        folder: "cricket-boxes",
-      });
-      uploadedMainImage = uploadedMain.secure_url;
-    }
-
-    // Upload gallery images to Cloudinary
-    if (images && images.length > 0) {
-      const uploads = await Promise.all(
-        images.map(img =>
-          cloudinary.uploader.upload(img, {
-            folder: "cricket-boxes",
-          })
-        )
-      );
-      uploadedGalleryImages = uploads.map(upload => upload.secure_url);
-    }
-
-    // Create cricket box
     const newBox = await CricketBox.create({
       name,
       location,
@@ -52,8 +28,8 @@ export const createBox = async (req, res) => {
       hourlyRate,
       mobileNumber,
       description,
-      image: uploadedMainImage,
-      images: uploadedGalleryImages,
+      image,
+      images,
       facilities: facilities ? facilities.split(',').map(f => f.trim()) : [],
       features: features ? features.split(',').map(f => f.trim()) : [],
       owner,
@@ -64,20 +40,17 @@ export const createBox = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Cricket box created successfully",
+      message: 'Cricket box created successfully',
       box: newBox,
     });
   } catch (err) {
-    console.error("Create Box Error:", err);
+    console.error('Create Box Error:', err);
     res.status(500).json({
       success: false,
-      message: err.message || "Server error during box creation",
+      message: err.message || 'Server error during box creation',
     });
   }
 };
-
-
-
 export const updateBox = async (req, res) => {
   try {
     const { id } = req.params;

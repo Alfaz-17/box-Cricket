@@ -10,6 +10,9 @@ import {
   updateBox,
 } from '../controllers/boxController.js';
 
+
+
+
 const router = express.Router();
 
 // No multer now, frontend uploads to Cloudinary directly

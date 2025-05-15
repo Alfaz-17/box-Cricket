@@ -5,7 +5,7 @@ import { Upload } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-
+import {uploadToCloudinary} from '../../utils/uploadToCloudinary'
 const CreateBox = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -13,14 +13,14 @@ const CreateBox = () => {
     name: '',
     description: '',
     location: '',
-    address:'',
+    address: '',
     hourlyRate: '',
-    features: '',
     mobileNumber: '',
-    image: '', // Main image in Base64
-    images: [], // Optional additional images in Base64
-    imagePreview: null, // Preview for the main image
-    imagesPreview: [] // Previews for additional images
+    features: '',
+    image: null, // File object
+    images: [],  // File objects array
+    imagePreview: null,
+    imagesPreview: [],
   });
 
   const handleChange = (e) => {
@@ -28,86 +28,82 @@ const CreateBox = () => {
 
     if (name === 'image') {
       const file = files[0];
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        setFormData(prev => ({
-          ...prev,
-          image: reader.result, // Store Base64 string
-          imagePreview: URL.createObjectURL(file) // Preview URL
-        }));
-      };
-      reader.readAsDataURL(file);
-    } else if (name === 'images') {
-      const filesArray = Array.from(files);
-      const previews = filesArray.map(file => URL.createObjectURL(file)); // Generate previews for each image
-
-      const readers = filesArray.map((file) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          setFormData(prev => ({
-            ...prev,
-            images: [...prev.images, reader.result] // Store Base64 strings for multiple images
-          }));
-        };
-        reader.readAsDataURL(file);
-      });
-      
       setFormData(prev => ({
         ...prev,
-        imagesPreview: previews
+        image: file,
+        imagePreview: URL.createObjectURL(file),
+      }));
+    } else if (name === 'images') {
+      const filesArray = Array.from(files);
+      const previews = filesArray.map(file => URL.createObjectURL(file));
+
+      setFormData(prev => ({
+        ...prev,
+        images: filesArray,
+        imagesPreview: previews,
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
-  const handleSubmit = async (e) => {
+ 
+const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
 
   try {
+    // Upload main image
+    let uploadedImageURL = '';
+    if (formData.image) {
+      uploadedImageURL = await uploadToCloudinary(formData.image);
+    }
+
+    // Upload additional images
+    const uploadedImagesURLs = [];
+    for (const imgFile of formData.images) {
+      const imgUrl = await uploadToCloudinary(imgFile);
+      uploadedImagesURLs.push(imgUrl);
+    }
+
+    // Final payload
     const payload = {
       name: formData.name,
       description: formData.description,
       location: formData.location,
-      address:formData.address,
+      address: formData.address,
       hourlyRate: formData.hourlyRate,
       mobileNumber: formData.mobileNumber,
       features: formData.features,
-      image: formData.image,        // Base64 main image
-      images: formData.images       // Array of Base64 additional images
+      image: uploadedImageURL,
+      images: uploadedImagesURLs,
     };
 
-    const response = await fetch("http://localhost:5001/api/boxes/create", {
-      method: "POST",
+    const response = await fetch('http://localhost:5001/api/boxes/create', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
       },
-      credentials: "include",
-      body: JSON.stringify(payload)
+      credentials: 'include',
+      body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
+    const resData = await response.json();
 
     if (!response.ok) {
-      console.error("Upload Error:", data);
-      toast.error(data?.message || "Something went wrong");
+      toast.error(resData?.message || 'Something went wrong');
       return;
     }
 
-    toast.success("Box created successfully!");
-    navigate("/admin/boxes");
-
+    toast.success('Box created successfully!');
+    navigate('/admin/boxes');
   } catch (err) {
-    console.error("Unexpected error:", err);
-    toast.error("Unexpected error occurred");
+    console.error('Unexpected error:', err);
+    toast.error('Unexpected error occurred');
   } finally {
     setLoading(false);
   }
 };
-
-
   return (
     <div className="max-w-2xl mx-auto">
       <Card title="Create New Cricket Box">
