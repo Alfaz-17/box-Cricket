@@ -303,12 +303,12 @@ const BoxDetail = () => {
               Facilities & Amenities
             </h2>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {displayBox.facilities.map((facility, index) => (
+              {displayBox.features.map((features, index) => (
                 <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
                   <svg className="w-4 h-4 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  {facility}
+                  {features}
                 </li>
               ))}
             </ul>
