@@ -13,10 +13,8 @@ const MyBookings = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await fetch('/api/booking/my-booking', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+        const response = await fetch('http://localhost:5001/api/booking/my-bookings', {
+          credentials:'include'
         });
         
         const data = await response.json();
@@ -24,7 +22,7 @@ const MyBookings = () => {
         if (!response.ok) {
           throw new Error(data.message || 'Failed to fetch bookings');
         }
-        
+        console.log(data)
         setBookings(data);
       } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -40,15 +38,18 @@ const MyBookings = () => {
     fetchBookings();
   }, []);
   
+useEffect(()=>{
+
+},[])
+
+
   const cancelBooking = async (id) => {
     if (!confirm('Are you sure you want to cancel this booking?')) return;
     
     try {
-      const response = await fetch(`/api/booking/cancel/${id}`, {
+      const response = await fetch(`http://localhost:5001/api/booking/cancel/${id}`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+     credentials:"include"
       });
       
       const data = await response.json();
@@ -60,7 +61,7 @@ const MyBookings = () => {
       // Update booking status
       setBookings(prev => 
         prev.map(booking => 
-          booking.id === id ? { ...booking, status: 'cancelled' } : booking
+          booking._id === id ? { ...booking, status: 'cancelled' } : booking
         )
       );
       
@@ -77,21 +78,50 @@ const MyBookings = () => {
       );
     }
   };
-  
+
+
+
+
+// this funtion is used to conver time this "01:00 PM" to this "13" means 24 houre because 
+  function convertTo24Hour(timeStr) {
+  const [time, modifier] = timeStr.trim().split(' ');
+  let [hours, minutes] = time.split(':');
+
+  hours = parseInt(hours, 10);
+
+  if (modifier === 'PM' && hours !== 12) {
+    hours += 12;
+  }
+
+  if (modifier === 'AM' && hours === 12) {
+    hours = 0;
+  }
+
+  return `${hours.toString().padStart(2, '0')}:${minutes}`;
+}
+
   // Filter bookings based on active tab
   const filteredBookings = bookings.filter(booking => {
-    const bookingDate = new Date(booking.date + 'T' + booking.startTime);
+    const fixedTime = convertTo24Hour(booking.startTime); // "03:30"
+const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
+
+
     const now = new Date();
-    
+ 
+  
+  
     if (activeTab === 'upcoming') {
       return bookingDate > now && booking.status !== 'cancelled';
     } else if (activeTab === 'past') {
-      return bookingDate < now && booking.status !== 'cancelled';
+      return bookingDate < now && booking.status !== 'cancelled'
+
+      
     } else {
       return booking.status === 'cancelled';
     }
   });
-  
+ 
+
   // Mock data for demonstration
   const mockBookings = [
     {
@@ -211,9 +241,9 @@ const MyBookings = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredBookings.map(booking => (
             <BookingCard 
-              key={booking.id} 
+              key={booking._id} 
               booking={booking} 
-              onCancel={() => cancelBooking(booking.id)} 
+              onCancel={() => cancelBooking(booking._id)} 
               showCancelButton={activeTab === 'upcoming'}
             />
           ))}
@@ -267,15 +297,15 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
       <div className="flex flex-col sm:flex-row">
         <div className="sm:w-1/3 w-full h-32 sm:h-auto">
           <img 
-            src={booking.boxImage} 
-            alt={booking.boxName} 
+            src={booking.box.image} 
+            alt={booking.box.name} 
             className="w-full h-full object-cover rounded-t-lg sm:rounded-l-lg sm:rounded-t-none"
           />
         </div>
         <div className="sm:w-2/3 p-4">
           <div className="flex justify-between items-start">
             <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">
-              {booking.boxName}
+              {booking.box.name}
             </h3>
             {getStatusBadge(booking.status)}
           </div>
@@ -291,16 +321,16 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
             </div>
             <div className="flex items-center">
               <MapPin size={16} className="mr-2 text-yellow-600 dark:text-yellow-400" />
-              <span>{booking.location}</span>
+              <span>{booking.box.location}</span>
             </div>
           </div>
           
           <div className="mt-4 flex justify-between items-center">
-            <div className="font-semibold text-gray-800 dark:text-gray-200">
-              ${booking.price}
+            <div className="font-semibold text-red-500 dark:text-gray-200">
+             Paid: ₹{booking.amountPaid}
             </div>
             <div className="flex space-x-2">
-              <Link to={`/box/${booking.boxId}`}>
+              <Link to={`/box/${booking.box._id}`}>
                 <Button variant="secondary" size="sm">
                   View Box
                 </Button>

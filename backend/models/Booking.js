@@ -1,16 +1,27 @@
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    box: { type: mongoose.Schema.Types.ObjectId, ref: "CricketBox", required: true },
-    date: { type: String, required: true },
-    startTime: { type: String, required: true },
-    duration: { type: Number, required: true },
-    amountPaid: { type: Number, required: true , default:500},
-    paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
-    paymentIntentId: { type: String },
-    contactNumber: { type: String },
-  }, { timestamps: true });
-  
+  user: { type: String, required: true },
+   userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', 
+  },
+  box: { type: mongoose.Schema.Types.ObjectId, ref: "CricketBox", required: true },
+  date: { type: String, required: true }, // For display/filtering
+  startTime: { type: String, required: true }, // For display
+  endTime: { type: String }, // For display
+  duration: { type: Number, required: true },
+  amountPaid: { type: Number, required: true, default: 500 },
+  paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
+  paymentIntentId: { type: String },
+  contactNumber: { type: String },
+  confirmedAt: { type: Date },
+  cancelledAt: { type: Date },
+  status: { type: String, enum: ["completed", "confirmed", "cancelled"], default: "confirmed"},
+  completedAt: { type: Date },
+  notes: { type: String },
+  startDateTime: { type: Date },  // ✅ Needed for accurate slot checking
+  endDateTime: { type: Date }
+}, { timestamps: true });
 
 export default mongoose.model("Booking", bookingSchema);

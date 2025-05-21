@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Sun, Moon, User, LogOut,Trophy } from 'lucide-react';
+import { Menu, X, Sun, Moon, User, LogOut,Trophy, Sidebar } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
 import ThemeContext from '../../context/ThemeContext';
 
@@ -45,15 +45,26 @@ const Navbar = () => {
             >
               Home
             </Link>
-            
+     {  console.log(user)}
             {isAuthenticated ? (
               <>
+                {user?.role === 'user' && (
                 <Link 
                   to="/my-bookings" 
                   className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-300"
                 >
                   My Bookings
                 </Link>
+                 )}
+
+                 {user?.role === 'owner' && (
+                  <Link 
+                    to="/admin/bookings" 
+                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-300"
+                  >
+                    Admin Booking
+                  </Link>
+                )}
                 
                 {user?.role === 'owner' && (
                   <Link 
@@ -115,9 +126,11 @@ const Navbar = () => {
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
+         
           </div>
         </div>
       </div>
+     
       
       {/* Mobile Menu */}
       <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} bg-yellow-100 dark:bg-gray-800 transition-colors duration-300`}>
@@ -132,6 +145,7 @@ const Navbar = () => {
           
           {isAuthenticated ? (
             <>
+             {user?.role === 'user' && (
               <Link 
                 to="/my-bookings" 
                 className="block px-3 py-2 rounded-md text-yellow-900 dark:text-yellow-100 hover:bg-yellow-200 dark:hover:bg-gray-700 transition-colors duration-300"
@@ -139,7 +153,21 @@ const Navbar = () => {
               >
                 My Bookings
               </Link>
+               )}
               
+              {user?.role === 'owner' && (
+                <Link 
+                  to="/admin/bookings" 
+                  className="block px-3 py-2 rounded-md text-yellow-900 dark:text-yellow-100 hover:bg-yellow-200 dark:hover:bg-gray-700 transition-colors duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Admin Booking
+                </Link>
+              )}
+              
+
+
+
               {user?.role === 'owner' && (
                 <Link 
                   to="/admin" 

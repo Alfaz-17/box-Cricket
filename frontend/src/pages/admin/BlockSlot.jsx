@@ -6,79 +6,79 @@ import "react-datepicker/dist/react-datepicker.css";
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import TimePicker from '../../components/ui/TimePicker';
 
 const BlockSlot = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    boxId: '',
     date: new Date(),
     startTime: '',
     endTime: '',
     reason: ''
   });
 
+
+    const handleTimeChange = (newTime) => {
+   setFormData(prev=>({
+    ...prev,
+    startTime:newTime,
+    endTime:newTime
+   }))
+  
+  };
   const [boxes, setBoxes] = useState([
     { id: '1', name: 'Premium Cricket Box' },
     { id: '2', name: 'Standard Cricket Net' },
     { id: '3', name: 'Professional Training Box' }
   ]);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  const formattedDate = formData.date.toISOString().split("T")[0];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  try {
+    const response = await fetch('http://localhost:5001/api/owners/block-slot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        date: formattedDate,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        reason: formData.reason
+      })
+    });
 
-    try {
-      const response = await fetch('http://localhost:5001/api/owners/blocktime', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials:"include",
-        body: JSON.stringify({
-          ...formData,
-          date: formData.date.toISOString().split('T')[0]
-        })
-      });
+    const data = await response.json(); // ✅ Must await this!
 
-      if (!response.ok) throw new Error('Failed to block time slot');
-
-      toast.success('Time slot blocked successfully');
-      setFormData({
-        boxId: '',
-        date: new Date(),
-        startTime: '',
-        endTime: '',
-        reason: ''
-      });
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to block slot");
     }
-  };
+
+    toast.success(data.message || 'Time slot blocked successfully');
+
+    setFormData({
+      date: new Date(),
+      startTime: '',
+      endTime: '',
+      reason: ''
+    });
+
+  } catch (error) {
+    toast.error(error.message);
+    console.log("error in blocked time slots", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="max-w-2xl mx-auto">
       <Card title="Block Time Slot">
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
-              Select Cricket Box
-            </label>
-            <select
-              value={formData.boxId}
-              onChange={(e) => setFormData(prev => ({ ...prev, boxId: e.target.value }))}
-              className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-gray-600 rounded-md"
-              required
-            >
-              <option value="">Select a box</option>
-              {boxes.map(box => (
-                <option key={box.id} value={box.id}>
-                  {box.name}
-                </option>
-              ))}
-            </select>
-          </div>
+       
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
@@ -102,13 +102,17 @@ const BlockSlot = () => {
                 Start Time
               </label>
               <div className="relative">
-                <input
-                  type="time"
-                  value={formData.startTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-gray-600 rounded-md"
-                  required
-                />
+        <TimePicker
+  value={formData.startTime} // Show the current selected time
+  onChange={(newTime) =>
+    setFormData((prev) => ({
+      ...prev,
+      startTime: newTime
+    }))
+  }
+/>
+
+
                 <Clock className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
             </div>
@@ -118,14 +122,16 @@ const BlockSlot = () => {
                 End Time
               </label>
               <div className="relative">
-                <input
-                  type="time"
-                  value={formData.endTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-gray-600 rounded-md"
-                  required
-                />
-                <Clock className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+         <TimePicker
+  value={formData.endTime} // Show the current selected time
+  onChange={(endTime) =>
+    setFormData((prev) => ({
+      ...prev,
+      endTime: endTime
+    }))
+  }
+/>
+                <Clock className="absolute right-3 top-2.5 h-5 w-5 mx-1 text-gray-400" />
               </div>
             </div>
           </div>

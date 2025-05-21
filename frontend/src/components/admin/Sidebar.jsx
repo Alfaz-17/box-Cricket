@@ -62,9 +62,11 @@ const Sidebar = ({ isOpen, onClose }) => {
       )}
       
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 transform transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-lg lg:static lg:z-auto
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+    <div className={`h-screen w-64 bg-white dark:bg-gray-900 shadow-lg transition-transform duration-300 ease-in-out z-50
+  fixed inset-y-0 left-0 lg:sticky lg:top-0
+  ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+`}>
+
         <div className="flex flex-col h-full">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <Link to="/admin" className="flex items-center">

@@ -15,10 +15,13 @@ import {
 import Sidebar from '../../components/admin/Sidebar';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+import { useEffect } from 'react';
 
 const Dashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
   
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const  [bookings,setBookings]=useState([])
   // Mock data for demonstration
   const stats = [
     {
@@ -58,7 +61,30 @@ const Dashboard = () => {
       link: '/admin/users'
     }
   ];
+
+    useEffect(() => {
+      recentBooking();
+ 
+    }, []);
   
+
+  const recentBooking =async()=>{
+setLoading(true)
+    try {
+      const response =await fetch('http://localhost:5001/api/owners/recent-bookings',{
+           credentials:"include"
+      })
+
+      const data=await response.json();
+
+      setBookings(data)
+      } catch (error) {
+      toast.error('Failed to fetch bookings');
+      console.log(error)
+    } finally {
+      setLoading(false);
+    }
+  };
   const recentBookings = [
     {
       id: '1',
@@ -228,32 +254,32 @@ const Dashboard = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                        {recentBookings.map((booking) => (
-                          <tr key={booking.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                        {bookings?bookings.map((booking) => (
+                          <tr key={booking._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                             <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
                               {booking.user}
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                              {booking.boxName}
+                              {booking.box.name}
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                               <div>{new Date(booking.date).toLocaleDateString()}</div>
-                              <div className="text-xs">{booking.time}</div>
+                              <div className="text-xs">{booking.startTime} to {booking.endTime}</div>
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                              {booking.amount}
+                              {booking.amountPaid} rs
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap">
                               <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                 ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
-                                  booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
+                                  booking.status === 'complete' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
                                   'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'}`}
                               >
                                 {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                               </span>
                             </td>
                           </tr>
-                        ))}
+                        )):null}
                       </tbody>
                     </table>
                   </div>

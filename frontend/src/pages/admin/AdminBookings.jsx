@@ -17,13 +17,16 @@ const AdminBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/owners/booking', {
+      const response = await fetch('http://localhost:5001/api/owners/bookings', {
        credentials:"include"
       });
       const data = await response.json();
+  
+      
       setBookings(data);
     } catch (error) {
       toast.error('Failed to fetch bookings');
+      console.log(error)
     } finally {
       setLoading(false);
     }
@@ -38,7 +41,7 @@ const AdminBookings = () => {
           
         },
         credentials:"include",
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ paymentStatus: newStatus })
       });
 
       if (!response.ok) throw new Error('Failed to update booking status');
@@ -50,26 +53,31 @@ const AdminBookings = () => {
     }
   };
 
-  const filteredBookings = bookings.filter(booking => {
-    const matchesSearch = 
-      booking.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.boxName.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredBookings = bookings.filter((booking) => {
+  const matchesSearch =
+    booking.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    booking.box.name.toLowerCase().includes(searchTerm.toLowerCase());
 
-    if (filter === 'all') return matchesSearch;
-    if (filter === 'upcoming') return matchesSearch && new Date(booking.date) > new Date() && booking.status !== 'cancelled';
-    if (filter === 'past') return matchesSearch && new Date(booking.date) < new Date() && booking.status !== 'cancelled';
-    if (filter === 'cancelled') return matchesSearch && booking.status === 'cancelled';
+  if (filter === 'all') return matchesSearch;
 
-    return matchesSearch;
-  });
 
-  if (loading) {
+  if (filter === 'upcoming') {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
-      </div>
+      matchesSearch &&
+      booking.status === 'confirmed' 
     );
   }
+
+  if (filter === 'past') {
+    return matchesSearch && booking.status === 'completed';
+  }
+
+  if (filter === 'cancelled') {
+    return matchesSearch && booking.status === 'cancelled';
+  }
+
+  return matchesSearch;
+});
 
   return (
     <div className="container mx-auto px-4">
@@ -120,19 +128,19 @@ const AdminBookings = () => {
 
         <div className="space-y-4">
           {filteredBookings.map((booking) => (
-            <Card key={booking.id}>
+            <Card key={booking._id}>
               <div className="flex flex-col md:flex-row md:items-center justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <User size={16} className="text-yellow-600 dark:text-yellow-400" />
                     <span className="font-medium text-gray-800 dark:text-gray-200">
-                      {booking.user.name}
+                      {booking.user}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <MapPin size={16} className="text-yellow-600 dark:text-yellow-400" />
                     <span className="text-gray-600 dark:text-gray-400">
-                      {booking.boxName}
+                      {booking.box.name}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -151,19 +159,16 @@ const AdminBookings = () => {
 
                 <div className="mt-4 md:mt-0 flex flex-col md:items-end space-y-2">
                   <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                    ${booking.price}
+                    ${booking.amountPaid}
                   </div>
                   <div className="flex space-x-2">
-                    <select
-                      value={booking.status}
-                      onChange={(e) => handleStatusChange(booking.id, e.target.value)}
-                      className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="completed">Completed</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
+                                  booking.status === 'complete' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
+                                  'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'}`}
+                              >
+                                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                              </span>
                   </div>
                 </div>
               </div>

@@ -61,6 +61,7 @@ const cricketBoxSchema = new mongoose.Schema({
       date: { type: String },
       startTime: { type: String },
       endTime: { type: String },
+      reason:{type:String}
     },
   ],
 

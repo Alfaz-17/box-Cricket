@@ -197,7 +197,7 @@ const Home = () => {
                         min="0"
                         value={filters.minPrice}
                         onChange={handleFilterChange}
-                        placeholder="$0"
+                        placeholder="0 rs"
                         className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md"
                       />
                     </div>
@@ -213,7 +213,7 @@ const Home = () => {
                         min="0"
                         value={filters.maxPrice}
                         onChange={handleFilterChange}
-                        placeholder="$999"
+                        placeholder="₹999"
                         className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md"
                       />
                     </div>
@@ -356,7 +356,7 @@ const BoxCard = ({ box }) => {
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-4 py-2">
           <div className="flex items-center">
             <div className="text-white text-sm font-bold px-2 py-1 rounded bg-yellow-500">
-              ${box.hourlyRate}/hr
+              ₹{box.hourlyRate}/hr
             </div>
           </div>
         </div>
