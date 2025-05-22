@@ -1,21 +1,31 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, Sun, Moon, User, LogOut, Trophy } from 'lucide-react';
+import { Menu, Sun, Moon, LogOut, Trophy } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
 import ThemeContext from '../../context/ThemeContext';
-import Sidebar from '../admin/Sidebar'; // ✅ Make sure the path is correct
+import Sidebar from '../admin/Sidebar';
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
   const { user, isAuthenticated, logout } = useContext(AuthContext);
   const { darkMode, toggleDarkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
 
+  // Update `isMobile` on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate('/');
-    setIsMenuOpen(false);
+    setSidebarOpen(false);
   };
 
   return (
@@ -32,7 +42,7 @@ const Navbar = () => {
               <span className="hidden sm:block">Trophy Box</span>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-6">
               <Link
                 to="/"
@@ -44,7 +54,7 @@ const Navbar = () => {
               {isAuthenticated && user?.role === 'user' && (
                 <Link
                   to="/my-bookings"
-                  className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-300"
+                  className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
                 >
                   My Bookings
                 </Link>
@@ -54,13 +64,13 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/admin/bookings"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-300"
+                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
                   >
                     Admin Booking
                   </Link>
                   <Link
                     to="/admin"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-300"
+                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
                   >
                     Admin Panel
                   </Link>
@@ -70,7 +80,7 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <button
                   onClick={handleLogout}
-                  className="flex items-center text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-300"
+                  className="flex items-center text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
                 >
                   <LogOut size={18} className="mr-1" />
                   <span>Logout</span>
@@ -79,13 +89,13 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/login"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-300"
+                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
                   >
                     Login
                   </Link>
                   <Link
                     to="/signup"
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md shadow-sm transition-colors duration-300"
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md shadow-sm"
                   >
                     Sign Up
                   </Link>
@@ -94,19 +104,17 @@ const Navbar = () => {
 
               <button
                 onClick={toggleDarkMode}
-                className="p-2 rounded-full bg-yellow-100 dark:bg-gray-700 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600 transition-colors duration-300"
-                aria-label="Toggle theme"
+                className="p-2 rounded-full bg-yellow-100 dark:bg-gray-700 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600"
               >
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
             </div>
 
-          {/* Mobile Menu Button */}
+            {/* Mobile Menu Button */}
             <div className="flex md:hidden items-center space-x-3">
               <button
                 onClick={toggleDarkMode}
-                className="p-2 rounded-full bg-yellow-100 dark:bg-gray-700 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600 transition-colors duration-300"
-                aria-label="Toggle theme"
+                className="p-2 rounded-full bg-yellow-100 dark:bg-gray-700 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600"
               >
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
@@ -121,8 +129,10 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Sidebar for Mobile */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      {/* Render Sidebar only on mobile */}
+      {isMobile && (
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      )}
     </>
   );
 };

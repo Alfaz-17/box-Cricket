@@ -16,6 +16,7 @@ import AuthContext from "../../context/AuthContext";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import TimePicker from "../../components/ui/TimePicker";
+import ReviewsSection from "../../components/ui/ReviewsSection";
 
 const BoxDetail = () => {
   const { id } = useParams();
@@ -28,6 +29,7 @@ const BoxDetail = () => {
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [contactNumber, setContactNumber] = useState("");
+  const [reviews, setReviews] = useState(null);
 
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -45,7 +47,7 @@ const BoxDetail = () => {
         if (!response.ok) {
           throw new Error(data.message || "Failed to fetch box details");
         }
-        console.log(data);
+    
         setBox(data);
       } catch (error) {
         console.error("Error fetching box details:", error);
@@ -57,6 +59,13 @@ const BoxDetail = () => {
 
     fetchBoxDetails();
   }, [id]);
+
+
+
+
+
+
+
 
   // Format date for API
 
@@ -414,48 +423,8 @@ const BoxDetail = () => {
         </Card>
 
         {/* Reviews */}
-        <Card>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300">
-              Reviews
-            </h2>
-            <Button variant="secondary" size="sm">
-              Write a Review
-            </Button>
-          </div>
+       <ReviewsSection boxId={box._id}/>
 
-          {displayBox.reviews.map((review) => (
-            <div
-              key={review.id}
-              className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0 last:mb-0 last:pb-0"
-            >
-              <div className="flex justify-between mb-2">
-                <div className="font-medium text-yellow-800 dark:text-yellow-300">
-                  {review.name}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {review.date}
-                </div>
-              </div>
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, index) => (
-                  <Star
-                    key={index}
-                    size={16}
-                    className={`${
-                      index < review.rating
-                        ? "text-yellow-500 fill-current"
-                        : "text-gray-300 dark:text-gray-600"
-                    } mr-1`}
-                  />
-                ))}
-              </div>
-              <p className="text-gray-700 dark:text-gray-300">
-                {review.comment}
-              </p>
-            </div>
-          ))}
-        </Card>
       </div>
 
       {/* Booking Widget */}

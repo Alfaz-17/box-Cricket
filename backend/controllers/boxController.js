@@ -144,25 +144,8 @@ export const getOwnerBoxes = async (req, res) => {
     }
   };
 
-  export const addReview = async (req, res) => {
-    try {
-      const { id } = req.params; // box ID
-      const { rating, comment } = req.body;
-      const userId = req.user._id;
-  
-      const box = await CricketBox.findById(id);
-      if (!box) return res.status(404).json({ message: "Box not found" });
-  const user=await User.findById(userId);
 
-      box.reviews.push({ user: userId, rating, comment,name:user.name });
-      await box.save();
-  
-      res.json({ message: "Review added", box });
-    } catch (err) {
-      console.log(err)
-      res.status(500).json({ message: "Failed to add review" });
-    }
-  };
+
   
 
   
