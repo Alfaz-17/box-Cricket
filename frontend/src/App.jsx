@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import AuthContext from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -28,6 +28,7 @@ import CreateBox from './pages/admin/CreateBox';
 import EditBox from './pages/admin/EditBox';
 import AdminBookings from './pages/admin/AdminBookings';
 import BlockSlot from './pages/admin/BlockSlot';
+import api from './utils/api';
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
@@ -94,10 +95,9 @@ function App() {
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:5001/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
+      const response=await api.post('/auth/logout');
+      toast.success(response.data.message)
+      
     } catch (error) {
       console.error('Logout error:', error);
     } finally {

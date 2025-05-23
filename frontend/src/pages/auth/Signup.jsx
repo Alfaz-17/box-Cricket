@@ -6,7 +6,7 @@ import AuthContext from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-
+import api from '../../utils/api'
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -47,44 +47,37 @@ const Signup = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    
-    try {
-      const response = await fetch('http://localhost:5001/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Signup failed');
-      }
-      
-      // Success - store token and user data
-      login(data.user, data.token);
-      
-      toast.success('Account created successfully');
-      navigate('/');
-    } catch (error) {
-      toast.error(error.message || 'Signup failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+
+  try {
+    const response = await api.post("/auth/signup", {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    });
+
+    const data = response.data;
+
+    // Success - store token and user data
+    login(data.user, data.token);
+
+    toast.success("Account created successfully");
+    navigate("/");
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || "Signup failed"
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   
   return (
     <div className="max-w-md mx-auto">

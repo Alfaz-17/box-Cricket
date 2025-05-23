@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import { Plus, Edit, Trash2, Box as BoxIcon } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-
+import api from '../../utils/api'
 const BoxManagement = () => {
   const [boxes, setBoxes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,37 +14,31 @@ const BoxManagement = () => {
   }, []);
 
   const fetchBoxes = async () => {
-    try {
-      const response = await fetch('http://localhost:5001/api/boxes/my-box',{credentials:'include'});
-      const data = await response.json();
+  try {
+    const response = await api.get('/boxes/my-box');
+    const data = response.data;
 
-     
-      setBoxes(data.boxes);
-    } catch (error) {
-      toast.error('Failed to fetch boxes');
-    } finally {
-      setLoading(false);
-    }
-  };
+    setBoxes(data.boxes);
+  } catch (error) {
+    toast.error('Failed to fetch boxes');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this box?')) return;
+ const handleDelete = async (id) => {
+  if (!confirm('Are you sure you want to delete this box?')) return;
 
-    try {
-      const response = await fetch(`http://localhost:5001/api/boxes/delete/${id}`, {
-        method: 'DELETE',
-      credentials:"include"
-      });
+  try {
+    await api.delete(`/boxes/delete/${id}`);
 
-      if (!response.ok) throw new Error('Failed to delete box');
-
-      toast.success('Box deleted successfully');
-      fetchBoxes();
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
-
+    toast.success('Box deleted successfully');
+    fetchBoxes();
+  } catch (error) {
+    toast.error(error.response?.data?.message || error.message || 'Failed to delete box');
+  }
+};
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">

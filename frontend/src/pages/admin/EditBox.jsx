@@ -5,7 +5,7 @@ import { Upload } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-
+import api from '../../utils/api'
 const EditBox = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,16 +22,15 @@ const EditBox = () => {
     fetchBoxDetails();
   }, [id]);
 
-  const fetchBoxDetails = async () => {
-    try {
-      const response = await fetch(`http://localhost:5001/api/public/boxes/${id}`,{credentials:"include"});
-      const data = await response.json();
-      setFormData(data);
-    } catch (error) {
-      toast.error('Failed to fetch box details');
-      navigate('/admin/boxes');
-    }
-  };
+const fetchBoxDetails = async () => {
+  try {
+    const response = await api.get(`/public/boxes/${id}`);
+    setFormData(response.data);
+  } catch (error) {
+    toast.error('Failed to fetch box details');
+    navigate('/admin/boxes');
+  }
+};
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -43,34 +42,32 @@ const EditBox = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const formDataToSend = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null) {
-          formDataToSend.append(key, formData[key]);
-        }
-      });
+  try {
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        formDataToSend.append(key, formData[key]);
+      }
+    });
 
-      const response = await fetch(`http://localhost:5001/api/boxes/update/${id}`, {
-        method: 'PUT',
-      credentials:"include",
-        body: formDataToSend
-      });
+    const response = await api.put(`/boxes/update/${id}`, formDataToSend, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
-      if (!response.ok) throw new Error('Failed to update box');
-
-      toast.success('Box updated successfully');
-      navigate('/admin/boxes');
-    } catch (error) {
-      toast.error(error.message);
-      console.log(error.message)
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.success(response.data.message || 'Box updated successfully');
+    navigate('/admin/boxes');
+  } catch (error) {
+    toast.error(error.response?.data?.message || error.message || 'Failed to update box');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="max-w-2xl mx-auto">

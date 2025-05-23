@@ -4,80 +4,62 @@ import { toast } from 'react-hot-toast';
 import { Calendar, Clock, MapPin, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+import api  from '../../utils/api';;
+
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('upcoming');
   
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await fetch('http://localhost:5001/api/booking/my-bookings', {
-          credentials:'include'
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.message || 'Failed to fetch bookings');
-        }
-        console.log(data)
-        setBookings(data);
-      } catch (error) {
-        console.error('Error fetching bookings:', error);
-        toast.error('Failed to load your bookings');
-        
-        // Mock data for demo
-        setBookings(mockBookings);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchBookings();
-  }, []);
-  
-useEffect(()=>{
 
-},[])
-
-
-  const cancelBooking = async (id) => {
-    if (!confirm('Are you sure you want to cancel this booking?')) return;
-    
+useEffect(() => {
+  const fetchBookings = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/booking/cancel/${id}`, {
-        method: 'POST',
-     credentials:"include"
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to cancel booking');
-      }
-      
-      // Update booking status
-      setBookings(prev => 
-        prev.map(booking => 
-          booking._id === id ? { ...booking, status: 'cancelled' } : booking
-        )
-      );
-      
-      toast.success('Booking cancelled successfully');
+      const response = await api.get('/booking/my-bookings');
+      setBookings(response.data);
     } catch (error) {
-      console.error('Error cancelling booking:', error);
-      toast.error(error.message || 'Failed to cancel booking');
-      
-      // For demo, update anyway
-      setBookings(prev => 
-        prev.map(booking => 
-          booking.id === id ? { ...booking, status: 'cancelled' } : booking
-        )
-      );
+      console.error('Error fetching bookings:', error);
+      toast.error('Failed to load your bookings');
+
+      // Mock data for demo
+      setBookings(mockBookings);
+    } finally {
+      setLoading(false);
     }
   };
+
+  fetchBookings();
+}, []);
+
+
+const cancelBooking = async (id) => {
+  if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+  try {
+    const response = await api.post(`/booking/cancel/${id}`);
+
+    // Axios treats non-2xx as errors, so if we’re here, it’s OK
+    setBookings(prev =>
+      prev.map(booking =>
+        booking._id === id ? { ...booking, status: 'cancelled' } : booking
+      )
+    );
+
+    toast.success('Booking cancelled successfully');
+  } catch (error) {
+    console.error('Error cancelling booking:', error);
+    toast.error(error.response?.data?.message || error.message || 'Failed to cancel booking');
+
+    // For demo, update anyway
+    setBookings(prev =>
+      prev.map(booking =>
+        booking._id === id ? { ...booking, status: 'cancelled' } : booking
+      )
+    );
+  }
+};
+
 
 
 

@@ -114,7 +114,7 @@ export const createTempBooking = async (req, res) => {
     const now = new Date();
     const start = parseDateTime(date, startTime);
     const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
-const formattedEndTime = end.toLocaleTimeString([], {
+    const formattedEndTime = end.toLocaleTimeString([], {
   hour: '2-digit',
   minute: '2-digit',
   hour12: true
@@ -283,33 +283,4 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
-export const getBlockedAndBookedSlots = async (req, res) => {
-  try {
-    const { boxId } = req.params;
 
-    // 1. Find the box
-    const box = await CricketBox.findById(boxId);
-    if (!box) return res.status(404).json({ message: "Cricket box not found" });
-
-    // 2. Get all bookings for the box
-    const bookings = await Booking.find({ box: boxId });
-
-    // 3. Format the slots
-    const bookedSlots = bookings.map((b) => ({
-      date: b.date,
-      startTime: b.startTime,
-      duration: b.duration,
-    }));
-
-    const blockedSlots = box.blockedSlots.map((slot) => ({
-      date: slot.date,
-      startTime: slot.startTime,
-      duration: slot.duration,
-    }));
-
-    res.json({ bookedSlots, blockedSlots });
-  } catch (error) {
-    console.error("Error getting slots:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};

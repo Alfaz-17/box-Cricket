@@ -6,8 +6,7 @@ import AuthContext from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-import { axiosInstance } from '../../services/axios';
-
+import api from '../../utils/api'
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,7 +41,7 @@ const Login = () => {
     setIsLoading(true);
   
     try {
-      const response = await axiosInstance.post(
+      const response = await api.post(
         '/auth/login',
         { email, password },
         { withCredentials: true } // important for cookies

@@ -16,7 +16,7 @@ import Sidebar from '../../components/admin/Sidebar';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { useEffect } from 'react';
-
+import api from '../../utils/api'
 const Dashboard = () => {
     const [loading, setLoading] = useState(false);
   
@@ -68,23 +68,19 @@ const Dashboard = () => {
     }, []);
   
 
-  const recentBooking =async()=>{
-setLoading(true)
-    try {
-      const response =await fetch('http://localhost:5001/api/owners/recent-bookings',{
-           credentials:"include"
-      })
-
-      const data=await response.json();
-
-      setBookings(data)
-      } catch (error) {
-      toast.error('Failed to fetch bookings');
-      console.log(error)
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+const recentBooking = async () => {
+  setLoading(true);
+  try {
+    const response = await api.get('/owners/recent-bookings');
+    setBookings(response.data);
+  } catch (error) {
+    toast.error('Failed to fetch bookings');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
   const recentBookings = [
     {
       id: '1',

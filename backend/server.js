@@ -8,7 +8,8 @@ import boxRoutes from "./routes/boxRoutes.js";
 import bookingRoutes from './routes/bookingRoutes.js'
 import ownerRoutes from './routes/ownerRoutes.js'
 import publicRoutes from "./routes/publicRoutes.js";
-import reviewRoutes from './routes/reviewRoutes.js'
+import reviewRoutes from './routes/reviewRoutes.js';
+import slotsRoutes from './routes/slotsRoutes.js'
 import cors from 'cors'
 dotenv.config();
 const app = express();
@@ -56,7 +57,9 @@ app.use("/api/boxes", boxRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/owners", ownerRoutes);
 app.use("/api/public", publicRoutes);
-app.use("/api/reviews",reviewRoutes)
+app.use("/api/reviews",reviewRoutes);
+app.use("/api/slots",slotsRoutes);
+
 console.log(process.env.PORT)
 app.listen(PORT,()=>{
     console.log("server is runnning on port",PORT);

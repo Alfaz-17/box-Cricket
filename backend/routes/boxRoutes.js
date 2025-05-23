@@ -15,12 +15,7 @@ import {
 const router = express.Router();
 
 // No multer now, frontend uploads to Cloudinary directly
-router.post(
-  "/create",
-  protectedRoute,
-  isOwner,
-  createBox
-);
+router.post("/create", protectedRoute,isOwner,createBox);
 router.put("/update/:id", protectedRoute, isOwner, updateBox);
 
 router.delete("/delete/:id", protectedRoute, isOwner, deleteBox);

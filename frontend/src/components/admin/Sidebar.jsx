@@ -32,6 +32,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   // Role-based menus
   const adminMenuItems = [
+     { path: '/', name: 'Home', icon: <Home size={20} /> },
     { path: '/admin', name: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { path: '/admin/boxes', name: 'Box Management', icon: <Box size={20} /> },
     { path: '/admin/bookings', name: 'Bookings', icon: <Calendar size={20} /> },

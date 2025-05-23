@@ -4,6 +4,9 @@ import { Calendar, Clock, MapPin, User, Search } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import api from '../../utils/api';
+
+
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -13,24 +16,23 @@ const AdminBookings = () => {
 
   useEffect(() => {
     fetchBookings();
+
   }, []);
 
-  const fetchBookings = async () => {
-    try {
-      const response = await fetch('http://localhost:5001/api/owners/bookings', {
-       credentials:"include"
-      });
-      const data = await response.json();
-  
-      
-      setBookings(data);
-    } catch (error) {
-      toast.error('Failed to fetch bookings');
-      console.log(error)
-    } finally {
-      setLoading(false);
-    }
-  };
+
+const fetchBookings = async () => {
+  try {
+    const response = await api.get('/owners/bookings');
+    const data = response.data;
+
+    setBookings(data);
+  } catch (error) {
+    toast.error('Failed to fetch bookings');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {

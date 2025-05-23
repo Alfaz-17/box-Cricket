@@ -4,7 +4,7 @@ import { Search, MapPin, Clock, Calendar, Filter } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-
+import api from '../../utils/api'
 const Home = () => {
   const [boxes, setBoxes] = useState([]);
   const [filteredBoxes, setFilteredBoxes] = useState([]);
@@ -18,16 +18,12 @@ const Home = () => {
     date: ''
   });
   
+ 
   useEffect(() => {
     const fetchBoxes = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/public/boxes');
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.message || 'Failed to fetch cricket boxes');
-        }
-       
+        const response = await api.get('/public/boxes');
+        const data = response.data;
 
         setBoxes(data);
         setFilteredBoxes(data);
@@ -37,10 +33,10 @@ const Home = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchBoxes();
   }, []);
-  
+
   useEffect(() => {
     // Filter boxes based on search query and filters
     let results = boxes;

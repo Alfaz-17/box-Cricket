@@ -77,5 +77,5 @@ export const logout = (req, res) => {
     sameSite: 'Lax',
     secure: process.env.NODE_ENV === 'production',
   });
-  res.status(200).json({ message: 'Logged out successfully' });
+  res.status(200).json({ message: 'Logout successfully...' });
 };

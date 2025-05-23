@@ -10,6 +10,7 @@ import {
   Star,
   Info,
 } from "lucide-react";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AuthContext from "../../context/AuthContext";
@@ -17,6 +18,10 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import TimePicker from "../../components/ui/TimePicker";
 import ReviewsSection from "../../components/ui/ReviewsSection";
+import api from '../../utils/api.js'
+import Tabs from "../../components/ui/tab.jsx";
+import BookedSlots from "../../components/ui/BookedSlots.jsx";
+import BlockedSlots from "../../components/ui/BlockedSlots.jsx";
 
 const BoxDetail = () => {
   const { id } = useParams();
@@ -29,7 +34,7 @@ const BoxDetail = () => {
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [contactNumber, setContactNumber] = useState("");
-  const [reviews, setReviews] = useState(null);
+  const [activeTab, setActiveTab] = useState("details");
 
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -39,16 +44,8 @@ const BoxDetail = () => {
   useEffect(() => {
     const fetchBoxDetails = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5001/api/public/boxes/${id}`
-        );
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch box details");
-        }
-    
-        setBox(data);
+        const response = await api.get(`/public/boxes/${id}`);
+        setBox(response.data);
       } catch (error) {
         console.error("Error fetching box details:", error);
         toast.error("Failed to load cricket box details");
@@ -78,113 +75,92 @@ const BoxDetail = () => {
   const formattedDate = selectedDate.toISOString().split("T")[0];
   const time = selectedTime.toString();
 
-  const checkAvailability = async () => {
-    if (!selectedDate || !selectedTime || !duration) {
-      toast.error("Please fill all detils");
-      return;
+
+const checkAvailability = async () => {
+  if (!selectedDate || !selectedTime || !duration) {
+    toast.error("Please fill all details");
+    return;
+  }
+
+  if (!isAuthenticated) {
+    toast.error("Please log in to book a cricket box");
+    navigate("/login", { state: { from: `/box/${id}` } });
+    return;
+  }
+
+  setIsCheckingAvailability(true);
+
+  try {
+    const response = await api.post("/booking/check-slot", {
+      boxId: id,
+      date: formattedDate,
+      startTime: time,
+      duration,
+    });
+
+    const data = response.data;
+
+    setAvailableTimes(data.available);
+
+    if (data.message) {
+      return toast.success(data.message);
     }
-    if (!isAuthenticated) {
-      toast.error("Please log in to book a cricket box");
-      navigate("/login", { state: { from: `/box/${id}` } });
-      return;
-    }
 
-    setIsCheckingAvailability(true);
-
-    try {
-      const response = await fetch(
-        "http://localhost:5001/api/booking/check-slot",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            boxId: id,
-            date: formattedDate,
-            startTime: time,
-            duration,
-         
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to check availability");
-      }
-
-      setAvailableTimes(data.available);
-
-      if (data.message) {
-        return toast.success(data.message);
-      }
-      toast.error(data.error);
-    } catch (error) {
-      console.error("Error checking availability:", error);
-      toast.error(error.message || "Failed to check availability");
-
-      // Mock data for demo
-    } finally {
-      setIsCheckingAvailability(false);
-    }
-  };
+    toast.error(data.error || "Slot not available");
+  } catch (error) {
+    console.error("Error checking availability:", error);
+    toast.error(
+      error.response?.data?.message || "Failed to check availability"
+    );
+  } finally {
+    setIsCheckingAvailability(false);
+  }
+};
 
   const handleBooking = async () => {
-    if (!isAuthenticated) {
-      toast.error("Please log in to book a cricket box");
-      navigate("/login", { state: { from: `/box/${id}` } });
-      return;
-    }
+  if (!isAuthenticated) {
+    toast.error("Please log in to book a cricket box");
+    navigate("/login", { state: { from: `/box/${id}` } });
+    return;
+  }
 
-    if (!selectedDate || !selectedTime || !duration) {
-      toast.error("Please select date, time and duration");
-      return;
-    }
-    if (!availableTimes) {
-      toast.error("this time is not available");
-    }
+  if (!selectedDate || !selectedTime || !duration) {
+    toast.error("Please select date, time and duration");
+    return;
+  }
 
-    setIsProcessingBooking(true);
+  if (!availableTimes) {
+    toast.error("This time is not available");
+    return;
+  }
 
-    try {
-      const response = await fetch(
-        "http://localhost:5001/api/booking/temp-booking",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            boxId: id,
-            date: formattedDate,
-            startTime: time,
-            duration: duration,
-            contactNumber
-          }),
-        }
-      );
+  setIsProcessingBooking(true);
 
-      const data = await response.json();
+  try {
+    const response = await api.post("/booking/temp-booking", {
+      boxId: id,
+      date: formattedDate,
+      startTime: time,
+      duration: duration,
+      contactNumber,
+    });
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to create booking");
-      }
-      toast.success("your booking is confirm");
-      setAvailableTimes(false);
-      console.log(data);
-    } catch (error) {
-      console.error("Error creating booking:", error);
-      toast.error(error.message || "Failed to create booking");
+    toast.success("Your booking is confirmed");
+    setAvailableTimes(false);
+    console.log(response.data);
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    toast.error(
+      error.response?.data?.message || "Failed to create booking"
+    );
+  } finally {
+    setIsProcessingBooking(false);
+  }
+};
 
-      // For demo purposes, simulate successful booking
-    } finally {
-      setIsProcessingBooking(false);
-    }
-  };
+
+
+
 
   // Mock data for demonstration
   const mockBox = {
@@ -268,7 +244,10 @@ const BoxDetail = () => {
   }
 
   return (
+    <>
+ 
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
       <div className="lg:col-span-2">
         {/* Image Gallery */}
         <div className="relative mb-6 rounded-lg overflow-hidden shadow-md">
@@ -422,11 +401,35 @@ const BoxDetail = () => {
           </div>
         </Card>
 
-        {/* Reviews */}
-       <ReviewsSection boxId={box._id}/>
 
-      </div>
+{isAuthenticated &&
+<div className="mb-6">
+  <Tabs
+    tabs={[
+      { label: "Booking", value: "details" },
+      { label: "Check Booking", value: "booked" },
+      { label: "Blocked Time Slots", value: "blocked" },
+      { label: "Reviews", value: "reviews" },
+    ]}
+    activeTab={activeTab}
+    onTabChange={setActiveTab}
+  />
+</div>
+}
 
+{activeTab === "booked" && (
+  <BookedSlots boxId={box._id} />
+)}
+
+{activeTab === "blocked" && (
+  <BlockedSlots boxId={box._id} />
+)}
+
+{activeTab === "reviews" && <ReviewsSection boxId={box._id} />}
+
+{activeTab === "details" && (
+  <>
+   
       {/* Booking Widget */}
       <div className="lg:col-span-1">
         <div className="sticky top-6">
@@ -588,7 +591,13 @@ const BoxDetail = () => {
           </div>
         </div>
       </div>
+  </>
+)}
+
+      </div>
+
     </div>
+    </>
   );
 };
 

@@ -6,6 +6,7 @@ import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import {uploadToCloudinary} from '../../utils/uploadToCloudinary'
+import api from '../../utils/api'
 const CreateBox = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -48,6 +49,7 @@ const CreateBox = () => {
   };
 
  
+
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
@@ -79,27 +81,13 @@ const handleSubmit = async (e) => {
       images: uploadedImagesURLs,
     };
 
-    const response = await fetch('http://localhost:5001/api/boxes/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(payload),
-    });
+    const response = await api.post('/boxes/create', payload);
 
-    const resData = await response.json();
-
-    if (!response.ok) {
-      toast.error(resData?.message || 'Something went wrong');
-      return;
-    }
-
-    toast.success('Box created successfully!');
+    toast.success(response.data.message || 'Box created successfully!');
     navigate('/admin/boxes');
   } catch (err) {
     console.error('Unexpected error:', err);
-    toast.error('Unexpected error occurred');
+    toast.error(err.response?.data?.message || 'Unexpected error occurred');
   } finally {
     setLoading(false);
   }
