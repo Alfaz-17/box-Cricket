@@ -5,24 +5,27 @@ import { Upload } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-import {uploadToCloudinary} from '../../utils/uploadToCloudinary'
-import api from '../../utils/api'
+import { uploadToCloudinary } from '../../utils/uploadToCloudinary';
+import api from '../../utils/api';
+
 const CreateBox = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    location: '',
-    address: '',
-    hourlyRate: '',
-    mobileNumber: '',
-    features: '',
-    image: null, // File object
-    images: [],  // File objects array
-    imagePreview: null,
-    imagesPreview: [],
-  });
+const [formData, setFormData] = useState({
+  name: '',
+  description: '',
+  location: '',
+  address: '',
+  hourlyRate: '',
+  mobileNumber: '',
+  features: '',
+  quarters: '',   // ← ADD THIS
+  image: null,
+  images: [],
+  imagePreview: null,
+  imagesPreview: [],
+});
+
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -48,50 +51,48 @@ const CreateBox = () => {
     }
   };
 
- 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    try {
+      let uploadedImageURL = '';
+      if (formData.image) {
+        uploadedImageURL = await uploadToCloudinary(formData.image);
+      }
 
-  try {
-    // Upload main image
-    let uploadedImageURL = '';
-    if (formData.image) {
-      uploadedImageURL = await uploadToCloudinary(formData.image);
-    }
+      const uploadedImagesURLs = [];
+      for (const imgFile of formData.images) {
+        const imgUrl = await uploadToCloudinary(imgFile);
+        uploadedImagesURLs.push(imgUrl);
+      }
 
-    // Upload additional images
-    const uploadedImagesURLs = [];
-    for (const imgFile of formData.images) {
-      const imgUrl = await uploadToCloudinary(imgFile);
-      uploadedImagesURLs.push(imgUrl);
-    }
-
-    // Final payload
-    const payload = {
-      name: formData.name,
-      description: formData.description,
-      location: formData.location,
-      address: formData.address,
-      hourlyRate: formData.hourlyRate,
-      mobileNumber: formData.mobileNumber,
-      features: formData.features,
-      image: uploadedImageURL,
-      images: uploadedImagesURLs,
-    };
-
-    const response = await api.post('/boxes/create', payload);
-
-    toast.success(response.data.message || 'Box created successfully!');
-    navigate('/admin/boxes');
-  } catch (err) {
-    console.error('Unexpected error:', err);
-    toast.error(err.response?.data?.message || 'Unexpected error occurred');
-  } finally {
-    setLoading(false);
-  }
+   const payload = {
+  name: formData.name,
+  description: formData.description,
+  location: formData.location,
+  address: formData.address,
+  hourlyRate: formData.hourlyRate,
+  mobileNumber: formData.mobileNumber,
+  features: formData.features,
+  numberOfQuarters: Number(formData.quarters),  // ← ensure it’s a number
+  image: uploadedImageURL,
+  images: uploadedImagesURLs,
 };
+console.log(payload)
+
+      const response = await api.post('/boxes/create', payload);
+
+      toast.success(response.data.message || 'Box created successfully!');
+      navigate('/admin/boxes');
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast.error(err.response?.data?.message || 'Unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       <Card title="Create New Cricket Box">
@@ -125,7 +126,7 @@ const handleSubmit = async (e) => {
             onChange={handleChange}
             required
           />
-          
+
           <Input
             label="Address"
             name="address"
@@ -169,7 +170,27 @@ const handleSubmit = async (e) => {
               required
             />
           </div>
+<div className="mb-4">
+  <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+    Number of Quarters
+  </label>
+  <select
+    name="quarters"
+    value={formData.quarters}
+    onChange={handleChange}
+    className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-gray-600 rounded-md"
+    required
+  >
+    <option value=""> Boxes</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+</div>
 
+          {/* Image upload fields (same as before) */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
               Box Image

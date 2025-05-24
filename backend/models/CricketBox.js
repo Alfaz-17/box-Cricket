@@ -53,6 +53,12 @@ const cricketBoxSchema = new mongoose.Schema({
     weekdays: { type: String ,default:"6:00 AM - 12:00 PM"},
     weekends: { type: String ,default:"12:00 AM - 12:00 AM(24 houres)"},
   },
+quarters: [
+  {
+    name: String,         // e.g., "Quarter 1"
+    isAvailable: { type: Boolean, default: true }
+  }
+],
 
   reviews: [reviewSchema],
 

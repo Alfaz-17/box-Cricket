@@ -15,17 +15,24 @@ export const createBox = async (req, res) => {
       facilities,
       features,
       image,
-      images
+      images,
+      numberOfQuarters // NEW
     } = req.body;
 
     const owner = req.user._id;
-  
 
-const owenrHaveBox = await CricketBox.find({ owner });
-if (owenrHaveBox.length > 0) {
-  return res.status(400).json({ message: "you already created box" });
-}
+    const ownerHaveBox = await CricketBox.find({ owner });
+    if (ownerHaveBox.length > 0) {
+      return res.status(400).json({ message: "You already created a box" });
+    }
 
+    const quartersArray = [];
+    for (let i = 1; i <= numberOfQuarters; i++) {
+      quartersArray.push({
+        name: `Quarter ${i}`,
+        isAvailable: true
+      });
+    }
 
     const newBox = await CricketBox.create({
       name,
@@ -42,6 +49,7 @@ if (owenrHaveBox.length > 0) {
       rating: 0,
       reviewCount: 0,
       reviews: [],
+      quarters: quartersArray // NEW FIELD ADDED
     });
 
     res.status(201).json({
@@ -58,12 +66,10 @@ if (owenrHaveBox.length > 0) {
   }
 };
 
+
 export const updateBox = async (req, res) => {
   try {
-    const { id } = req.params;
-    const ownerId = req.user._id;
-
-    // Destructure the request body
+    const boxId = req.params.id; // assuming you pass box ID in URL
     const {
       name,
       location,
@@ -73,52 +79,61 @@ export const updateBox = async (req, res) => {
       description,
       facilities,
       features,
-      image,  // Main image URL sent from frontend
-      images,  // Gallery image URLs sent from frontend
+      image,
+      images,
+      numberOfQuarters // NEW
     } = req.body;
 
-    const updates = { ...req.body }; // Spread the updates
+    const box = await CricketBox.findById(boxId);
 
-    // Handle main image (if provided) and update the URL
-    if (image) {
-      const uploadedMain = await cloudinary.uploader.upload(image, {
-        folder: "cricket-boxes",
-      });
-      updates.image = uploadedMain.secure_url; // Use the uploaded image URL
+    if (!box) {
+      return res.status(404).json({ message: 'Box not found' });
     }
 
-    // Handle gallery images (if provided) and update the URLs
-    if (images && images.length > 0) {
-      const uploads = await Promise.all(
-        images.map(image =>
-          cloudinary.uploader.upload(image, {
-            folder: "cricket-boxes",
-          })
-        )
-      );
-      updates.images = uploads.map(upload => upload.secure_url); // Save the gallery image URLs
+    // Update basic fields
+    box.name = name || box.name;
+    box.location = location || box.location;
+    box.address = address || box.address;
+    box.hourlyRate = hourlyRate || box.hourlyRate;
+    box.mobileNumber = mobileNumber || box.mobileNumber;
+    box.description = description || box.description;
+    box.image = image || box.image;
+    box.images = images || box.images;
+    box.facilities = facilities ? facilities.split(',').map(f => f.trim()) : box.facilities;
+    box.features = features ? features.split(',').map(f => f.trim()) : box.features;
+
+    // Update quarters if needed
+    if (numberOfQuarters) {
+      const currentCount = box.quarters.length;
+
+      if (numberOfQuarters > currentCount) {
+        // Add new quarters
+        for (let i = currentCount + 1; i <= numberOfQuarters; i++) {
+          box.quarters.push({
+            name: `Quarter ${i}`,
+            isAvailable: true
+          });
+        }
+      } else if (numberOfQuarters < currentCount) {
+        // Remove extra quarters (optional: check for bookings before deleting)
+        box.quarters = box.quarters.slice(0, numberOfQuarters);
+      }
+      // If same number, do nothing
     }
 
-    // Split facilities and features if they are provided as a string
-    if (facilities && typeof facilities === "string") {
-      updates.facilities = facilities.split(',').map(f => f.trim());
-    }
-    if (features && typeof features === "string") {
-      updates.features = features.split(',').map(f => f.trim());
-    }
+    await box.save();
 
-    // Update the box in the database
-    const updated = await CricketBox.findOneAndUpdate(
-      { _id: id, owner: ownerId },
-      updates,
-      { new: true }
-    );
-
-    if (!updated) return res.status(404).json({ message: "Box not found" });
-    res.json({ message: "Box updated", box: updated });
+    res.status(200).json({
+      success: true,
+      message: 'Box updated successfully',
+      box,
+    });
   } catch (err) {
-    console.error("Error in updateBox:", err);
-    res.status(500).json({ message: "Update failed" });
+    console.error('Update Box Error:', err);
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Server error during box update',
+    });
   }
 };
 
