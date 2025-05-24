@@ -6,80 +6,58 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import api from '../../utils/api';
 
-
-
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all'); // all, upcoming, past, cancelled
+  const [selectedQuarter, setSelectedQuarter] = useState('all'); // new: quarter filter
 
   useEffect(() => {
     fetchBookings();
-
   }, []);
 
-
-const fetchBookings = async () => {
-  try {
-    const response = await api.get('/owners/bookings');
-    const data = response.data;
-
-    setBookings(data);
-  } catch (error) {
-    toast.error('Failed to fetch bookings');
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-  const handleStatusChange = async (bookingId, newStatus) => {
+  const fetchBookings = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/booking/status/${bookingId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          
-        },
-        credentials:"include",
-        body: JSON.stringify({ paymentStatus: newStatus })
-      });
+      const response = await api.get('/owners/bookings');
+      const data = response.data;
 
-      if (!response.ok) throw new Error('Failed to update booking status');
-
-      toast.success('Booking status updated');
-      fetchBookings();
+      setBookings(data);
     } catch (error) {
-      toast.error(error.message);
+      toast.error('Failed to fetch bookings');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
+const uniqueQuarters = Array.from(
+  new Set(
+    bookings.flatMap(b =>
+      b.box && Array.isArray(b.box.quarters)
+        ? b.box.quarters.map(q => q.name)
+        : []
+    )
+  )
+);
+
   const filteredBookings = bookings.filter((booking) => {
-  const matchesSearch =
-    booking.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    booking.box.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      booking.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.box.name.toLowerCase().includes(searchTerm.toLowerCase());
 
-  if (filter === 'all') return matchesSearch;
+    const matchesFilter =
+      filter === 'all' ||
+      (filter === 'upcoming' && booking.status === 'confirmed') ||
+      (filter === 'past' && booking.status === 'completed') ||
+      (filter === 'cancelled' && booking.status === 'cancelled');
 
+    const matchesQuarter =
+      selectedQuarter === 'all' ||
+      booking.quarterName === selectedQuarter;
 
-  if (filter === 'upcoming') {
-    return (
-      matchesSearch &&
-      booking.status === 'confirmed' 
-    );
-  }
-
-  if (filter === 'past') {
-    return matchesSearch && booking.status === 'completed';
-  }
-
-  if (filter === 'cancelled') {
-    return matchesSearch && booking.status === 'cancelled';
-  }
-
-  return matchesSearch;
-});
+    return matchesSearch && matchesFilter && matchesQuarter;
+  });
 
   return (
     <div className="container mx-auto px-4">
@@ -128,6 +106,27 @@ const fetchBookings = async () => {
           </div>
         </div>
 
+        {/* Quarter filter buttons */}
+        {uniqueQuarters.length > 0 && (
+          <div className="flex gap-2 mb-6 flex-wrap">
+            <Button
+              variant={selectedQuarter === 'all' ? 'primary' : 'secondary'}
+              onClick={() => setSelectedQuarter('all')}
+            >
+              All Quarters
+            </Button>
+            {uniqueQuarters.map((quarter) => (
+              <Button
+                key={quarter}
+                variant={selectedQuarter === quarter ? 'primary' : 'secondary'}
+                onClick={() => setSelectedQuarter(quarter)}
+              >
+                {quarter}
+              </Button>
+            ))}
+          </div>
+        )}
+
         <div className="space-y-4">
           {filteredBookings.map((booking) => (
             <Card key={booking._id}>
@@ -164,13 +163,12 @@ const fetchBookings = async () => {
                     ${booking.amountPaid}
                   </div>
                   <div className="flex space-x-2">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
-                                  booking.status === 'complete' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
-                                  'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'}`}
-                              >
-                                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                              </span>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
+                        booking.status === 'complete' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
+                        'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'}`}>
+                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                    </span>
                   </div>
                 </div>
               </div>

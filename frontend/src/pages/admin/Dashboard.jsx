@@ -230,6 +230,9 @@ const recentBooking = async () => {
                           <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Date & Time
                           </th>
+                              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                           Boxes
+                          </th>
                           <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Amount
                           </th>
@@ -249,7 +252,10 @@ const recentBooking = async () => {
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                               <div>{new Date(booking.date).toLocaleDateString()}</div>
-                              <div className="text-xs">{booking.startTime} to {booking.endTime}</div>
+                              <div className="text-xs">{booking.startTime} to {booking.endTime}  </div>
+                            </td>
+                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                              {booking.quarterName}
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                               {booking.amountPaid} rs
