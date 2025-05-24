@@ -20,11 +20,12 @@ export const createBox = async (req, res) => {
 
     const owner = req.user._id;
   
-const owenrHaveBox=await CricketBox.find({owner});
 
-if(owenrHaveBox){
-  return res.status(400).json({message:"you already created box"})
+const owenrHaveBox = await CricketBox.find({ owner });
+if (owenrHaveBox.length > 0) {
+  return res.status(400).json({ message: "you already created box" });
 }
+
 
     const newBox = await CricketBox.create({
       name,
@@ -56,6 +57,7 @@ if(owenrHaveBox){
     });
   }
 };
+
 export const updateBox = async (req, res) => {
   try {
     const { id } = req.params;
