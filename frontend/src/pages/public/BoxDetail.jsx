@@ -35,6 +35,7 @@ const BoxDetail = () => {
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [contactNumber, setContactNumber] = useState("");
   const [activeTab, setActiveTab] = useState("details");
+const [selectedQuarter, setSelectedQuarter] = useState(null);
 
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -87,6 +88,11 @@ const checkAvailability = async () => {
     navigate("/login", { state: { from: `/box/${id}` } });
     return;
   }
+  if (!selectedQuarter) {
+  toast.error("Please select a quarter");
+  return;
+}
+
 
   setIsCheckingAvailability(true);
 
@@ -94,6 +100,7 @@ const checkAvailability = async () => {
     const response = await api.post("/booking/check-slot", {
       boxId: id,
       date: formattedDate,
+       quarterId: selectedQuarter,
       startTime: time,
       duration,
     });
@@ -133,6 +140,11 @@ const checkAvailability = async () => {
     toast.error("This time is not available");
     return;
   }
+  if (!selectedQuarter) {
+  toast.error("Please select a quarter");
+  return;
+}
+
 
   setIsProcessingBooking(true);
 
@@ -141,6 +153,7 @@ const checkAvailability = async () => {
       boxId: id,
       date: formattedDate,
       startTime: time,
+     quarterId: selectedQuarter,  // add this
       duration: duration,
       contactNumber,
     });
@@ -356,6 +369,32 @@ const checkAvailability = async () => {
             </ul>
           </div>
 
+          {/* quaters */}
+
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+  <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
+    Available Boxes
+  </h2>
+  <div className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-300">
+    {Array.isArray(displayBox.quarters) && displayBox.quarters.length > 0 ? (
+      displayBox.quarters.map((quarter, index) => (
+        <span
+          key={index}
+          className="px-3 py-1 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full text-sm"
+        >
+          {quarter.name}
+        </span>
+      ))
+    ) : (
+      <p>No quarters available</p>
+    )}
+  </div>
+</div>
+
+
+
+
+
           <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
             <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
               Opening Hours
@@ -512,6 +551,27 @@ const checkAvailability = async () => {
                 ))}
               </select>
             </div>
+<div className="mb-4">
+  <label className="block text-sm font-medium mb-1">Select Quarter:</label>
+  <select
+    value={selectedQuarter}
+    onChange={(e) => setSelectedQuarter(e.target.value)}
+    className="w-full p-2 border rounded"
+  >
+    <option value="">-- Select a quarter --</option>
+    {displayBox.quarters.map((quarter) => (
+      <option
+        key={quarter._id}
+        value={quarter._id}
+        disabled={!quarter.isAvailable}
+      >
+        {quarter.name} {quarter.isAvailable ? "" : "(Unavailable)"}
+      </option>
+    ))}
+  </select>
+</div>
+
+
             <Button
               onClick={checkAvailability}
               variant="secondary"

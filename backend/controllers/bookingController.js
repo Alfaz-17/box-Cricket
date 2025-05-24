@@ -16,47 +16,57 @@ import BlockedSlot from "../models/BlockedSlot.js";
 
 export const checkSlotAvailability = async (req, res) => {
   try {
-    const { boxId, date, startTime, duration } = req.body;
+    const { boxId, quarterId, date, startTime, duration } = req.body;
 
-    if (!boxId || !date || !startTime || !duration) {
+    if (!boxId || !quarterId || !date || !startTime || !duration) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const now = new Date();
-
     const start = parseDateTime(date, startTime);
-    const end = new Date(start.getTime() + duration * 60 * 60 * 1000); // assuming duration in hours
+    const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
 
-
-
-    // check start time nor less than current time
+    // check start time not less than current time
     if (start < now) {
-      return res
-        .status(400)
-        .json({ message: "Start time cannot be in the past" });
+      return res.status(400).json({ message: "Start time cannot be in the past" });
     }
 
-//blockedSlot  checking
-  const blockedSlots = await BlockedSlot.find({ boxId });
+    // Check if quarter exists and is available in the box quarters
+    const box = await CricketBox.findById(boxId);
+    if (!box) {
+      return res.status(404).json({ message: "Box not found" });
+    }
+    const quarter = box.quarters.find(q => q._id.toString() === quarterId);
+    if (!quarter) {
+      return res.status(400).json({ message: "Invalid quarter selected" });
+    }
+    if (!quarter.isAvailable) {
+      return res.json({ available: false, error: `Quarter ${quarter.name} is not available for booking.` });
+    }
 
-const isBlocked = blockedSlots.some((slot) => {
-  const blockStart = parseDateTime(slot.date, slot.startTime);
-  const blockEnd = parseDateTime(slot.date, slot.endTime);
+    // Check blocked slots (optional: if blocking is per quarter, add quarter check here)
+    const blockedSlots = await BlockedSlot.find({ boxId });
 
-  if (blockEnd <= blockStart) {
-    blockEnd.setDate(blockEnd.getDate() + 1);
-  }
+    const isBlocked = blockedSlots.some((slot) => {
+      const blockStart = parseDateTime(slot.date, slot.startTime);
+      const blockEnd = parseDateTime(slot.date, slot.endTime);
 
-  return blockStart < end && blockEnd > start;
-});
+      if (blockEnd <= blockStart) {
+        blockEnd.setDate(blockEnd.getDate() + 1);
+      }
 
-if (isBlocked) {
-  return res.json({ available: false, error: "Slot is blocked by admin" });
-}
+      // You might want to check if slot.quarterId === quarterId if blocking is quarter specific
+      return blockStart < end && blockEnd > start;
+    });
 
-    //overlape Booking
+    if (isBlocked) {
+      return res.json({ available: false, error: "Slot is blocked by admin" });
+    }
+
+    // Check overlapping bookings **for the specific quarter**
     const overlappingBookings = await Booking.find({
       box: boxId,
+      quarter: quarterId,
       startDateTime: { $lt: end },
       endDateTime: { $gt: start },
     });
@@ -71,6 +81,7 @@ if (isBlocked) {
     res.status(500).json({ message: err.message || "Server error" });
   }
 };
+
 
 // Create Stripe Checkout session
 export const createStripeCheckout = async (req, res) => {
@@ -107,41 +118,68 @@ export const createStripeCheckout = async (req, res) => {
 
   res.json({ id: session.id });
 };
+
+
 // TEMP: Create booking directly (no Stripe, no conflict check)
 export const createTempBooking = async (req, res) => {
   try {
-    const { boxId, date, startTime, duration, contactNumber } = req.body;
+    const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body;
     const now = new Date();
     const start = parseDateTime(date, startTime);
     const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
     const formattedEndTime = end.toLocaleTimeString([], {
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true
-});
-    // contact number is alway 10 digit
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+
     if (!/^\d{10}$/.test(contactNumber)) {
-      return res
-        .status(400)
-        .json({
-          message: "Invalid contact number. It must be exactly 10 digits.",
-        });
+      return res.status(400).json({ message: "Invalid contact number. It must be exactly 10 digits." });
     }
 
-    // check start time nor less than current time
     if (start < now) {
-      return res
-        .status(400)
-        .json({ message: "Start time cannot be in the past" });
+      return res.status(400).json({ message: "Start time cannot be in the past" });
     }
 
+    // 1. Fetch box to check quarters
+    const box = await CricketBox.findById(boxId);
+    if (!box) {
+      return res.status(404).json({ message: "Box not found" });
+    }
+
+    // 2. Check if quarterId exists and is available
+    const quarter = box.quarters.find(q => q._id.toString() === quarterId);
+    if (!quarter) {
+      return res.status(400).json({ message: "Invalid quarter selected" });
+    }
+    if (!quarter.isAvailable) {
+      return res.status(400).json({ message: `Quarter ${quarter.name} is not available for booking.` });
+    }
+
+    // 3. Check for overlapping bookings on this quarter
+    const overlappingBooking = await Booking.findOne({
+      box: boxId,
+      quarter: quarterId,
+      date,
+      $or: [
+        { startDateTime: { $lt: end }, endDateTime: { $gt: start } },
+      ],
+    });
+
+    if (overlappingBooking) {
+      return res.status(400).json({ message: `Quarter ${quarter.name} is already booked for this time slot.` });
+    }
+
+    // 4. Create booking with quarter
     const booking = await Booking.create({
       user: req.user.name,
       userId: req.user._id,
       box: boxId,
+      quarter: quarterId,
+      quarterName: quarter.name,
       date,
       startTime,
-      endTime:formattedEndTime,
+      endTime: formattedEndTime,
       duration,
       contactNumber,
       startDateTime: start,

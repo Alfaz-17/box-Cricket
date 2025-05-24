@@ -6,7 +6,10 @@ const bookingSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', 
   },
+  quarterName: { type: String, required: true },
+
   box: { type: mongoose.Schema.Types.ObjectId, ref: "CricketBox", required: true },
+   quarter: { type: mongoose.Schema.Types.ObjectId, required: true },
   date: { type: String, required: true }, // For display/filtering
   startTime: { type: String, required: true }, // For display
   endTime: { type: String }, // For display

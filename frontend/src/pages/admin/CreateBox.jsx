@@ -79,7 +79,7 @@ const [formData, setFormData] = useState({
   image: uploadedImageURL,
   images: uploadedImagesURLs,
 };
-console.log(payload)
+
 
       const response = await api.post('/boxes/create', payload);
 
