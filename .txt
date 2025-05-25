@@ -1,11 +1,13 @@
+          today tasks
+
+
 
 done *1. get owner booking add  option of quaters 
- **2. get recent booking show quaters
+     *2. get recent booking show quaters
+      *3. get user booking show quaters
+    *4. bloked time slots accoring to quaters
+    *5 .get booked and blocked slots accoring to quaters and show them in frontend
 
- 
-3. get user booking show quaters
-4. bloked time slots accoring to quaters
-5 .get booked and blocked slots accoring to quaters and show them in frontend
 
 
 

@@ -8,6 +8,7 @@ const BlockedSlotSchema = new mongoose.Schema({
     ref: 'Box',
     required: true
   },
+  quarterName:String,
   date: {
     type: String, // or Date
     required: true

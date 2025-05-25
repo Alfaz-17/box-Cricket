@@ -5,10 +5,18 @@ import Booking from "../models/Booking.js";
 
 export const blockTimeSlot = async (req, res) => {
   try {
-    const { date, startTime, endTime, reason } = req.body;
+    const { date, startTime, endTime, reason, quarterName } = req.body;
 
     const box = await CricketBox.findOne({ owner: req.user._id });
-    if (!box) return res.status(404).json({ message: "No box found. Please create a box." });
+    if (!box) {
+      return res.status(404).json({ message: "No box found. Please create a box." });
+    }
+
+    // ✅ Check if quarter exists in box
+    const quarter = box.quarters.find(q => q.name === quarterName);
+    if (!quarter) {
+      return res.status(404).json({ message: `Quarter "${quarterName}" not found in this box.` });
+    }
 
     const start = parseDateTime(date, startTime);
     const end = parseDateTime(date, endTime);
@@ -18,24 +26,23 @@ export const blockTimeSlot = async (req, res) => {
       return res.status(400).json({ message: "Start time cannot be in the past" });
     }
 
-    // 🧠 Check for overlapping blocked slots
+    // 🧠 Check for overlapping blocked slots in this quarter
     const overlapping = await BlockedSlot.findOne({
       boxId: box._id,
+      quarterName, // <== include quarter in overlap check
       date,
       $or: [
-        {
-          startTime: { $lt: endTime },
-          endTime: { $gt: startTime }
-        }
+        { startTime: { $lt: endTime }, endTime: { $gt: startTime } }
       ]
     });
 
     if (overlapping) {
-      return res.status(409).json({ message: "This time slot is already blocked or overlaps with another blocked slot." });
+      return res.status(409).json({ message: `This time slot in "${quarterName}" is already blocked or overlaps with another blocked slot.` });
     }
 
     const newBlockedSlot = new BlockedSlot({
       boxId: box._id,
+      quarterName, // <== save quarter name
       date,
       startTime,
       endTime,
@@ -44,12 +51,13 @@ export const blockTimeSlot = async (req, res) => {
 
     await newBlockedSlot.save();
 
-    res.json({ message: "Time slot blocked successfully" });
+    res.json({ message: `Time slot blocked successfully in "${quarterName}"` });
   } catch (error) {
     console.log("❌ Error in blockTimeSlot controller:", error);
     res.status(500).json({ message: "Failed to block time slot" });
   }
 };
+
 
 export const getBlockedAndBookedSlots = async (req, res) => {
   try {
@@ -59,26 +67,59 @@ export const getBlockedAndBookedSlots = async (req, res) => {
     const box = await CricketBox.findById(id);
     if (!box) return res.status(404).json({ message: "Cricket box not found" });
 
-    // 2. Get all bookings for the box
+    const now = new Date();
+
+    // 2. Get all upcoming bookings for the box
     const bookings = await Booking.find({ box: id });
-const now =new Date();
-    // 3. Format the slots
-    const upcomingBookedSolts = bookings.filter((b) => {
-       return b.endDateTime > now
+    const upcomingBookedSlots = bookings.filter(b => new Date(b.endDateTime) > now);
+
+    // 3. Get all upcoming blocked slots for the box
+    const blockedSlots = (await BlockedSlot.find({ boxId: id })).filter(b => {
+      const endBlockedTime = parseDateTime(b.date, b.endTime);
+      return endBlockedTime > now;
     });
 
-   const blockedSlots= (await BlockedSlot.find()).filter((b)=>{
- const endBlockedTime =parseDateTime(b.date,b.endTime);
- return endBlockedTime > now ;
-    
-   });
+    // 4. Group booked slots by quarterName
+    const bookedMap = {};
+    upcomingBookedSlots.forEach(b => {
+      if (!bookedMap[b.quarterName]) {
+        bookedMap[b.quarterName] = [];
+      }
+      bookedMap[b.quarterName].push(b);
+    });
 
-    res.json({ upcomingBookedSolts, blockedSlots });
+    // 5. Group blocked slots by quarterName
+    const blockedMap = {};
+    blockedSlots.forEach(b => {
+      if (!blockedMap[b.quarterName]) {
+        blockedMap[b.quarterName] = [];
+      }
+      blockedMap[b.quarterName].push(b);
+    });
+
+    // 6. Convert maps to array format
+    const bookedSlotsResponse = Object.keys(bookedMap).map(quarterName => ({
+      quarterName,
+      slots: bookedMap[quarterName]
+    }));
+
+    const blockedSlotsResponse = Object.keys(blockedMap).map(quarterName => ({
+      quarterName,
+      slots: blockedMap[quarterName]
+    }));
+
+    // 7. Send response
+    res.json({
+      bookedSlots: bookedSlotsResponse,
+      blockedSlots: blockedSlotsResponse
+    });
+
   } catch (error) {
-    console.error("Error getting slots:", error);
+    console.error("❌ Error getting slots:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const unblockTimeSlot = async (req, res) => {
   try {
@@ -105,22 +146,6 @@ export const unblockTimeSlot = async (req, res) => {
   }
 };
 
-export const getBlockedSlot =async (req,res)=>{
-      try {
-        const box=await CricketBox.find({owner:req.user._id});
-
-        if(!box){
-          return res.status(400).json({message:"Box is not founded"})
-        }
-
-        const blockedSlot=await BlockedSlot.find({boxId:box._id})
-
-      } catch (error) {
-        
-      }
-
-
-}
 
 
 
