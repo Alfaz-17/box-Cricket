@@ -3,12 +3,12 @@ import React from "react";
 
 const Tabs = ({ tabs, activeTab, onTabChange }) => {
   return (
-    <div className="flex justify-center border-b border-yellow-400 mb-6">
+    <div className="flex justify-center border-b border-yellow-400 mb-7">
       {tabs.map((tab, index) => (
         <button
           key={index}
           onClick={() => onTabChange(tab.value)}
-          className={`relative px-6 py-3 font-semibold transition-colors duration-300
+          className={`relative px-3 py-3  font-semibold transition-colors duration-300
             ${
               activeTab === tab.value
                 ? "text-yellow-600 border-b-4 border-yellow-600"

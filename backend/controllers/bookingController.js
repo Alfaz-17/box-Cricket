@@ -156,6 +156,9 @@ export const createTempBooking = async (req, res) => {
       return res.status(400).json({ message: `Quarter ${quarter.name} is not available for booking.` });
     }
 
+if(req.user.role === "owner"){
+  return res.status(400).json({message:"Owner cant booking Box"})
+}
     // 3. Check for overlapping bookings on this quarter
     const overlappingBooking = await Booking.findOne({
       box: boxId,
@@ -261,6 +264,7 @@ export const stripeWebhook = async (req, res) => {
 };
 
 // User's bookings
+
 export const getMyBookings = async (req, res) => {
   const bookings = await Booking.find({ userId: req.user._id }).populate("box");
 

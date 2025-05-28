@@ -61,21 +61,11 @@ function App() {
     const checkAuth = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://localhost:5001/api/auth/me', {
-          method: 'POST',
-          credentials: 'include',
-        });
+        const response = await api.post('/auth/me'); // ✅ Axios handles POST & cookies
 
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData.user);
-          setIsAuthenticated(true);
-     
-        } else {
-          setUser(null);
-        
-          setIsAuthenticated(false);
-        }
+        // Axios automatically parses response.data
+        setUser(response.data.user);
+        setIsAuthenticated(true);
       } catch (error) {
         console.error('❌ Auth check error:', error);
         setUser(null);

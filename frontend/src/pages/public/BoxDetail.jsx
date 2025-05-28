@@ -257,8 +257,7 @@ const checkAvailability = async () => {
   }
 
   return (
-    <>
- 
+
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <div className="lg:col-span-2">
@@ -445,10 +444,10 @@ const checkAvailability = async () => {
 <div className="mb-6">
   <Tabs
     tabs={[
-      { label: "Booking", value: "details" },
-      { label: "Check Booking", value: "booked" },
-      { label: "Blocked Time Slots", value: "blocked" },
-      { label: "Reviews", value: "reviews" },
+      { label: "Details", value: "details" },
+      { label: "Booked", value: "booked" },
+      { label: "Blocked", value: "blocked" },
+      { label: "Review", value: "reviews" },
     ]}
     activeTab={activeTab}
     onTabChange={setActiveTab}
@@ -657,7 +656,8 @@ const checkAvailability = async () => {
       </div>
 
     </div>
-    </>
+
+   
   );
 };
 

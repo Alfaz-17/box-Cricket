@@ -1,21 +1,15 @@
-          today tasks
-
-
-
-done *1. get owner booking add  option of quaters 
-     *2. get recent booking show quaters
-      *3. get user booking show quaters
-    *4. bloked time slots accoring to quaters
-    *5 .get booked and blocked slots accoring to quaters and show them in frontend
-
-
-
-
-
+        
 
 later changes
 
 1. add otp  in login 
 2. add map in box detils
 3. change ui color
+4.add review count 
+5.name and logo
+6.sticky Navbar
+7.booking recipt
+8.sms after booking via
+9.notify owner when booking is made
+10.autoMaticaaly expire blocked slot when it is past
 

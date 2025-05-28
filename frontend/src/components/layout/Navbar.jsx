@@ -4,6 +4,7 @@ import { Menu, Sun, Moon, LogOut, Trophy } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
 import ThemeContext from '../../context/ThemeContext';
 import Sidebar from '../admin/Sidebar';
+import logo from '../../images/logo.png'
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -38,8 +39,12 @@ const Navbar = () => {
               to="/"
               className="flex items-center space-x-2 text-yellow-800 dark:text-yellow-400 font-bold text-xl transition-colors duration-300"
             >
-              <Trophy size={28} className="text-yellow-600 dark:text-yellow-400" />
-              <span className="hidden sm:block">Trophy Box</span>
+               <img
+    src={logo}
+    alt="BookMyBox Logo"
+    className="h-13 w-13 rounded-3xl transition-transform duration-300 hover:scale-150"
+  />
+  
             </Link>
 
             {/* Desktop Nav */}
