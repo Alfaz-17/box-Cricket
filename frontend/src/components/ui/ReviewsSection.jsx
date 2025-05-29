@@ -16,7 +16,7 @@ const ReviewsSection = ({ boxId }) => {
   const fetchReviews = async () => {
     try {
       const res = await axios.get(`http://localhost:5001/api/reviews/${boxId}`);
-      setReviews(res.data);
+      setReviews(res.data.reviews);
     } catch (err) {
       console.log(err);
     }

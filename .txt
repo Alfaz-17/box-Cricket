@@ -2,14 +2,21 @@
 
 later changes
 
-1. add otp  in login 
 2. add map in box detils
 3. change ui color
 4.add review count 
-5.name and logo
-6.sticky Navbar
+
 7.booking recipt
 8.sms after booking via
 9.notify owner when booking is made
 10.autoMaticaaly expire blocked slot when it is past
+
+
+
+done
+1. add otp  in signup  
+5.name and logo  
+6.sticky Navbar                 
+
+
 

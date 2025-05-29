@@ -34,17 +34,27 @@ if(rating > 5){
   }
 };
 
-
 export const getReviews = async (req, res) => {
   try {
     const { id } = req.params; // boxID
+
     const reviews = await Review.find({ boxId: id }).sort({ createdAt: -1 });
 
- 
+    let averageRating = 0;
 
-    res.json(reviews);
+    if (reviews.length > 0) {
+      const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+      averageRating = (total / reviews.length).toFixed(1); // one decimal point
+    }
+
+    res.json({
+      reviews,
+      averageRating: Number(averageRating),
+      reviewCount: reviews.length,
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: "Failed to get reviews" });
   }
 };
+

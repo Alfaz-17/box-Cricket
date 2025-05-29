@@ -1,4 +1,3 @@
-import cloudinary from "../lib/cloudinary.js";
 import CricketBox from "../models/CricketBox.js";
 import User from "../models/User.js";
 

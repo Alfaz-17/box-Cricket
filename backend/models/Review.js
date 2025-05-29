@@ -8,7 +8,7 @@ const ReviewsSchema = new mongoose.Schema({
     ref: 'Box',
     required: true
   },
-  
+
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -19,7 +19,10 @@ const ReviewsSchema = new mongoose.Schema({
   required: true
   },
   name: String,
-  rating:Number 
+  rating:Number ,
+    averageRating:Number,
+    reviewCount:Number
+  
  
 },{timestamps:true});
 

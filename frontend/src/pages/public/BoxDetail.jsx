@@ -36,6 +36,9 @@ const BoxDetail = () => {
   const [contactNumber, setContactNumber] = useState("");
   const [activeTab, setActiveTab] = useState("details");
 const [selectedQuarter, setSelectedQuarter] = useState(null);
+const [reviews, setReviews] = useState(null);
+const [averageRating, setAverageRating] = useState(null);
+const [totalReviews, setTotalReviews] = useState(null);
 
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -61,9 +64,30 @@ const [selectedQuarter, setSelectedQuarter] = useState(null);
 
 
 
+const fetchReviews = async () => {
+  setLoading(true);
+ 
+  try {
+    const res = await api.get(`/reviews/${id}`);
+    setReviews(res.data.reviews);
+    setAverageRating(res.data.averageRating);
+    setTotalReviews(res.data.reviewCount);
+  } catch (err) {
+    console.error(err);
+    setError('Failed to load reviews. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
 
-
+  
+  useEffect(() => {
+    if (id) {
+      fetchReviews();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]); // Refetch when box ID changes
 
   // Format date for API
 
@@ -323,10 +347,10 @@ const checkAvailability = async () => {
             <div className="flex items-center mr-3">
               <Star className="w-5 h-5 text-yellow-500 fill-current" />
               <span className="text-gray-700 dark:text-gray-300 font-medium ml-1">
-                {displayBox.rating}
+                {averageRating}
               </span>
               <span className="text-gray-500 dark:text-gray-400 ml-1">
-                ({displayBox.reviewCount} reviews)
+                ({totalReviews} reviews)
               </span>
             </div>
             <div className="flex items-center text-gray-600 dark:text-gray-400">
@@ -482,7 +506,7 @@ const checkAvailability = async () => {
               <div className="flex items-center">
                 <Star className="w-5 h-5 text-yellow-500 fill-current" />
                 <span className="text-gray-700 dark:text-gray-300 font-medium ml-1">
-                  {displayBox.rating}
+                  {averageRating}
                 </span>
               </div>
             </div>

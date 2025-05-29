@@ -2,21 +2,48 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { generateToken } from "../lib/generateToken.js";
 import dotenv from "dotenv";
+import redis from '../lib/redis.js'
 dotenv.config();
+
+export const sendOtp = async (req, res) => {
+  try {
+    const { contactNumber } = req.body;
+
+    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+    const ttl = 300; // 5 minutes
+
+    await redis.set(`otp:${contactNumber}`, otp, 'EX', ttl);
+
+    console.log(`OTP for ${contactNumber}: ${otp}`); // 👉 Replace this with SMS sending
+
+    res.status(200).json({ message: 'OTP sent successfully' });
+  } catch (error) {
+    console.error('Send OTP error:', error);
+    res.status(500).json({ message: 'Failed to send OTP' });
+  }
+};
+
+
+
 
 export const signup = async (req, res) => {
   try {
-    const { name, contactNumber, ownerCode,password, role, otp } = req.body;
+    const { name, contactNumber, ownerCode, password, role, otp } = req.body;
 
     const exists = await User.findOne({ contactNumber });
     if (exists)
-      return res
-        .status(400)
-        .json({ message: "Contact number already registered" });
+      return res.status(400).json({ message: 'Contact number already registered' });
 
-    // ✅ Optionally: Verify OTP here (if using external OTP service)
-    // if (otp !== "expectedOtp") return res.status(400).json({ message: "Invalid OTP" });
+    // ✅ Verify OTP from Redis
+    const storedOtp = await redis.get(`otp:${contactNumber}`);
+    if (!storedOtp) {
+      return res.status(400).json({ message: 'OTP expired or not found' });
+    }
+    if (storedOtp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
 
+    // ✅ Proceed to create user
     const hashed = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
@@ -25,18 +52,21 @@ export const signup = async (req, res) => {
       role,
       ownerCode,
     });
- if (ownerCode) {
-  if (ownerCode !== process.env.OWNER_CODE) {
-    return res.status(400).json({ message: "owner code is not valid" });
-  } else {
-    user.role = "owner";
-    await user.save();
-  }
-}
 
+    if (ownerCode) {
+      if (ownerCode !== process.env.OWNER_CODE) {
+        return res.status(400).json({ message: 'Owner code is not valid' });
+      } else {
+        user.role = 'owner';
+        await user.save();
+      }
+    }
+
+    // ✅ Clean up OTP from Redis after successful signup
+    await redis.del(`otp:${contactNumber}`);
 
     res.status(200).json({
-      message: "Signup successful",
+      message: 'Signup successful',
       token: generateToken(user._id, res),
       user: {
         id: user._id,
@@ -46,10 +76,11 @@ export const signup = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Signup error:", error);
-    res.status(500).json({ message: "Signup failed" });
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Signup failed' });
   }
 };
+
 
 export const login = async (req, res) => {
   try {
