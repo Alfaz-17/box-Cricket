@@ -70,6 +70,7 @@ quarters: [
       reason:{type:String}
     },
   ],
+  updatedAt:{type:Date},
 
   rating: { type: Number, default: 0 },        // Optional: Computed later
   reviewCount: { type: Number, default: 0 },   // Optional: Computed later

@@ -8,7 +8,7 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import api from '../../utils/api'
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -23,8 +23,10 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid';
+        if (!contactNumber) newErrors.contactNumber = 'contactNumber is required';
+    else if (contactNumber.length !== 10) newErrors.contactNumber = 'contactNumber must be  10 digits';
+
+   
     
     if (!password) newErrors.password = 'Password is required';
     else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
@@ -43,7 +45,7 @@ const Login = () => {
     try {
       const response = await api.post(
         '/auth/login',
-        { email, password },
+        { contactNumber, password },
         { withCredentials: true } // important for cookies
       );
   
@@ -70,16 +72,16 @@ const Login = () => {
         subtitle="Log in to your account to book cricket boxes"
       >
         <form onSubmit={handleSubmit}>
-          <Input
-            label="Email"
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            error={errors.email}
+       <Input
+            label="Contact Number"
+            id="contactNumber"
+            type="tel"
+            value={contactNumber}
+            onChange={(e) => setContactNumber(e.target.value)}
+            placeholder="Enter your contact number"
+            error={errors.contactNumber}
           />
-          
+    
           <Input
             label="Password"
             id="password"

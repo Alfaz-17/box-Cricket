@@ -10,7 +10,7 @@ import api from '../../utils/api'
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    contactNumber: '',
     password: '',
     confirmPassword: ''
   });
@@ -31,12 +31,13 @@ const Signup = () => {
   
   const validateForm = () => {
     const newErrors = {};
-    const { name, email, password, confirmPassword } = formData;
+    const { name, password, confirmPassword } = formData;
     
     if (!name) newErrors.name = 'Name is required';
     
-    if (!email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid';
+    if (!contactNumber) newErrors.contactNumber = "Contact number is required";
+  
+
     
     if (!password) newErrors.password = 'Password is required';
     else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
@@ -58,7 +59,7 @@ const handleSubmit = async (e) => {
   try {
     const response = await api.post("/auth/signup", {
       name: formData.name,
-      email: formData.email,
+      contactNumber: formData.contactNumber,
       password: formData.password,
     });
 
@@ -95,18 +96,19 @@ const handleSubmit = async (e) => {
             placeholder="Enter your full name"
             error={errors.name}
           />
-          
+
           <Input
-            label="Email"
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter your email"
-            error={errors.email}
-          />
+  label="Contact Number"
+  id="contactNumber"
+  name="contactNumber"
+  type="tel"
+  value={formData.contactNumber}
+  onChange={handleChange}
+  placeholder="Enter your phone number"
+  error={errors.contactNumber}
+/>
           
+       
           <Input
             label="Password"
             id="password"

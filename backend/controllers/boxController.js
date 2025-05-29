@@ -66,10 +66,9 @@ export const createBox = async (req, res) => {
   }
 };
 
-
 export const updateBox = async (req, res) => {
   try {
-    const boxId = req.params.id; // assuming you pass box ID in URL
+    const boxId = req.params.id;
     const {
       name,
       location,
@@ -84,6 +83,8 @@ export const updateBox = async (req, res) => {
       numberOfQuarters // NEW
     } = req.body;
 
+ 
+
     const box = await CricketBox.findById(boxId);
 
     if (!box) {
@@ -94,32 +95,52 @@ export const updateBox = async (req, res) => {
     box.name = name || box.name;
     box.location = location || box.location;
     box.address = address || box.address;
-    box.hourlyRate = hourlyRate || box.hourlyRate;
+    box.hourlyRate = hourlyRate !== undefined ? Number(hourlyRate) : box.hourlyRate;
     box.mobileNumber = mobileNumber || box.mobileNumber;
     box.description = description || box.description;
     box.image = image || box.image;
     box.images = images || box.images;
-    box.facilities = facilities ? facilities.split(',').map(f => f.trim()) : box.facilities;
-    box.features = features ? features.split(',').map(f => f.trim()) : box.features;
 
-    // Update quarters if needed
-    if (numberOfQuarters) {
+    if (facilities) {
+      box.facilities = facilities.split(',').map(f => f.trim());
+    }
+
+    if (features) {
+      box.features = features.split(',').map(f => f.trim());
+    }
+
+    // Handle quarters safely
+    if (numberOfQuarters !== undefined) {
+      const newCount = Number(numberOfQuarters);
       const currentCount = box.quarters.length;
 
-      if (numberOfQuarters > currentCount) {
+      if (newCount > currentCount) {
         // Add new quarters
-        for (let i = currentCount + 1; i <= numberOfQuarters; i++) {
+        for (let i = currentCount + 1; i <= newCount; i++) {
           box.quarters.push({
             name: `Quarter ${i}`,
             isAvailable: true
           });
         }
-      } else if (numberOfQuarters < currentCount) {
-        // Remove extra quarters (optional: check for bookings before deleting)
-        box.quarters = box.quarters.slice(0, numberOfQuarters);
+      } else if (newCount < currentCount) {
+        // Check if extra quarters are all free
+        const extraQuarters = box.quarters.slice(newCount);
+
+        const anyBooked = extraQuarters.some(q => !q.isAvailable);
+        if (anyBooked) {
+          return res.status(400).json({
+            message: 'Cannot remove quarters that are currently booked or unavailable'
+          });
+        }
+
+        // Remove extra quarters safely
+        box.quarters = box.quarters.slice(0, newCount);
       }
-      // If same number, do nothing
+      // If same count, do nothing
     }
+
+    // Optional: track update time
+    box.updatedAt = new Date();
 
     await box.save();
 
