@@ -29,7 +29,10 @@ import EditBox from './pages/admin/EditBox';
 import AdminBookings from './pages/admin/AdminBookings';
 import BlockSlot from './pages/admin/BlockSlot';
 import api from './utils/api';
-
+import '@fontsource/lato'; // Defaults to weight 400 (regular)
+import  "@fontsource/inter";
+import   "@fontsource/montserrat";
+import   "@fontsource/poppins";
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
 
@@ -108,7 +111,8 @@ function App() {
     <AuthContext.Provider value={authContextValue}>
       <ThemeProvider>
         <Router>
-          <div className="flex flex-col min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+        <div style={{ fontFamily: 'montserrat' }}>
+          <div  className=" flex flex-col min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300" >
             <Navbar />
             <main className="flex-grow container mx-auto px-4 py-8">
               {!loading && (
@@ -200,9 +204,11 @@ function App() {
             <Footer />
             <Toaster position="top-right" />
           </div>
+           </div>
         </Router>
       </ThemeProvider>
     </AuthContext.Provider>
+   
   );
 }
 
