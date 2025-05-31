@@ -8,6 +8,8 @@ export const createBox = async (req, res) => {
       name,
       location,
       address,
+      latitude,    // NEW
+      longitude,   // NEW
       hourlyRate,
       mobileNumber,
       description,
@@ -15,7 +17,7 @@ export const createBox = async (req, res) => {
       features,
       image,
       images,
-      numberOfQuarters // NEW
+      numberOfQuarters
     } = req.body;
 
     const owner = req.user._id;
@@ -37,6 +39,10 @@ export const createBox = async (req, res) => {
       name,
       location,
       address,
+      coordinates: {
+        lat: latitude,
+        lng: longitude,
+      },
       hourlyRate,
       mobileNumber,
       description,
@@ -48,7 +54,7 @@ export const createBox = async (req, res) => {
       rating: 0,
       reviewCount: 0,
       reviews: [],
-      quarters: quartersArray // NEW FIELD ADDED
+      quarters: quartersArray
     });
 
     res.status(201).json({
@@ -64,6 +70,7 @@ export const createBox = async (req, res) => {
     });
   }
 };
+
 
 export const updateBox = async (req, res) => {
   try {

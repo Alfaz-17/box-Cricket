@@ -7,7 +7,7 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary';
 import api from '../../utils/api';
-
+import MapPicker  from '../../components/ui/MapPicker'
 const CreateBox = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -24,6 +24,8 @@ const [formData, setFormData] = useState({
   images: [],
   imagePreview: null,
   imagesPreview: [],
+    latitude: null,
+  longitude: null,
 });
 
 
@@ -78,9 +80,11 @@ const [formData, setFormData] = useState({
   numberOfQuarters: Number(formData.quarters),  // ← ensure it’s a number
   image: uploadedImageURL,
   images: uploadedImagesURLs,
+     latitude: formData.latitude,
+  longitude: formData.longitude,
 };
 
-
+console.log(payload)
       const response = await api.post('/boxes/create', payload);
 
       toast.success(response.data.message || 'Box created successfully!');
@@ -119,13 +123,36 @@ const [formData, setFormData] = useState({
             />
           </div>
 
-          <Input
-            label="Location"
+        <div className="mb-6">
+  <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+    Pick Location on Map
+  </label>
+<MapPicker
+  latitude={formData.latitude}
+  longitude={formData.longitude}
+  onLocationChange={(lat, lng) =>
+    setFormData((prev) => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+    }))
+  }
+/>
+
+  {formData.latitude && formData.longitude && (
+    <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+      Selected Coordinates: {formData.latitude.toFixed(5)}, {formData.longitude.toFixed(5)}
+    </p>
+  )}
+</div>
+  <Input
+            label="location"
             name="location"
             value={formData.location}
             onChange={handleChange}
             required
           />
+
 
           <Input
             label="Address"

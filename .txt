@@ -2,9 +2,9 @@
 
 later changes
 
-2. add map in box detils
+
 3. change ui color
-4.add review count 
+
 
 7.booking recipt
 8.sms after booking via
@@ -16,7 +16,8 @@ later changes
 done
 1. add otp  in signup  
 5.name and logo  
-6.sticky Navbar                 
-
+6.sticky Navbar  
+2. add map in box detils               
+4.add review count 
 
 

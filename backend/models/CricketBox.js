@@ -41,7 +41,10 @@ const cricketBoxSchema = new mongoose.Schema({
     required: true,
     match: /^[6-9]\d{9}$/, // Validates Indian-style 10-digit number
   },
-
+  coordinates: {
+    lat: Number,
+    lng: Number,
+  },
   image: { type: String },        // Primary image
   images: [{ type: String }],     // Multiple images from Cloudinary
 

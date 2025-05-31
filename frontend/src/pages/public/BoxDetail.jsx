@@ -22,10 +22,12 @@ import api from '../../utils/api.js'
 import Tabs from "../../components/ui/tab.jsx";
 import BookedSlots from "../../components/ui/BookedSlots.jsx";
 import BlockedSlots from "../../components/ui/BlockedSlots.jsx";
-
+import BoxMap from "../../components/ui/BoxMap.jsx";
 const BoxDetail = () => {
   const { id } = useParams();
-  const [box, setBox] = useState(null);
+  const [box, setBox] = useState(
+    ""
+  );
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState("");
@@ -35,10 +37,10 @@ const BoxDetail = () => {
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [contactNumber, setContactNumber] = useState("");
   const [activeTab, setActiveTab] = useState("details");
-const [selectedQuarter, setSelectedQuarter] = useState(null);
+const [selectedQuarter, setSelectedQuarter] = useState("");
 const [reviews, setReviews] = useState(null);
-const [averageRating, setAverageRating] = useState(null);
-const [totalReviews, setTotalReviews] = useState(null);
+const [averageRating, setAverageRating] = useState("");
+const [totalReviews, setTotalReviews] = useState("");
 
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -450,19 +452,18 @@ const checkAvailability = async () => {
             <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
               Location
             </h2>
-            <div className="bg-gray-200 dark:bg-gray-700 h-64 rounded-lg mb-3 flex items-center justify-center">
-              <p className="text-gray-500 dark:text-gray-400 text-center p-4">
-                <MapPin size={24} className="inline-block mb-2" />
-                <br />
-                Map view would be displayed here
-              </p>
-            </div>
+       <BoxMap
+  lat={displayBox.coordinates.lat}
+  lng={displayBox.coordinates.lng}
+  name={displayBox.name}
+/>
+
             <p className="text-gray-700 dark:text-gray-300">
               <span className="font-medium">Address:</span> {displayBox.address}
             </p>
           </div>
         </Card>
-
+       
 
 {isAuthenticated &&
 <div className="mb-6">
