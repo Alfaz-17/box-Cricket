@@ -29,10 +29,7 @@ import EditBox from './pages/admin/EditBox';
 import AdminBookings from './pages/admin/AdminBookings';
 import BlockSlot from './pages/admin/BlockSlot';
 import api from './utils/api';
-import '@fontsource/lato'; // Defaults to weight 400 (regular)
-import  "@fontsource/inter";
-import   "@fontsource/montserrat";
-import   "@fontsource/poppins";
+
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
 
