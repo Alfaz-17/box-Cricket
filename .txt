@@ -10,6 +10,8 @@ later changes
 8.sms after booking via
 9.notify owner when booking is made
 10.autoMaticaaly expire blocked slot when it is past
+11.when owner delete the box need a owner code
+
 
 
 
@@ -21,3 +23,5 @@ done
 4.add review count 
 
 
+problem
+1.  i blocked slot that already booked

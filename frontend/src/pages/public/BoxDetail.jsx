@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   Star,
   Info,
+  Contact,
 } from "lucide-react";
 
 import DatePicker from "react-datepicker";
@@ -104,10 +105,11 @@ const fetchReviews = async () => {
 
 
 const checkAvailability = async () => {
-  if (!selectedDate || !selectedTime || !duration) {
+  if (!selectedDate || !selectedTime || !duration || !contactNumber) {
     toast.error("Please fill all details");
     return;
   }
+  
 
   if (!isAuthenticated) {
     toast.error("Please log in to book a cricket box");
@@ -161,6 +163,11 @@ const checkAvailability = async () => {
     toast.error("Please select date, time and duration");
     return;
   }
+    if (!contactNumber) {
+    toast.error("Please enter your contact number");
+    return;
+  }
+
 
   if (!availableTimes) {
     toast.error("This time is not available");
