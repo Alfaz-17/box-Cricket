@@ -22,19 +22,16 @@ export const sendOtp = async (req, res) => {
     res.status(500).json({ message: 'Failed to send OTP' });
   }
 };
-
-
-
-
-export const signup = async (req, res) => {
+export const verifyOtp = async (req, res) => {
   try {
-    const { name, contactNumber, ownerCode, password, role, otp } = req.body;
+    const { contactNumber, otp } = req.body;
 
+    // Check if already registered
     const exists = await User.findOne({ contactNumber });
     if (exists)
       return res.status(400).json({ message: 'Contact number already registered' });
 
-    // ✅ Verify OTP from Redis
+    // Check OTP from Redis
     const storedOtp = await redis.get(`otp:${contactNumber}`);
     if (!storedOtp) {
       return res.status(400).json({ message: 'OTP expired or not found' });
@@ -43,7 +40,21 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: 'Invalid OTP' });
     }
 
-    // ✅ Proceed to create user
+    res.status(200).json({ success: true, message: 'OTP verified' });
+  } catch (error) {
+    console.error('OTP verify error:', error);
+    res.status(500).json({ message: 'OTP verification failed' });
+  }
+};
+
+export const completeSignup = async (req, res) => {
+  try {
+    const { name, contactNumber, ownerCode, password, role } = req.body;
+
+    const exists = await User.findOne({ contactNumber });
+    if (exists)
+      return res.status(400).json({ message: 'Contact number already registered' });
+
     const hashed = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
@@ -62,7 +73,7 @@ export const signup = async (req, res) => {
       }
     }
 
-    // ✅ Clean up OTP from Redis after successful signup
+    // ✅ Cleanup OTP from Redis after signup
     await redis.del(`otp:${contactNumber}`);
 
     res.status(200).json({
@@ -80,6 +91,9 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: 'Signup failed' });
   }
 };
+
+
+
 
 
 export const login = async (req, res) => {

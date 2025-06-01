@@ -270,16 +270,25 @@ const checkAvailability = async () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) =>
-      prev === displayBox.images.length - 1 ? 0 : prev + 1
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === displayBox.images.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? displayBox.images.length - 1 : prev - 1
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? displayBox.images.length - 1 : prevIndex - 1
     );
   };
+
+   // Auto-slide every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextImage();
+    }, 4000); // 4000ms = 4 seconds
+
+    return () => clearInterval(interval); // cleanup on unmount
+  }, [currentImageIndex, displayBox.images.length]);
 
   if (loading) {
     return (
@@ -296,55 +305,50 @@ const checkAvailability = async () => {
       <div className="lg:col-span-2">
         {/* Image Gallery */}
         <div className="relative mb-6 rounded-lg overflow-hidden shadow-md">
-          <div className="relative h-64 md:h-96">
-            <img
-              src={displayBox.images[currentImageIndex]}
-              alt={displayBox.name}
-              className="w-full h-full object-cover"
-            />
+      <div className="relative h-64 md:h-96">
+        <img
+          src={displayBox.images[currentImageIndex]}
+          alt={displayBox.name}
+          className="w-full h-full object-cover transition-transform duration-700 ease-in-out"
+          key={currentImageIndex} // force re-render for smoothness
+        />
 
-            {displayBox.images.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors duration-300"
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors duration-300"
-                  aria-label="Next image"
-                >
-                  <ChevronRight size={20} />
-                </button>
-                <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-                  <div className="flex space-x-2">
-                    {displayBox &&
-                    displayBox.images &&
-                    displayBox.images.length > 0 ? (
-                      displayBox.images.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentImageIndex(index)}
-                          className={`h-2 w-2 rounded-full ${
-                            index === currentImageIndex
-                              ? "bg-white"
-                              : "bg-white/50"
-                          }`}
-                          aria-label={`Go to image ${index + 1}`}
-                        />
-                      ))
-                    ) : (
-                      <p>No images available</p>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        {displayBox.images.length > 1 && (
+          <>
+            <button
+              onClick={prevImage}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors duration-300"
+              aria-label="Previous image"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={nextImage}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-colors duration-300"
+              aria-label="Next image"
+            >
+              <ChevronRight size={20} />
+            </button>
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+              <div className="flex space-x-2">
+                {displayBox.images.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`h-2 w-2 rounded-full ${
+                      index === currentImageIndex
+                        ? "bg-white"
+                        : "bg-white/50"
+                    }`}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
 
         {/* Box Details */}
         <Card className="mb-8">
@@ -366,6 +370,9 @@ const checkAvailability = async () => {
               <MapPin size={16} className="mr-1" />
               <span>{displayBox.location}</span>
             </div>
+
+
+
           </div>
 
           <p className="text-gray-700 dark:text-gray-300 mb-6">
@@ -377,7 +384,7 @@ const checkAvailability = async () => {
               Facilities & Amenities
             </h2>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {displayBox.features.map((features, index) => (
+              {displayBox?.features.map((features, index) => (
                 <li
                   key={index}
                   className="flex items-center text-gray-700 dark:text-gray-300"
@@ -409,7 +416,7 @@ const checkAvailability = async () => {
   </h2>
   <div className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-300">
     {Array.isArray(displayBox.quarters) && displayBox.quarters.length > 0 ? (
-      displayBox.quarters.map((quarter, index) => (
+      displayBox.quarters?.map((quarter, index) => (
         <span
           key={index}
           className="px-3 py-1 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full text-sm"
@@ -455,20 +462,28 @@ const checkAvailability = async () => {
             </div>
           </div>
 
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-            <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
-              Location
-            </h2>
-       <BoxMap
-  lat={displayBox.coordinates.lat}
-  lng={displayBox.coordinates.lng}
-  name={displayBox.name}
-/>
+         <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+  <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
+    Location
+  </h2>
 
-            <p className="text-gray-700 dark:text-gray-300">
-              <span className="font-medium">Address:</span> {displayBox.address}
-            </p>
-          </div>
+  {displayBox?.coordinates ? (
+    <BoxMap
+      lat={displayBox.coordinates.lat}
+      lng={displayBox.coordinates.lng}
+      name={displayBox.name}
+    />
+  ) : (
+    <div className="w-full h-64 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-lg">
+      <p className="text-gray-500 dark:text-gray-400">No map available for this box</p>
+    </div>
+  )}
+
+  <p className="text-gray-700 dark:text-gray-300">
+    <span className="font-medium">Address:</span> {displayBox?.address || 'No address provided'}
+  </p>
+</div>
+
         </Card>
        
 
@@ -590,7 +605,7 @@ const checkAvailability = async () => {
     className="w-full p-2 border rounded"
   >
     <option value="">-- Select a quarter --</option>
-    {displayBox.quarters.map((quarter) => (
+    {displayBox.quarters?.map((quarter) => (
       <option
         key={quarter._id}
         value={quarter._id}
