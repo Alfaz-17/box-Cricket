@@ -5,6 +5,7 @@ import { Calendar, Clock, MapPin, CheckCircle, AlertCircle, XCircle } from 'luci
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import api  from '../../utils/api';;
+import { jsPDF } from 'jspdf';
 
 
 const MyBookings = () => {
@@ -39,6 +40,11 @@ const cancelBooking = async (id) => {
   try {
     const response = await api.post(`/booking/cancel/${id}`);
 
+if(response.status !== 200){
+  throw new Error(response.data.message || 'Failed to cancel booking');
+}
+
+
     // Axios treats non-2xx as errors, so if we’re here, it’s OK
     setBookings(prev =>
       prev.map(booking =>
@@ -51,14 +57,11 @@ const cancelBooking = async (id) => {
     console.error('Error cancelling booking:', error);
     toast.error(error.response?.data?.message || error.message || 'Failed to cancel booking');
 
-    // For demo, update anyway
-    setBookings(prev =>
-      prev.map(booking =>
-        booking._id === id ? { ...booking, status: 'cancelled' } : booking
-      )
-    );
+  
+  
   }
 };
+
 
 
 
@@ -236,6 +239,8 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
 };
 
 const BookingCard = ({ booking, onCancel, showCancelButton }) => {
+
+
   const getStatusBadge = (status) => {
     if (status === 'confirmed') {
       return (
@@ -273,7 +278,50 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
-  
+
+// funtion for download recipt 
+const handleDownloadReceipt = async (bookingId) => {
+  try {
+    const response = await api.get(`/booking/report/${bookingId}`);
+    const data = response.data;
+
+    const doc = new jsPDF();
+
+    // Set title
+    doc.setFontSize(18);
+    doc.text('Booking Receipt', 20, 20);
+
+    // Add details
+    doc.setFontSize(12);
+    const details = [
+      `Booking ID: ${data.bookingId}`,
+      `Box Name: ${data.boxName}`,
+      `Date: ${data.date}`,
+      `Start Time: ${data.startTime}`,
+      `End Time: ${data.endTime}`,
+      `Duration: ${data.duration} hours`,
+      `Amount Paid: ₹${data.amountPaid}`,
+      `Payment Status: ${data.paymentStatus}`,
+      `Contact Number: ${data.contactNumber}`,
+      `Quarter Name: ${data.quarterName}`
+    ];
+
+    let y = 40;
+    details.forEach(line => {
+      doc.text(line, 20, y);
+      y += 10;
+    });
+
+    // Save PDF
+    doc.save(`booking_receipt_${data.bookingId}.pdf`);
+    
+  } catch (error) {
+    console.error('Download failed', error);
+    console.log("booking",error)
+  }
+};
+
+
   return (
     <Card>
       <div className="flex flex-col sm:flex-row">
@@ -317,6 +365,14 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
                   View Box
                 </Button>
               </Link>
+                {/* Download Receipt Button */}
+  <Button 
+    variant="primary" 
+    size="sm"
+    onClick={() => handleDownloadReceipt(booking._id)}
+  >
+    Download Receipt
+  </Button>
               
               {showCancelButton && booking.status === 'confirmed' && (
                 <Button 
