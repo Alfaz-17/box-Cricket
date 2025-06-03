@@ -1,6 +1,7 @@
 import CricketBox from "../models/CricketBox.js";
 import User from "../models/User.js";
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const createBox = async (req, res) => {
   try {
@@ -169,6 +170,15 @@ export const deleteBox = async (req, res) => {
   try {
     const { id } = req.params;
     const ownerId = req.user._id;
+const{ownerCode}=req.body;
+    // Validate owner code if provided
+    const code=process.env.OWNER_CODE;
+
+    if (ownerCode && ownerCode !== code) {
+      return res.status(403).json({ message: "Invalid owner code" });
+    }
+
+  
 
     const deleted = await CricketBox.findOneAndDelete({ _id: id, owner: ownerId });
     if (!deleted) return res.status(404).json({ message: "Box not found" });

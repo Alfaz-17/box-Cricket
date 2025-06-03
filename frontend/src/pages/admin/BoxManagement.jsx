@@ -8,7 +8,9 @@ import api from '../../utils/api'
 const BoxManagement = () => {
   const [boxes, setBoxes] = useState([]);
   const [loading, setLoading] = useState(true);
-
+const [showDeleteInput, setShowDeleteInput] = useState(false);
+const [selectedBoxId, setSelectedBoxId] = useState(null);
+const [ownerCode, setOwnerCode] = useState('');
   useEffect(() => {
     fetchBoxes();
   }, []);
@@ -27,18 +29,28 @@ const BoxManagement = () => {
   }
 };
 
- const handleDelete = async (id) => {
+ const handleDelete = async () => {
+  if (!ownerCode) {
+    toast.error('Owner code is required');
+    return;
+  }
+
   if (!confirm('Are you sure you want to delete this box?')) return;
 
   try {
-    await api.delete(`/boxes/delete/${id}`);
+    await api.delete(`/boxes/delete/${selectedBoxId}`, {
+      data: { ownerCode },
+    });
 
     toast.success('Box deleted successfully');
+    setShowDeleteInput(false);
+    setOwnerCode('');
     fetchBoxes();
   } catch (error) {
     toast.error(error.response?.data?.message || error.message || 'Failed to delete box');
   }
 };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -75,14 +87,48 @@ const BoxManagement = () => {
                   </Button>
                 </Link>
                 <Button 
-                  variant="danger" 
-                  size="sm"
-                  onClick={() => handleDelete(box._id)}
-                >
-                  <Trash2 size={16} />
-                </Button>
+  variant="danger" 
+  size="sm"
+  onClick={() => {
+    setSelectedBoxId(box._id);
+    setShowDeleteInput(true);
+  }}
+>
+  <Trash2 size={16} />
+</Button>
+
               </div>
             </div>
+            {showDeleteInput && (
+  <div className="p-4 mt-2 bg-red-50 border border-red-300 rounded">
+    <label className="block text-sm font-medium text-red-700 mb-1">Enter Owner Code to Confirm Delete:</label>
+    <input
+      type="password"
+      value={ownerCode}
+      onChange={(e) => setOwnerCode(e.target.value)}
+      className="border border-gray-300 rounded px-3 py-1 w-full"
+      placeholder="Owner code"
+    />
+    <div className="mt-2 flex gap-2">
+      <button
+        onClick={handleDelete}
+        className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
+      >
+        Confirm Delete
+      </button>
+      <button
+        onClick={() => {
+          setShowDeleteInput(false);
+          setOwnerCode('');
+        }}
+        className="bg-gray-200 text-gray-800 px-4 py-1 rounded hover:bg-gray-300"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
 
             <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300 mb-2">
               {box.name}

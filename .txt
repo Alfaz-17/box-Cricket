@@ -6,11 +6,9 @@ later changes
 3. change ui color
 
 
-7.booking recipt
-8.sms after booking via
-9.notify owner when booking is made
+
+
 10.autoMaticaaly expire blocked slot when it is past
-11.when owner delete the box need a owner code
 
 
 
@@ -21,6 +19,11 @@ done
 6.sticky Navbar  
 2. add map in box detils               
 4.add review count 
+7.booking recipt
+9.notify owner when booking is made
+8.sms after booking via
+11.when owner delete the box need a owner code
+
 
 
 problem
