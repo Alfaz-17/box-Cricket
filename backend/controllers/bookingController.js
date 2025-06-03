@@ -158,9 +158,12 @@ if(req.user.role === "owner"){
       paymentIntentId: "manual",
       paymentStatus: "paid",
     });
-
+//Notify user via WhatsApp
   await sendMessage(`91${contactNumber}`, `Your booking for ${box.name} on ${date} from ${startTime} for ${duration} hours has been confirmed. Contact: ${contactNumber}.`);
 
+
+    // Notify owner via WhatsApp
+await sendMessage(`91${box.mobileNumber}`, `New booking for ${box.name} on ${date} from ${startTime} for ${duration} hours by ${req.user.name}. Contact: ${contactNumber}.`);
     res.status(201).json({ message: "Temporary booking created", booking });
   } catch (err) {
     console.error("❌ Error creating temp booking:", err.message);

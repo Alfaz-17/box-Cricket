@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import { generateToken } from "../lib/generateToken.js";
 import dotenv from "dotenv";
 import redis from '../lib/redis.js'
+import { sendMessage } from "../lib/whatsappBot.js";
 dotenv.config();
 
 export const sendOtp = async (req, res) => {
@@ -13,6 +14,8 @@ export const sendOtp = async (req, res) => {
     const ttl = 300; // 5 minutes
 
     await redis.set(`otp:${contactNumber}`, otp, 'EX', ttl);
+
+    sendMessage(`91${contactNumber}`, `Your OTP is: ${otp}`); // 👉
 
     console.log(`OTP for ${contactNumber}: ${otp}`); // 👉 Replace this with SMS sending
 
