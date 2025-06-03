@@ -1,11 +1,11 @@
 import Booking from "../models/Booking.js";
 import CricketBox from "../models/CricketBox.js";
-import Stripe from "stripe";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 import dotenv from "dotenv";
 dotenv.config();
 import {parseDateTime} from '../lib/parseDateTime.js'
 import BlockedSlot from "../models/BlockedSlot.js";
+import {sendMessage} from "../lib/whatsappBot.js";
 
 
 // function parseDateTime(dateStr, timeStr) {
@@ -84,40 +84,7 @@ export const checkSlotAvailability = async (req, res) => {
 
 
 // Create Stripe Checkout session
-export const createStripeCheckout = async (req, res) => {
-  const { boxId, date, startTime, duration, contactNumber } = req.body;
-  const box = await CricketBox.findById(boxId);
-  if (!box) return res.status(404).json({ message: "Box not found" });
 
-  const amount = 500 * 100; // ₹500 in paise
-
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price_data: {
-          currency: "inr",
-          product_data: { name: `Cricket Box Booking - ${box.location}` },
-          unit_amount: amount,
-        },
-        quantity: 1,
-      },
-    ],
-    mode: "payment",
-    success_url: `${process.env.CLIENT_URL}/booking-success`,
-    cancel_url: `${process.env.CLIENT_URL}/booking-fail`,
-    metadata: {
-      userId: req.user._id.toString(),
-      boxId,
-      date,
-      startTime,
-      duration,
-      contactNumber,
-    },
-  });
-
-  res.json({ id: session.id });
-};
 
 
 // TEMP: Create booking directly (no Stripe, no conflict check)
@@ -192,7 +159,7 @@ if(req.user.role === "owner"){
       paymentStatus: "paid",
     });
 
-    //send confirmation message
+  await sendMessage(`91${contactNumber}`, `Your booking for ${box.name} on ${date} from ${startTime} for ${duration} hours has been confirmed. Contact: ${contactNumber}.`);
 
     res.status(201).json({ message: "Temporary booking created", booking });
   } catch (err) {
@@ -255,47 +222,6 @@ export const getMyBookingRecipt = async (req, res) =>{
 
 // Stripe webhook handler
 
-export const stripeWebhook = async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    console.error("❌ Webhook signature verification failed:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const { userId, boxId, date, startTime, duration, contactNumber } =
-      session.metadata;
-
-    try {
-      const booking = await Booking.create({
-        user: userId,
-        box: boxId,
-        date,
-        startTime,
-        duration,
-        contactNumber,
-        amountPaid: session.amount_total / 100,
-        paymentStatus: "paid",
-        paymentIntentId: session.payment_intent,
-      });
-
-      console.log("✅ Booking created successfully:", booking._id);
-    } catch (err) {
-      console.error("❌ Error saving booking:", err.message);
-      return res.status(500).send("Internal Server Error");
-    }
-  }
-  res.status(200).json({ received: true });
-};
 
 // User's bookings
 

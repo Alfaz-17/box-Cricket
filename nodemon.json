@@ -1,0 +1,4 @@
+{
+
+  "ignore": ["auth", "auth/**", "sessions", "sessions/**", "node_modules"]
+}
