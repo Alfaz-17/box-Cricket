@@ -69,6 +69,7 @@ export const checkSlotAvailability = async (req, res) => {
       quarter: quarterId,
       startDateTime: { $lt: end },
       endDateTime: { $gt: start },
+    status: { $eq: "confirmed" },
     });
 
     if (overlappingBookings.length > 0) {
@@ -94,11 +95,12 @@ export const createTempBooking = async (req, res) => {
     const now = new Date();
     const start = parseDateTime(date, startTime);
     const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
-    const formattedEndTime = end.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
+const formattedTime = end.toLocaleTimeString([], {
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+}).replace(/am|pm/i, match => match.toUpperCase());
+
 
     if (!/^\d{10}$/.test(contactNumber)) {
       return res.status(400).json({ message: "Invalid contact number. It must be exactly 10 digits." });
@@ -123,9 +125,9 @@ export const createTempBooking = async (req, res) => {
       return res.status(400).json({ message: `Quarter ${quarter.name} is not available for booking.` });
     }
 
-if(req.user.role === "owner"){
-  return res.status(400).json({message:"Owner cant booking Box"})
-}
+// if(req.user.role === "owner"){
+//   return res.status(400).json({message:"Owner cant booking Box"})
+// }
     // 3. Check for overlapping bookings on this quarter
     const overlappingBooking = await Booking.findOne({
       box: boxId,
@@ -149,7 +151,7 @@ if(req.user.role === "owner"){
       quarterName: quarter.name,
       date,
       startTime,
-      endTime: formattedEndTime,
+      endTime: formattedTime,
       duration,
       contactNumber,
       startDateTime: start,

@@ -13,32 +13,39 @@ export const blockTimeSlot = async (req, res) => {
     }
 
     // ✅ Check if quarter exists in box
-    const quarter = box.quarters.find(q => q.name === quarterName);
-    if (!quarter) {
-      return res.status(404).json({ message: `Quarter "${quarterName}" not found in this box.` });
-    }
+  // First, get the quarterId
+const quarter = box.quarters.find(q => q.name === quarterName);
+if (!quarter) {
+  return res.status(404).json({ message: `Quarter "${quarterName}" not found in this box.` });
+}
+const quarterId = quarter._id;
 
-    const start = parseDateTime(date, startTime);
-    const end = parseDateTime(date, endTime);
-    const now = new Date();
+// Convert date+time to full Date objects for comparison
+const startDateTime = parseDateTime(date, startTime);
+const endDateTime = parseDateTime(date, endTime);
 
-    if (start < now) {
-      return res.status(400).json({ message: "Start time cannot be in the past" });
-    }
+// Check for overlapping confirmed bookings
+const overlappingBooking = await Booking.findOne({
+  box: box._id,
+  quarter: quarterId,
+  status: "confirmed",
+  startDateTime: { $lt: endDateTime },
+  endDateTime: { $gt: startDateTime },
+});
 
-    // 🧠 Check for overlapping blocked slots in this quarter
-    const overlapping = await BlockedSlot.findOne({
-      boxId: box._id,
-      quarterName, // <== include quarter in overlap check
-      date,
-      $or: [
-        { startTime: { $lt: endTime }, endTime: { $gt: startTime } }
-      ]
-    });
+if (overlappingBooking) {
+  return res.status(409).json({
+    message: `This time slot in "${quarterName}" has a confirmed booking and cannot be blocked.`,
+  });
+}
 
-    if (overlapping) {
-      return res.status(409).json({ message: `This time slot in "${quarterName}" is already blocked or overlaps with another blocked slot.` });
-    }
+
+if (overlappingBooking) {
+  return res.status(409).json({
+    message: `This time slot in "${quarterName}" has a confirmed booking and cannot be blocked.`
+  });
+}
+
 
     const newBlockedSlot = new BlockedSlot({
       boxId: box._id,

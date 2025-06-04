@@ -240,7 +240,7 @@ setOtpSent(true)
           label="Owner Code"
           id="ownerCode"
           name="ownerCode"
-          type="text"
+          type="password"
           value={formData.ownerCode}
           onChange={handleChange}
           placeholder="Enter owner code"

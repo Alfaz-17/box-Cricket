@@ -285,7 +285,7 @@ const checkAvailability = async () => {
   useEffect(() => {
     const interval = setInterval(() => {
       nextImage();
-    }, 4000); // 4000ms = 4 seconds
+    }, 3500); // 4000ms = 4 seconds
 
     return () => clearInterval(interval); // cleanup on unmount
   }, [currentImageIndex, displayBox.images.length]);
@@ -313,7 +313,7 @@ const checkAvailability = async () => {
           key={currentImageIndex} // force re-render for smoothness
         />
 
-        {displayBox.images.length > 1 && (
+        {displayBox.images?.length > 1 && (
           <>
             <button
               onClick={prevImage}
@@ -331,7 +331,7 @@ const checkAvailability = async () => {
             </button>
             <div className="absolute bottom-4 left-0 right-0 flex justify-center">
               <div className="flex space-x-2">
-                {displayBox.images.map((_, index) => (
+                {displayBox.images?.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
