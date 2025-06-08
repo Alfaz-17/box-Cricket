@@ -6,13 +6,8 @@ dotenv.config();
 import {parseDateTime} from '../lib/parseDateTime.js'
 import BlockedSlot from "../models/BlockedSlot.js";
 import {sendMessage} from "../lib/whatsappBot.js";
+import User from "../models/User.js";
 
-
-// function parseDateTime(dateStr, timeStr) {
-//   const dateTime = moment(`${dateStr} ${timeStr}`, "YYYY-MM-DD hh:mm A");
-//   if (!dateTime.isValid()) throw new Error("Invalid date or time format");
-//   return dateTime.toDate();
-// }
 
 export const checkSlotAvailability = async (req, res) => {
   try {
@@ -82,9 +77,6 @@ export const checkSlotAvailability = async (req, res) => {
     res.status(500).json({ message: err.message || "Server error" });
   }
 };
-
-
-// Create Stripe Checkout session
 
 
 
@@ -224,12 +216,6 @@ export const getMyBookingRecipt = async (req, res) =>{
   }
 }
 
-
-// Stripe webhook handler
-
-
-// User's bookings
-
 export const getMyBookings = async (req, res) => {
   const bookings = await Booking.find({ userId: req.user._id }).populate("box");
 
@@ -289,5 +275,43 @@ export const cancelBooking = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+// owner controllers
+export const getRecenetBooking=async(req,res)=>{
+  try {
+    const box = await CricketBox.findOne({ owner: req.user._id });
+    if (!box) return res.status(404).json({ message: "No box found" });
+  
+
+const recenetBookings = await Booking.find({ box: box._id })
+  .sort({ createdAt: -1 }) // Sort by newest first
+  .limit(5)                // Limit to latest 5
+  .populate("user box",);
+
+  res.json(recenetBookings);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get Booking" });
+    console.log("error in recentBooking Controller",error)
+ }
+}
+
+
+
+export const getOwnersBookings=async(req,res)=>{
+  try {
+    const box = await CricketBox.findOne({ owner: req.user._id });
+    if (!box) return res.status(404).json({ message: "No box found" });
+  
+
+const recenetBookings = await Booking.find({ box: box._id })
+  .sort({ createdAt: -1 }) // Sort by newest first
+  .limit(5)                // Limit to latest 5
+  .populate("user box",);
+
+  res.json(recenetBookings);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get Booking" });
+    console.log("error in recentBooking Controller",error)
+ }
+}
 
 

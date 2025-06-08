@@ -6,7 +6,6 @@ import connectMongoDB from './lib/connectMongoDB.js'
 import cookieParser from 'cookie-parser';
 import boxRoutes from "./routes/boxRoutes.js";
 import bookingRoutes from './routes/bookingRoutes.js'
-import ownerRoutes from './routes/ownerRoutes.js'
 import publicRoutes from "./routes/publicRoutes.js";
 import reviewRoutes from './routes/reviewRoutes.js';
 import slotsRoutes from './routes/slotsRoutes.js';
@@ -34,7 +33,6 @@ const PORT = process.env.PORT || 5000
 app.use("/api/auth", authRoutes);
 app.use("/api/boxes", boxRoutes);
 app.use("/api/booking", bookingRoutes);
-app.use("/api/owners", ownerRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/reviews",reviewRoutes);
 app.use("/api/slots",slotsRoutes);

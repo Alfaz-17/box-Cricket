@@ -10,7 +10,9 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "owner"],
     default: "user",
   },
-  ownerCode: { type: String, default:null }, // For owners, to verify ownership
+  ownerCode: { type: String, default:null }, 
+    profileImg: { type: String, default: "" },  // ✅ Only this image field
+// For owners, to verify ownership
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

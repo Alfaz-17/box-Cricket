@@ -18,7 +18,7 @@ const AdminBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await api.get('/owners/bookings');
+      const response = await api.get('/booking/owner-bookings');
       const data = response.data;
       setBookings(data);
     } catch (error) {

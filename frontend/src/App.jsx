@@ -29,6 +29,7 @@ import EditBox from './pages/admin/EditBox';
 import AdminBookings from './pages/admin/AdminBookings';
 import BlockSlot from './pages/admin/BlockSlot';
 import api from './utils/api';
+import Profile from './pages/user/Profile';
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
@@ -62,7 +63,6 @@ function App() {
       setLoading(true);
       try {
         const response = await api.post('/auth/me'); // ✅ Axios handles POST & cookies
-
         // Axios automatically parses response.data
         setUser(response.data.user);
         setIsAuthenticated(true);
@@ -126,6 +126,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <MyBookings />
+                      </ProtectedRoute>
+                    }
+                  />
+                     <Route
+                    path="/my-profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
                       </ProtectedRoute>
                     }
                   />

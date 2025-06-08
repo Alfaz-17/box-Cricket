@@ -9,6 +9,10 @@ dotenv.config();
 export const sendOtp = async (req, res) => {
   try {
     const { contactNumber } = req.body;
+    
+ const exists = await User.findOne({ contactNumber });
+    if (exists)
+      return res.status(400).json({ message: 'Contact number already registered' });
 
     const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
     const ttl = 300; // 5 minutes
@@ -147,3 +151,48 @@ export const logout = (req, res) => {
   });
   res.status(200).json({ message: "Logout successfully..." });
 };
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, contactNumber, profileImg } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          ...(name && { name }),
+          ...(contactNumber && { contactNumber }),
+          ...(profileImg && { profileImg }),
+        },
+      },
+      { new: true }
+    ).select("-password -otp");
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ success: false, message: "Failed to update profile" });
+  }
+};
+
+
+export const getAllUsers = async (req, res) => {
+  try{
+    const users =await User.find().select("-password -otp");
+    res.status(200).json({
+      success:true,
+      users:users
+    })
+  }catch(error){
+    return res.status(500).json({
+      success:false,
+      message:"Failed to fetch users",
+    })
+  }
+};
+

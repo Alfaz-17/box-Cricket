@@ -1,19 +1,10 @@
         
 
-later changes
-
-
+later changes:
 3. change ui color
-
-
-
-
 10.autoMaticaaly expire blocked slot when it is past
 
-
-
-
-done
+done:
 1. add otp  in signup  
 5.name and logo  
 6.sticky Navbar  
@@ -23,8 +14,18 @@ done
 9.notify owner when booking is made
 8.sms after booking via
 11.when owner delete the box need a owner code
-
-
-
-problem
 1.  i blocked slot that already booked
+
+
+
+
+work:done
+backend:
+1.i done work like for admin panel like get all user .
+2.soutomize api  2 in 1 like get owner and all booking .and also for recent booking 
+
+work:
+fontend + backend:
+1>> admin can creat box for particular owner and also delte it 
+2>>i think one api create for anylitics get all user,total booking,totoal cricket box
+like dashbord for amdmin
