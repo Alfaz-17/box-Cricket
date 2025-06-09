@@ -104,11 +104,13 @@ const Login = () => {
               </label>
             </div>
             
-            <div className="text-sm">
-              <a href="#" className="text-yellow-600 hover:text-yellow-500 dark:text-yellow-400 dark:hover:text-yellow-300">
-                Forgot password?
-              </a>
-            </div>
+          <Link
+  to="/forgot-password"
+  className="text-yellow-600 hover:text-yellow-500 dark:text-yellow-400 dark:hover:text-yellow-300"
+>
+  Forgot password?
+</Link>
+
           </div>
           
           <Button 

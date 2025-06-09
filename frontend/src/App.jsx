@@ -30,6 +30,7 @@ import AdminBookings from './pages/admin/AdminBookings';
 import BlockSlot from './pages/admin/BlockSlot';
 import api from './utils/api';
 import Profile from './pages/user/Profile';
+import ForgotPassword from './pages/auth/ForgotPassword';
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
@@ -119,6 +120,7 @@ function App() {
                   <Route path="/box/:id" element={<BoxDetail />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
 
                   {/* User Routes */}
                   <Route

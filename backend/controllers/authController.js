@@ -33,10 +33,7 @@ export const verifyOtp = async (req, res) => {
   try {
     const { contactNumber, otp } = req.body;
 
-    // Check if already registered
-    const exists = await User.findOne({ contactNumber });
-    if (exists)
-      return res.status(400).json({ message: 'Contact number already registered' });
+
 
     // Check OTP from Redis
     const storedOtp = await redis.get(`otp:${contactNumber}`);
@@ -100,9 +97,6 @@ export const completeSignup = async (req, res) => {
 };
 
 
-
-
-
 export const login = async (req, res) => {
   try {
     const { contactNumber, password } = req.body;
@@ -129,6 +123,66 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Login failed" });
   }
 };
+
+// POST /auth/otp-for-reset
+export const sendOtpForReset = async (req, res) => {
+  try {
+    const { contactNumber } = req.body;
+
+    const user = await User.findOne({ contactNumber });
+    if (!user)
+      return res.status(404).json({ message: 'User not found with this contact number' });
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const ttl = 300;
+
+    await redis.set(`otp:${contactNumber}`, otp, 'EX', ttl);
+    sendMessage(`91${contactNumber}`, `Your OTP to reset password: ${otp}`);
+    res.status(200).json({ message: 'OTP sent for password reset' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to send OTP' });
+  }
+};
+
+
+export const forgotPas = async (req, res) => {
+  try {
+    const { contactNumber, otp, newPas } = req.body;
+
+    const numberExist = await User.findOne({ contactNumber });
+
+    if (!numberExist) {
+      return res.status(404).json({ message: "This number is not registered" });
+    }
+
+    const storedOtp = await redis.get(`otp:${contactNumber}`);
+    if (!storedOtp) {
+      return res.status(400).json({ message: "OTP expired or not found" });
+    }
+
+    if (storedOtp !== otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPas, 10);
+
+    await User.findOneAndUpdate(
+      { contactNumber },
+      { password: hashedPassword }
+    );
+
+    // Optional: delete OTP from Redis
+    await redis.del(`otp:${contactNumber}`);
+
+    return res.status(200).json({ message: "Password updated successfully" });
+
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 
 export const getMe = async (req, res) => {
   try {
