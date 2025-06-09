@@ -72,7 +72,7 @@ const Dashboard = () => {
 const recentBooking = async () => {
   setLoading(true);
   try {
-    const response = await api.get('/owners/recent-bookings');
+    const response = await api.get('/booking/owner-recent-bookings');
     setBookings(response.data);
   } catch (error) {
     toast.error('Failed to fetch bookings');
@@ -149,7 +149,7 @@ const recentBooking = async () => {
       name: 'Professional Training Box',
       bookings: 30,
       revenue: '$3,600',
-      utilization: '45%'
+      utilization: '46%'
     }
   ];
   
@@ -251,7 +251,7 @@ const recentBooking = async () => {
                               {booking.box.name}
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                              <div>{new Date(booking.date).toLocaleDateString()}</div>
+                              <div>{booking.date}</div>
                               <div className="text-xs">{booking.startTime} to {booking.endTime}  </div>
                             </td>
                              <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">

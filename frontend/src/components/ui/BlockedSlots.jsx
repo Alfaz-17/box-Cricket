@@ -7,6 +7,7 @@ export default function BlockedSlots({ boxId }) {
   const [filteredSlots, setFilteredSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState("");
+const [selectedQuarter, setSelectedQuarter] = useState("");
 
   useEffect(() => {
     async function fetchSlots() {
@@ -23,18 +24,50 @@ export default function BlockedSlots({ boxId }) {
     fetchSlots();
   }, [boxId]);
 
-  const handleDateChange = (e) => {
-    const date = e.target.value;
-    setSelectedDate(date);
-    if (date === "") {
-      setFilteredSlots(blockedSlots);
-    } else {
-      const filtered = blockedSlots.map((quarter) => ({
-        ...quarter,
-        slots: quarter.slots.filter((slot) => slot.date === date),
-      }));
-      setFilteredSlots(filtered);
-    }
+
+const filterSlots = (date, quarter) => {
+  let filtered = blockedSlots;
+
+  if (quarter !== "") {
+    filtered = filtered.filter((q) => q.quarterName === quarter);
+  }
+
+  filtered = filtered.map((q) => ({
+    ...q,
+    slots:
+      date === ""
+        ? q.slots
+        : q.slots.filter((slot) => slot.date === date),
+  }));
+
+  setFilteredSlots(filtered);
+};
+
+
+ const handleDateChange = (e) => {
+  const date = e.target.value;
+  setSelectedDate(date);
+  filterSlots(date, selectedQuarter);
+};
+
+const handleQuarterChange = (e) => {
+  const quarter = e.target.value;
+  setSelectedQuarter(quarter);
+  filterSlots(selectedDate, quarter);
+};
+
+
+
+
+  // Extract unique quarters from blocked slots
+const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
+
+
+
+  //format date to readable format
+      const formatDate = (dateString) => {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
   if (loading)
@@ -58,29 +91,50 @@ export default function BlockedSlots({ boxId }) {
     );
 
   return (
+
+
+    
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
       <h2 className="text-2xl font-bold text-red-600 mb-4 flex items-center gap-2">
-        ⛔ Blocked Slots by Quarter
+        ⛔ Blocked Slots by Boxes
       </h2>
 
-      <div className="mb-4 flex items-center gap-2">
-        <Filter className="w-5 h-5 text-red-500" />
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={handleDateChange}
-          className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
-        />
-        <button
-          onClick={() => {
-            setSelectedDate("");
-            setFilteredSlots(blockedSlots);
-          }}
-          className="ml-auto text-sm text-red-600 hover:underline"
-        >
-          Clear Filter
-        </button>
-      </div>
+      <div className="mb-4 flex flex-wrap items-center gap-4">
+  <div className="flex items-center gap-2">
+    <Filter className="w-5 h-5 text-red-500" />
+    <input
+      type="date"
+      value={selectedDate}
+      onChange={handleDateChange}
+      className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+    />
+  </div>
+
+  <select
+    value={selectedQuarter}
+    onChange={handleQuarterChange}
+    className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+  >
+    <option value="">All Boxes</option>
+    {[...new Set(blockedSlots.map((q) => q.quarterName))].map((name) => (
+      <option key={name} value={name}>
+        {name}-(box)
+      </option>
+    ))}
+  </select>
+
+  <button
+    onClick={() => {
+      setSelectedDate("");
+      setSelectedQuarter("");
+      setFilteredSlots(blockedSlots);
+    }}
+    className="ml-auto text-sm text-red-600 hover:underline"
+  >
+    Clear Filter
+  </button>
+</div>
+
 
       <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
         {filteredSlots.map((quarter) =>
@@ -92,7 +146,7 @@ export default function BlockedSlots({ boxId }) {
               <div className="flex items-center gap-2 mb-3">
                 <Square className="w-5 h-5 text-red-500" />
                 <h3 className="text-lg font-semibold text-red-700 dark:text-red-300">
-                  Quarter: {quarter.quarterName}
+                  Boxes: {quarter.quarterName}-(box)
                 </h3>
               </div>
 
@@ -105,7 +159,7 @@ export default function BlockedSlots({ boxId }) {
                     <div className="flex items-center gap-2 mb-1 text-gray-700 dark:text-gray-300">
                       <Calendar className="w-4 h-4 text-red-500" />
                       <span className="font-medium">Date:</span>
-                      <span>{slot.date}</span>
+                      <span>{formatDate(slot.date)}</span>
                     </div>
                     <div className="flex items-center gap-2 mb-1 text-gray-700 dark:text-gray-300">
                       <Clock className="w-4 h-4 text-red-500" />
@@ -126,6 +180,13 @@ export default function BlockedSlots({ boxId }) {
           )
         )}
       </div>
+      {noFilteredResults && (
+  <div className="text-center text-gray-600 bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md shadow mb-4">
+    <p className="text-lg font-semibold">No blocked slots found for selected date.</p>
+    <p className="text-sm">Try choosing a different date or clear the filter.</p>
+  </div>
+)}
+
     </div>
   );
 }

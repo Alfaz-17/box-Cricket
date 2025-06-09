@@ -57,6 +57,15 @@ const AdminBookings = () => {
     return matchesSearch && matchesFilter && matchesQuarter;
   });
 
+
+
+
+    //fromat date to a readable string
+    const formatDate = (dateString) => {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+  };
+
   return (
     <div className="container mx-auto px-4">
       <div className="mb-6">
@@ -152,7 +161,7 @@ const AdminBookings = () => {
           {/* Highlighted Date */}
           <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 dark:bg-yellow-900 rounded-md text-yellow-700 dark:text-yellow-300 font-medium text-sm">
             <Calendar size={18} />
-            <span>{new Date(booking.date).toLocaleDateString()}</span>
+            <span>{formatDate(booking.date)}</span>
           </div>
 
           {/* Highlighted Time */}

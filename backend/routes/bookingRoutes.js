@@ -9,7 +9,7 @@ import {
   getMyBookingRecipt,
   getOwnersBookings,
   getRecenetBooking,
-  analytics
+  
 } from "../controllers/bookingController.js";
 import { protectedRoute } from "../middleware/auth.js";
 
@@ -27,8 +27,6 @@ router.get("/owner-bookings",protectedRoute,getOwnersBookings);
 router.get("/owner-recent-bookings",protectedRoute,getRecenetBooking);
 
 
-//admin route
-router.get("/analytics", protectedRoute,analytics)
-
+//admin rout
 
 export default router;

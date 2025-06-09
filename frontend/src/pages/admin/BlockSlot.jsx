@@ -128,6 +128,13 @@ const BlockSlot = () => {
       toast.error("Failed to unblock slot");
     }
   };
+  
+
+  //fromat date to a readable string
+    const formatDate = (dateString) => {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+  };
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -251,7 +258,7 @@ const BlockSlot = () => {
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">
                   <span className="font-medium">Date:</span>{' '}
-                  {timeSlot.date}
+                  {formatDate(timeSlot.date)}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   <span className="font-medium">Reason:</span>{' '}

@@ -43,7 +43,8 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const userMenuItems = [
     { path: '/', name: 'Home', icon: <Home size={20} /> },
-    { path: '/my-bookings', name: 'My Bookings', icon: <CalendarCheck size={20} /> }
+    { path: '/my-bookings', name: 'My Bookings', icon: <CalendarCheck size={20} /> },
+    { path: '/my-profile', name: 'My Profile', icon:  <Users size={20} /> },
   ];
 
   const guestMenuItems = [
