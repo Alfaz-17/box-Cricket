@@ -80,7 +80,8 @@ const Profile = () => {
   return (
 <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded shadow relative pt-20 px-6 pb-6">
   {/* Profile Image at the top, centered and rounded */}
-  <div className="absolute my-25 top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+<div className="absolute my-2  left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+  <div className="relative w-32 h-32">
     {form.imagePreview ? (
       <img
         src={form.imagePreview}
@@ -89,14 +90,33 @@ const Profile = () => {
       />
     ) : (
       <div className="w-32 h-32 rounded-full bg-yellow-200 dark:bg-yellow-700 flex items-center justify-center text-yellow-600 dark:text-yellow-300 text-3xl font-bold border-4 border-yellow-500 dark:border-yellow-300 shadow-lg">
-        {/* Placeholder Initial or Icon */}
         {form.name ? form.name.charAt(0).toUpperCase() : "U"}
       </div>
     )}
-     <h2 className="text-xl font-bold mb-4 text-yellow-800 dark:text-yellow-300 text-center">
+
+    {/* Change button overlaid on bottom-right */}
+    <label
+      htmlFor="profileImgInput"
+      className="absolute bottom-0 my-2 right-0 bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded-full shadow cursor-pointer transition-all"
+      title="Change Profile Picture"
+    >
+      <Upload size={16} />
+      <input
+        type="file"
+        id="profileImgInput"
+        name="profileImg"
+        className="sr-only"
+        onChange={handleChangeImg}
+        accept="image/*"
+      />
+    </label>
+  </div>
+
+  <h2 className="text-xl font-bold mt-2 text-yellow-800 dark:text-yellow-300 text-center">
     {user.name}
   </h2>
-  </div>
+</div>
+
 
  
 <div className="mt-20">
@@ -131,37 +151,11 @@ const Profile = () => {
         name="contactNumber"
         id="contactNumber"
         value={form.contactNumber}
-        onChange={handleChange}
+        // onChange={handleChange}
         className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
       />
     </div>
 
-    {/* Image upload field */}
-    <div>
-      <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
-        Update your Image
-      </label>
-      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md cursor-pointer hover:border-yellow-500 dark:hover:border-yellow-300 transition-colors">
-        <div className="space-y-1 text-center">
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <div className="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
-            <label className="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-yellow-600 hover:text-yellow-500 dark:text-yellow-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-yellow-500 px-3 py-1">
-              <span>Choose a file</span>
-              <input
-                type="file"
-                name="profileImg"
-                className="sr-only"
-                onChange={handleChangeImg}
-                accept="image/*"
-              />
-            </label>
-          </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            PNG, JPG, GIF up to 10MB
-          </p>
-        </div>
-      </div>
-    </div>
 
     <button
       type="submit"

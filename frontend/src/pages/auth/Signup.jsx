@@ -47,6 +47,7 @@ const [isOtpVerified, setIsOtpVerified] = useState(false);
     try {
       const response = await api.post('/auth/otp', {
         contactNumber: formData.contactNumber,
+         action: 'signup' 
       });
 setOtpSent(true)
       toast.success(response.data.message || 'OTP sent successfully');

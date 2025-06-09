@@ -8,27 +8,39 @@ dotenv.config();
 
 export const sendOtp = async (req, res) => {
   try {
-    const { contactNumber } = req.body;
-    
- const exists = await User.findOne({ contactNumber });
-    if (exists)
-      return res.status(400).json({ message: 'Contact number already registered' });
+    const { contactNumber, action } = req.body;
+
+    const userExists = await User.findOne({ contactNumber });
+
+    if (action === 'signup') {
+      if (userExists) {
+        return res.status(400).json({ message: 'Contact number already registered' });
+      }
+    } else if (action === 'forgot-password') {
+      if (!userExists) {
+        return res.status(404).json({ message: 'Contact number not registered' });
+      }
+    } else {
+      return res.status(400).json({ message: 'Invalid action' });
+    }
 
     const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
     const ttl = 300; // 5 minutes
 
     await redis.set(`otp:${contactNumber}`, otp, 'EX', ttl);
 
-    sendMessage(`91${contactNumber}`, `Your OTP is: ${otp}`); // 👉
+    sendMessage(`91${contactNumber}`, `Your OTP is: ${otp}`);
 
-    console.log(`OTP for ${contactNumber}: ${otp}`); // 👉 Replace this with SMS sending
+    console.log(`OTP for ${contactNumber}: ${otp}`);
 
     res.status(200).json({ message: 'OTP sent successfully' });
+
   } catch (error) {
     console.error('Send OTP error:', error);
     res.status(500).json({ message: 'Failed to send OTP' });
   }
 };
+
 export const verifyOtp = async (req, res) => {
   try {
     const { contactNumber, otp } = req.body;
@@ -124,25 +136,7 @@ export const login = async (req, res) => {
   }
 };
 
-// POST /auth/otp-for-reset
-export const sendOtpForReset = async (req, res) => {
-  try {
-    const { contactNumber } = req.body;
 
-    const user = await User.findOne({ contactNumber });
-    if (!user)
-      return res.status(404).json({ message: 'User not found with this contact number' });
-
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    const ttl = 300;
-
-    await redis.set(`otp:${contactNumber}`, otp, 'EX', ttl);
-    sendMessage(`91${contactNumber}`, `Your OTP to reset password: ${otp}`);
-    res.status(200).json({ message: 'OTP sent for password reset' });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to send OTP' });
-  }
-};
 
 
 export const forgotPas = async (req, res) => {
