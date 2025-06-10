@@ -502,16 +502,13 @@ const checkAvailability = async () => {
 </div>
 }
 
-{activeTab === "booked" && (
-  <BookedSlots boxId={box._id} />
-)}
 
-{activeTab === "blocked" && (
-  <BlockedSlots boxId={box._id} />
-)}
 
-{activeTab === "reviews" && <ReviewsSection boxId={box._id} />}
 
+
+      </div>
+      
+      
 {activeTab === "details" && (
   <>
    
@@ -699,8 +696,14 @@ const checkAvailability = async () => {
       </div>
   </>
 )}
+{activeTab === "reviews" && <ReviewsSection boxId={box._id} />}
+{activeTab === "booked" && (
+  <BookedSlots boxId={box._id} />
+)}
 
-      </div>
+{activeTab === "blocked" && (
+  <BlockedSlots boxId={box._id} />
+)}
 
     </div>
 

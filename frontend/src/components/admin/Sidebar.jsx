@@ -37,6 +37,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/admin/boxes', name: 'Box Management', icon: <Box size={20} /> },
     { path: '/admin/bookings', name: 'Bookings', icon: <Calendar size={20} /> },
     { path: '/admin/block-slot', name: 'Block Time Slots', icon: <Clock size={20} /> },
+    { path: '/my-profile', name: 'My Profile', icon:  <Users size={20} /> },
+
     { path: '/admin/users', name: 'User Management', icon: <Users size={20} /> },
     { path: '/admin/settings', name: 'Settings', icon: <Settings size={20} /> }
   ];

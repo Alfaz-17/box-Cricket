@@ -79,6 +79,24 @@ const Navbar = () => {
                   >
                     Admin Panel
                   </Link>
+                     <Link
+                    to="/admin/boxes"
+                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
+                  >
+                    Box Management
+                  </Link>
+                     <Link
+                    to="/admin/block-slot"
+                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
+                  >
+                    Block Slot
+                  </Link>
+                     <Link
+                    to="/my-profile"
+                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
+                  >
+                    My profile
+                  </Link>
                 </>
               )}
 

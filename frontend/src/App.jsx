@@ -189,6 +189,14 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                          <Route
+                    path="/my-profile" 
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/admin/bookings"
                     element={
