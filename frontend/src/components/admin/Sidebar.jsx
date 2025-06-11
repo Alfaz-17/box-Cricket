@@ -40,18 +40,24 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/my-profile', name: 'My Profile', icon:  <Users size={20} /> },
 
     { path: '/admin/users', name: 'User Management', icon: <Users size={20} /> },
-    { path: '/admin/settings', name: 'Settings', icon: <Settings size={20} /> }
+         { path: '/settings', name: 'Settings', icon: <Settings size={20} /> }
+
   ];
 
   const userMenuItems = [
     { path: '/', name: 'Home', icon: <Home size={20} /> },
     { path: '/my-bookings', name: 'My Bookings', icon: <CalendarCheck size={20} /> },
     { path: '/my-profile', name: 'My Profile', icon:  <Users size={20} /> },
+         { path: '/settings', name: 'Settings', icon: <Settings size={20} /> }
+
   ];
 
   const guestMenuItems = [
     { path: '/', name: 'Home', icon: <Home size={20} /> },
-    { path: '/login', name: 'Login', icon: <LogIn size={20} /> }
+    { path: '/login', name: 'Login', icon: <LogIn size={20} /> },   
+     { path: '/settings', name: 'Settings', icon: <Settings size={20} /> }
+
+
   ];
 
   // Select which menu to show

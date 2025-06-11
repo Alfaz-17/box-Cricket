@@ -15,6 +15,7 @@ const BlockSlot = () => {
   const [boxes, setBoxes] = useState([]);
   const [selectedBoxId, setSelectedBoxId] = useState(null);
   const [selectedQuarter, setSelectedQuarter] = useState(''); // NEW quarter state
+const [selectedFilterQuarter, setSelectedFilterQuarter] = useState('all');
 
   const [formData, setFormData] = useState({
     date: new Date(),
@@ -138,6 +139,9 @@ const BlockSlot = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
+
+    
+
       <Card title="Block a Time Slot">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -231,13 +235,40 @@ const BlockSlot = () => {
         </form>
       </Card>
 <Card title="Blocked Slots">
+
+  {/* Filter Blocked Slots by Quarter */}
+{selectedBoxId && (
+  <div className="max-w-3xl mx-auto mb-6">
+    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+      Filter Blocked Slots by Quarter
+    </label>
+    <select
+      className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+      value={selectedFilterQuarter || 'all'}
+      onChange={(e) => setSelectedFilterQuarter(e.target.value)}
+    >
+      <option value="all">All Quarters</option>
+      {boxes.find(b => b._id === selectedBoxId)?.quarters?.map((quarter, idx) => (
+        <option key={idx} value={quarter.name || quarter}>
+          {quarter.name || quarter}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
+
+
   {slotsLoading ? (
     <p className="text-center text-gray-500">Loading blocked slots...</p>
   ) : blockedSlots.length === 0 ? (
     <p className="text-center text-gray-500">No blocked slots found.</p>
   ) : (
     <ul className="space-y-4">
-      {blockedSlots.map((slotGroup) => (
+    {blockedSlots
+  .filter(slotGroup => selectedFilterQuarter === 'all' || slotGroup.quarterName === selectedFilterQuarter)
+  .map((slotGroup) => (
+
         <li
           key={slotGroup._id}
           className="p-4 bg-yellow-100 dark:bg-gray-800 rounded-md flex flex-col space-y-2"
@@ -247,6 +278,10 @@ const BlockSlot = () => {
           </p>
 
           <div className="pl-4 space-y-3">
+
+
+
+
             {slotGroup.slots.map((timeSlot, idx) => (
               <div
                 key={idx}

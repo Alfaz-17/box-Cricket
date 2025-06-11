@@ -125,22 +125,12 @@ const Navbar = () => {
                 </>
               )}
 
-              <button
-                onClick={toggleDarkMode}
-                className="p-2 rounded-full bg-yellow-100 dark:bg-gray-700 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600"
-              >
-                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
+             
             </div>
 
             {/* Mobile Menu Button */}
             <div className="flex md:hidden items-center space-x-3">
-              <button
-                onClick={toggleDarkMode}
-                className="p-2 rounded-full bg-yellow-100 dark:bg-gray-700 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600"
-              >
-                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
+           
               <button
                 onClick={() => setSidebarOpen(true)}
                 className="text-gray-700 dark:text-gray-300"

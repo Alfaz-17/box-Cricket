@@ -87,40 +87,7 @@ const Home = () => {
     setSearchQuery('');
   };
   
-  // Mock data for demonstration purposes
-  const mockBoxes = [
-    {
-      id: 1,
-      name: 'Premium Cricket Box',
-      description: 'High-quality cricket practice box with advanced bowling machine and analytics.',
-      location: 'Central Sports Complex, New York',
-      hourlyRate: 45,
-      image: 'https://images.pexels.com/photos/3628912/pexels-photo-3628912.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-      rating: 4.8,
-      reviewCount: 24
-    },
-    {
-      id: 2,
-      name: 'Standard Cricket Net',
-      description: 'Standard cricket practice net suitable for beginners and intermediate players.',
-      location: 'Community Park, Boston',
-      hourlyRate: 25,
-      image: 'https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-      rating: 4.2,
-      reviewCount: 18
-    },
-    {
-      id: 3,
-      name: 'Professional Training Box',
-      description: 'Professional-grade cricket box with multiple lanes and video analysis.',
-      location: 'Sports Academy, Chicago',
-      hourlyRate: 60,
-      image: 'https://images.pexels.com/photos/5739101/pexels-photo-5739101.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-      rating: 4.9,
-      reviewCount: 32
-    },
-  ];
-  
+ 
   return (
     <div>
       {/* Hero Section */}
@@ -258,7 +225,7 @@ const Home = () => {
             Available Cricket Boxes
           </h2>
           <div className="text-sm text-gray-600 dark:text-gray-400">
-            Showing {filteredBoxes.length || mockBoxes.length} results
+            Showing {filteredBoxes.length} results
           </div>
         </div>
         
@@ -283,9 +250,7 @@ const Home = () => {
         ) : (
           // Show mock data when no API data is available
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockBoxes.map(box => (
-              <BoxCard key={box.id} box={box} />
-            ))}
+          Not Show any boxes
           </div>
         )}
       </section>

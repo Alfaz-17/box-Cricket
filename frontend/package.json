@@ -29,6 +29,7 @@
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "daisyui": "^5.0.43",
     "date-fns": "^4.1.0",
     "jspdf": "^3.0.1",
     "jwt-decode": "^4.0.0",

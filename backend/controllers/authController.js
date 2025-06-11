@@ -229,18 +229,5 @@ export const updateProfile = async (req, res) => {
 };
 
 
-export const getAllUsers = async (req, res) => {
-  try{
-    const users =await User.find().select("-password -otp");
-    res.status(200).json({
-      success:true,
-      users:users
-    })
-  }catch(error){
-    return res.status(500).json({
-      success:false,
-      message:"Failed to fetch users",
-    })
-  }
-};
+
 

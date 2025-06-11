@@ -31,6 +31,7 @@ import BlockSlot from './pages/admin/BlockSlot';
 import api from './utils/api';
 import Profile from './pages/user/Profile';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import SettingsPage from './pages/public/SettingsPage';
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
@@ -110,7 +111,7 @@ function App() {
       <ThemeProvider>
         <Router>
         <div style={{ fontFamily: 'montserrat' }}>
-          <div  className=" flex flex-col min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300" >
+<div className="flex flex-col min-h-screen bg-base-100 text-base-content transition-colors duration-300">
             <Navbar />
             <main className="flex-grow container mx-auto px-4 py-8">
               {!loading && (
@@ -121,6 +122,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/settings" element={<SettingsPage />} />
 
                   {/* User Routes */}
                   <Route

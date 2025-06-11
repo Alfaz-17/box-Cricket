@@ -9,6 +9,7 @@ import bookingRoutes from './routes/bookingRoutes.js'
 import publicRoutes from "./routes/publicRoutes.js";
 import reviewRoutes from './routes/reviewRoutes.js';
 import slotsRoutes from './routes/slotsRoutes.js';
+import analyticsRoute from './routes/analyticsRoute.js'
 import { startBot } from './lib/whatsappBot.js'
 import cors from 'cors'
 dotenv.config();
@@ -36,6 +37,7 @@ app.use("/api/booking", bookingRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/reviews",reviewRoutes);
 app.use("/api/slots",slotsRoutes);
+app.use("/api/analytics",analyticsRoute);
 
 
 

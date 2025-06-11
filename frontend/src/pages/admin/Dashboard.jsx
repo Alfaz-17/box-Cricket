@@ -16,56 +16,73 @@ import Sidebar from '../../components/admin/Sidebar';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { useEffect } from 'react';
-import api from '../../utils/api'
+import api from '../../utils/api';
+
 const Dashboard = () => {
     const [loading, setLoading] = useState(false);
   
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const  [bookings,setBookings]=useState([])
+  const [analytics, setAnalytics] = useState(null);
   // Mock data for demonstration
-  const stats = [
-    {
-      title: 'Total Bookings',
-      value: '142',
-      change: '+12%',
-      isIncrease: true,
-      icon: <Calendar className="text-blue-500" />,
-      color: 'bg-blue-100 dark:bg-blue-900/30',
-      link: '/admin/bookings'
-    },
-    {
-      title: 'Revenue',
-      value: '$5,240',
-      change: '+8%',
-      isIncrease: true,
-      icon: <DollarSign className="text-green-500" />,
-      color: 'bg-green-100 dark:bg-green-900/30',
-      link: '/admin/bookings'
-    },
-    {
-      title: 'Cricket Boxes',
-      value: '8',
-      change: '+2',
-      isIncrease: true,
-      icon: <Box className="text-yellow-500" />,
-      color: 'bg-yellow-100 dark:bg-yellow-900/30',
-      link: '/admin/boxes'
-    },
-    {
-      title: 'Users',
-      value: '186',
-      change: '+24%',
-      isIncrease: true,
-      icon: <Users className="text-purple-500" />,
-      color: 'bg-purple-100 dark:bg-purple-900/30',
-      link: '/admin/users'
-    }
-  ];
+const stats = analytics
+  ? [
+      {
+        title: 'Total Bookings',
+        value: analytics.totalBookings,
+        change: `${analytics.bookingChange > 0 ? '+' : ''}${analytics.bookingChange}%`,
+        isIncrease: analytics.bookingChange >= 0,
+        icon: <Calendar className="text-blue-500" />,
+        color: 'bg-blue-100 dark:bg-blue-900/30',
+        link: '/admin/bookings'
+      },
+      {
+        title: 'Revenue',
+        value: `${analytics.totalRevenue} Rs`,
+        change: `${analytics.revenueChange > 0 ? '+' : ''}${analytics.revenueChange}%`,
+        isIncrease: analytics.revenueChange >= 0,
+        icon: <DollarSign className="text-green-500" />,
+        color: 'bg-green-100 dark:bg-green-900/30',
+        link: '/admin/bookings'
+      },
+      {
+        title: 'Cricket Boxes',
+        value: analytics.totalBoxes,
+        change: `${analytics.boxChange > 0 ? '+' : ''}${analytics.boxChange}`,
+        isIncrease: analytics.boxChange >= 0,
+        icon: <Box className="text-yellow-500" />,
+        color: 'bg-yellow-100 dark:bg-yellow-900/30',
+        link: '/admin/boxes'
+      },
+      {
+        title: 'Users',
+        value: analytics.totalUsers,
+        change: `${analytics.userChange > 0 ? '+' : ''}${analytics.userChange}%`,
+        isIncrease: analytics.userChange >= 0,
+        icon: <Users className="text-purple-500" />,
+        color: 'bg-purple-100 dark:bg-purple-900/30',
+        link: '/admin/users'
+      }
+    ]
+  : [];
+
+
 
     useEffect(() => {
       recentBooking();
+        fetchAnalytics();
  
     }, []);
+
+
+    const fetchAnalytics = async () => {
+  try {
+    const response = await api.get('/analytics/owner');
+    setAnalytics(response.data);
+  } catch (error) {
+    console.error('Error fetching analytics:', error);
+  }
+};
+    
   
 
   
@@ -81,77 +98,9 @@ const recentBooking = async () => {
     setLoading(false);
   }
 };
-  const recentBookings = [
-    {
-      id: '1',
-      user: 'John Smith',
-      boxName: 'Premium Cricket Box',
-      date: '2025-06-15',
-      time: '10:00 - 12:00',
-      amount: '$90',
-      status: 'confirmed'
-    },
-    {
-      id: '2',
-      user: 'Emily Johnson',
-      boxName: 'Standard Cricket Net',
-      date: '2025-06-14',
-      time: '14:00 - 15:00',
-      amount: '$25',
-      status: 'confirmed'
-    },
-    {
-      id: '3',
-      user: 'Michael Wilson',
-      boxName: 'Professional Training Box',
-      date: '2025-06-13',
-      time: '16:00 - 18:00',
-      amount: '$120',
-      status: 'pending'
-    },
-    {
-      id: '4',
-      user: 'Sarah Davis',
-      boxName: 'Premium Cricket Box',
-      date: '2025-06-12',
-      time: '09:00 - 11:00',
-      amount: '$90',
-      status: 'confirmed'
-    },
-    {
-      id: '5',
-      user: 'Robert Brown',
-      boxName: 'Standard Cricket Net',
-      date: '2025-06-11',
-      time: '13:00 - 14:00',
-      amount: '$25',
-      status: 'cancelled'
-    }
-  ];
+ 
   
-  const popularBoxes = [
-    {
-      id: '1',
-      name: 'Premium Cricket Box',
-      bookings: 48,
-      revenue: '$4,320',
-      utilization: '78%'
-    },
-    {
-      id: '2',
-      name: 'Standard Cricket Net',
-      bookings: 64,
-      revenue: '$1,600',
-      utilization: '62%'
-    },
-    {
-      id: '3',
-      name: 'Professional Training Box',
-      bookings: 30,
-      revenue: '$3,600',
-      utilization: '46%'
-    }
-  ];
+
   
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -279,54 +228,7 @@ const recentBooking = async () => {
               
               {/* Popular Boxes */}
               <div className="lg:col-span-1">
-                <Card>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">
-                      Popular Cricket Boxes
-                    </h2>
-                    <Link to="/admin/boxes">
-                      <Button variant="link" size="sm" className="flex items-center">
-                        View All <ArrowRight size={14} className="ml-1" />
-                      </Button>
-                    </Link>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {popularBoxes.map((box) => (
-                      <div key={box.id} className="flex items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <div className="w-10 h-10 rounded-md bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center mr-3">
-                          <Box size={20} className="text-yellow-600 dark:text-yellow-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                            {box.name}
-                          </p>
-                          <div className="flex text-xs text-gray-500 dark:text-gray-400">
-                            <span className="mr-2">{box.bookings} bookings</span>
-                            <span>Utilization: {box.utilization}</span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                            {box.revenue}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Revenue
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-4">
-                    <Link to="/admin/boxes/create">
-                      <Button variant="secondary" fullWidth className="flex items-center justify-center">
-                        <Box size={16} className="mr-2" />
-                        Add New Cricket Box
-                      </Button>
-                    </Link>
-                  </div>
-                </Card>
+           
                 
                 {/* Quick Actions Card */}
                 <Card className="mt-6">

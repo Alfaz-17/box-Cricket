@@ -73,6 +73,7 @@ const AdminBookings = () => {
           Booking Management
         </h1>
 <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+  {/* Search Input */}
   <div className="relative w-full md:w-1/3">
     <Input
       placeholder="Search by user or box name"
@@ -83,58 +84,45 @@ const AdminBookings = () => {
     <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
   </div>
 
-  <div className="flex flex-wrap gap-2">
-    {[
-      { label: 'All', value: 'all' },
-      { label: 'Upcoming', value: 'upcoming' },
-      { label: 'Past', value: 'past' },
-      { label: 'Cancelled', value: 'cancelled' },
-    ].map((item) => (
-      <button
-        key={item.value}
-        className={`px-4 py-2 rounded-md text-sm font-medium transition 
-          border ${
-            filter === item.value
-              ? 'bg-green-600 text-white border-green-600 shadow'
-              : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-green-50 dark:hover:bg-green-700'
-          }`}
-        onClick={() => setFilter(item.value)}
-      >
-        {item.label}
-      </button>
-    ))}
+  {/* Status Filter Dropdown */}
+  <div className="w-full md:w-1/4">
+    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Filter by Status
+    </label>
+    <select
+      value={filter}
+      onChange={(e) => setFilter(e.target.value)}
+      className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+    >
+      <option value="all">All</option>
+      <option value="upcoming">Upcoming</option>
+      <option value="past">Past</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
   </div>
 
+  {/* Quarter Filter Dropdown */}
   {uniqueQuarters.length > 0 && (
-    <div className="flex flex-wrap gap-2">
-      <button
-        className={`px-4 py-2 rounded-md text-sm font-medium transition 
-          border ${
-            selectedQuarter === 'all'
-              ? 'bg-green-600 text-white border-green-600 shadow'
-              : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-green-50 dark:hover:bg-green-700'
-          }`}
-        onClick={() => setSelectedQuarter('all')}
+    <div className="w-full md:w-1/4">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Filter by Quarter
+      </label>
+      <select
+        value={selectedQuarter}
+        onChange={(e) => setSelectedQuarter(e.target.value)}
+        className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
       >
-        All Quarters
-      </button>
-      {uniqueQuarters.map((quarter) => (
-        <button
-          key={quarter}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition 
-            border ${
-              selectedQuarter === quarter
-                ? 'bg-green-600 text-white border-green-600 shadow'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-green-50 dark:hover:bg-green-700'
-            }`}
-          onClick={() => setSelectedQuarter(quarter)}
-        >
-          {quarter}
-        </button>
-      ))}
+        <option value="all">All Quarters</option>
+        {uniqueQuarters.map((quarter) => (
+          <option key={quarter} value={quarter}>
+            {quarter}
+          </option>
+        ))}
+      </select>
     </div>
   )}
 </div>
+
 
 
 
