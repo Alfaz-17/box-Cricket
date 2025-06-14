@@ -31,27 +31,28 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-gradient-to-r from-yellow-200 to-yellow-300 dark:from-gray-800 dark:to-gray-900 shadow-md transition-colors duration-300">
+<nav className="sticky top-0 z-50 bg-base-300 shadow-md backdrop-blur bg-opacity-80">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link
               to="/"
-              className="flex items-center space-x-2 text-yellow-800 dark:text-yellow-400 font-bold text-xl transition-colors duration-300"
+              className="flex items-center space-x-2  dark:text-yellow-400 font-bold text-xl transition-colors duration-300"
             >
-               <img
+               {/* <img
     src={logo}
     alt="BookMyBox Logo"
     className="h-13 w-13 rounded-3xl transition-transform duration-300 hover:scale-150"
   />
-  
+   */}
+   <h1 >🏏 Book My Box</h1>
             </Link>
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-6">
               <Link
                 to="/"
-                className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-300"
+                className="btn btn-ghost text-base-content"
               >
                 Home
               </Link>
@@ -59,68 +60,60 @@ const Navbar = () => {
               {isAuthenticated && user?.role === 'user' && (
                 <Link
                   to="/my-bookings"
-                  className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
+                  className="btn btn-ghost text-base-content"
                 >
                   My Bookings
                 </Link>
               )}
 
-              {isAuthenticated && user?.role === 'owner' && (
-                <>
-                  <Link
-                    to="/admin/bookings"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
-                  >
-                    Admin Booking
-                  </Link>
-                  <Link
-                    to="/admin"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
-                  >
-                    Admin Panel
-                  </Link>
-                     <Link
-                    to="/admin/boxes"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
-                  >
-                    Box Management
-                  </Link>
-                     <Link
-                    to="/admin/block-slot"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
-                  >
-                    Block Slot
-                  </Link>
-                     <Link
-                    to="/my-profile"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
-                  >
-                    My profile
-                  </Link>
-                </>
-              )}
+             
+      {isAuthenticated && user?.role === 'owner' && (
+        <>
+          <Link to="/admin/bookings" className="btn btn-ghost text-base-content">
+            Admin Booking
+          </Link>
+          <Link to="/admin" className="btn btn-ghost text-base-content">
+            Admin Panel
+          </Link>
+          <Link to="/admin/boxes" className="btn btn-ghost text-base-content">
+            Box Management
+          </Link>
+          <Link to="/admin/block-slot" className="btn btn-ghost text-base-content">
+            Block Slot
+          </Link>
+          <Link to="/my-profile" className="btn btn-ghost text-base-content">
+            My Profile
+          </Link>
+        </>
+      )}
 
               {isAuthenticated ? (
                 <button
                   onClick={handleLogout}
-                  className="flex items-center text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
+                  className="flex items-centerbtn btn btn-primary"
                 >
-                  <LogOut size={18} className="mr-1" />
+                  <LogOut size={18} className="mr-1  btn-primary text-base-content" />
                   <span>Logout</span>
                 </button>
               ) : (
                 <>
                   <Link
                     to="/login"
-                    className="text-yellow-900 dark:text-yellow-100 hover:text-yellow-700 dark:hover:text-yellow-300"
+                    className="btn btn-ghost text-base-content"
                   >
                     Login
                   </Link>
                   <Link
                     to="/signup"
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md shadow-sm"
+                    className="btn btn-ghost text-base-content"
                   >
                     Sign Up
+                  </Link>
+                     <Link
+                    to="/settings"
+                    className="btn btn-ghost text-base-content"
+                  >
+                    Settings
                   </Link>
                 </>
               )}
@@ -133,7 +126,8 @@ const Navbar = () => {
            
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="text-gray-700 dark:text-gray-300"
+
+                className="btn btn-primary"
               >
                 <Menu size={24} />
               </button>

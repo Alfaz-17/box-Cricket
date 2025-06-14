@@ -74,19 +74,19 @@ const Sidebar = ({ isOpen, onClose }) => {
       )}
 
       <div
-        className={`h-screen w-64 bg-white dark:bg-gray-900 shadow-lg transition-transform duration-300 ease-in-out z-50
+        className={`h-screen w-64 bg-base-100 shadow-lg transition-transform duration-300 ease-in-out z-50
         fixed inset-y-0 right-0 lg:sticky lg:top-0
         ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
       `}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-base-300">
           {/* Header */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <Link to="/" className="flex items-center">
-              <div className="bg-yellow-500 text-white p-2 rounded-md mr-2">
+            <Link to="/" className="flex items-center  ">
+              <div className="bg-base-100 p-2 rounded-md mr-2">
                 <Box size={20} />
               </div>
-              <div className="text-yellow-900 dark:text-yellow-300 font-bold text-xl">
+              <div className="text-primary font-bold text-xl">
                 {isAuthenticated
                   ? user?.role === 'owner'
                     ? 'Admin Panel'
@@ -106,12 +106,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                     className={`
                       flex items-center px-4 py-3 rounded-md transition-colors duration-200
                       ${isActive(item.path)
-                        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 font-medium'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}
+                        ? 'bg-primary  text-primary-content'
+                        : ' hover:bg-primary   dark:hover:bg-base-100'}
                     `}
                     onClick={() => window.innerWidth < 1024 && onClose()}
                   >
-                    <span className="mr-3 text-yellow-600 dark:text-yellow-400">
+                    <span className="mr-3 text-primary-200">
                       {item.icon}
                     </span>
                     <span>{item.name}</span>
@@ -126,18 +126,18 @@ const Sidebar = ({ isOpen, onClose }) => {
             <div className="space-y-3">
               <a
                 href="#"
-                className="flex items-center text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                className="flex items-center  rounded-md hover:bg-base-100"
               >
-                <HelpCircle size={20} className="mr-3 text-yellow-600 dark:text-yellow-400" />
+                <HelpCircle size={20} className="mr-3 text-primmary-200" />
                 <span>Help & Support</span>
               </a>
 
               {isAuthenticated && (
                 <button
                   onClick={handleLogout}
-                  className="flex items-center w-full text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  className="flex items-center w-full btn px-4 py-2 rounded-md hover:bg-base-100 "
                 >
-                  <LogOut size={20} className="mr-3 text-yellow-600 dark:text-yellow-400" />
+                  <LogOut size={20} className="mr-3 " />
                   <span>Logout</span>
                 </button>
               )}

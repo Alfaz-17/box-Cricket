@@ -138,164 +138,170 @@ setOtpSent(true)
 };
 
 
-  return (
-    <div className="max-w-md mx-auto">
-      <Card title="Create an Account" subtitle="Sign up to start booking cricket boxes">
-       <form onSubmit={handleSubmit}>
-  {/* Phase 1 */}
-  {!isOtpVerified && (
-    <>
-      <Input
-        label="Contact Number"
-        id="contactNumber"
-        name="contactNumber"
-        type="tel"
-        value={formData.contactNumber}
-        onChange={handleChange}
-        placeholder="Enter your contact number"
-        error={errors.contactNumber}
-      />
-      <div className="flex space-x-2 mb-3">
-        <button
-          type="button"
-          onClick={sendOtp}
-          disabled={isOtpSending}
-          className="px-1 py-1 rounded-md bg-yellow-500 text-white hover:bg-yellow-600"
+return (
+  <div className="max-w-md mx-auto">
+    <Card title="Create an Account" subtitle="Sign up to start booking cricket boxes">
+      <form onSubmit={handleSubmit}>
+        {/* Phase 1: OTP Verification */}
+        {!isOtpVerified && (
+          <>
+            <Input
+              label="Contact Number"
+              id="contactNumber"
+              name="contactNumber"
+              type="tel"
+              value={formData.contactNumber}
+              onChange={handleChange}
+              placeholder="Enter your contact number"
+              error={errors.contactNumber}
+            />
+
+            <div className="flex space-x-2 mb-3">
+              <button
+                type="button"
+                onClick={sendOtp}
+                disabled={isOtpSending}
+                className="btn btn-sm btn-warning"
+              >
+                {isOtpSending ? 'Sending...' : 'Send OTP'}
+              </button>
+            </div>
+
+            <Input
+              label="OTP"
+              id="otp"
+              name="otp"
+              type="text"
+              value={formData.otp}
+              onChange={handleChange}
+              placeholder="Enter OTP"
+              error={errors.otp}
+            />
+
+            <button
+              type="button"
+              onClick={verifyOtp}
+              className="btn btn-success mt-2"
+            >
+              Verify OTP
+            </button>
+          </>
+        )}
+
+        {/* Phase 2: Account Details */}
+        {isOtpVerified && (
+          <>
+            <Input
+              label="Name"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your full name"
+              error={errors.name}
+            />
+
+            <Input
+              label="Password"
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Create a password"
+              error={errors.password}
+            />
+
+            <Input
+              label="Confirm Password"
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm your password"
+              error={errors.confirmPassword}
+            />
+
+            <div className="form-control mb-4">
+              <label htmlFor="role" className="label">
+                <span className="label-text">Role</span>
+              </label>
+              <select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="select select-bordered w-full"
+              >
+                <option value="user">User</option>
+                <option value="owner">Owner</option>
+              </select>
+            </div>
+
+            {formData.role === 'owner' && (
+              <Input
+                label="Owner Code"
+                id="ownerCode"
+                name="ownerCode"
+                type="password"
+                value={formData.ownerCode}
+                onChange={handleChange}
+                placeholder="Enter owner code"
+                error={errors.ownerCode}
+              />
+            )}
+
+            <div className="form-control mb-6">
+              <label className="label cursor-pointer">
+                <input
+                  id="terms"
+                  type="checkbox"
+                  className="checkbox checkbox-primary"
+                  required
+                />
+                <span className="label-text ml-2">
+                  I agree to the{' '}
+                  <a href="#" className="text-primary link">
+                    Terms of Service
+                  </a>{' '}
+                  and{' '}
+                  <a href="#" className="text-yellow-600 hover:text-yellow-500">
+                    Privacy Policy
+                  </a>
+                </span>
+              </label>
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              isLoading={isLoading}
+              className="flex justify-center items-center"
+            >
+              <UserPlus size={18} className="mr-2" />
+              Sign up
+            </Button>
+          </>
+        )}
+      </form>
+
+      <div className="mt-6 text-center text-sm">
+        <span className="text-gray-600 dark:text-gray-400">
+          Already have an account?{' '}
+        </span>
+        <Link
+          to="/login"
+          className="link  hover:text-primary"
         >
-          {isOtpSending ? 'Sending...' : 'Send OTP'}
-        </button>
+          Log in
+        </Link>
       </div>
-      <Input
-        label="OTP"
-        id="otp"
-        name="otp"
-        type="text"
-        value={formData.otp}
-        onChange={handleChange}
-        placeholder="Enter OTP"
-        error={errors.otp}
-      />
-      <button
-        type="button"
-        onClick={verifyOtp}
-        className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-      >
-        Verify OTP
-      </button>
-    </>
-  )}
+    </Card>
+  </div>
+);
 
-  {/* Phase 2 */}
-  {isOtpVerified && (
-    <>
-      <Input
-        label="Name"
-        id="name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        placeholder="Enter your full name"
-        error={errors.name}
-      />
-
-      <Input
-        label="Password"
-        id="password"
-        name="password"
-        type="password"
-        value={formData.password}
-        onChange={handleChange}
-        placeholder="Create a password"
-        error={errors.password}
-      />
-
-      <Input
-        label="Confirm Password"
-        id="confirmPassword"
-        name="confirmPassword"
-        type="password"
-        value={formData.confirmPassword}
-        onChange={handleChange}
-        placeholder="Confirm your password"
-        error={errors.confirmPassword}
-      />
-
-      <div className="mb-4">
-        <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
-          Role
-        </label>
-        <select
-          id="role"
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        >
-          <option value="user">User</option>
-          <option value="owner">Owner</option>
-        </select>
-      </div>
-
-      {formData.role === 'owner' && (
-        <Input
-          label="Owner Code"
-          id="ownerCode"
-          name="ownerCode"
-          type="password"
-          value={formData.ownerCode}
-          onChange={handleChange}
-          placeholder="Enter owner code"
-          error={errors.ownerCode}
-        />
-      )}
-
-      <div className="mb-6">
-        <div className="flex items-center">
-          <input
-            id="terms"
-            type="checkbox"
-            className="h-4 w-4 text-yellow-500 border-gray-300 rounded"
-            required
-          />
-          <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-            I agree to the{' '}
-            <a href="#" className="text-yellow-600 hover:text-yellow-500">
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="#" className="text-yellow-600 hover:text-yellow-500">
-              Privacy Policy
-            </a>
-          </label>
-        </div>
-      </div>
-
-      <Button
-        type="submit"
-        variant="primary"
-        fullWidth
-        isLoading={isLoading}
-        className="flex justify-center items-center"
-      >
-        <UserPlus size={18} className="mr-2" />
-        Sign up
-      </Button>
-    </>
-  )}
-</form>
-
-        <div className="mt-6 text-center text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Already have an account? </span>
-          <Link
-            to="/login"
-            className="text-yellow-600 hover:text-yellow-500 dark:text-yellow-400 dark:hover:text-yellow-300 font-medium"
-          >
-            Log in
-          </Link>
-        </div>
-      </Card>
-    </div>
-  );
 };
 
 

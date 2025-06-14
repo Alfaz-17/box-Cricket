@@ -20,12 +20,12 @@ const TimePicker = ({ value, onChange }) => {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="border rounded px-3 py-2"
+            className="input input-bordered w-full bg-base-100 "
       aria-label="Select time"
     >
-      <option value="">Select time</option>
+      <option className='bg-base-100' value="">Select time</option>
       {timeOptions.map((time, idx) => (
-        <option key={idx} value={time}>
+        <option className='bg-base-100' key={idx} value={time}>
           {time}
         </option>
       ))}

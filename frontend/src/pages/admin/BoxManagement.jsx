@@ -51,97 +51,99 @@ const [ownerCode, setOwnerCode] = useState('');
   }
 };
 
-  if (loading) {
+if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
+        <span className="loading loading-spinner text-warning w-12 h-12"></span>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">Box Management</h1>
+    <div className="container  mx-auto px-4">
+      <div className="flex justify-between  items-center mb-6">
+        <h1 className="text-3xl font-bold">Box Management</h1>
         <Link to="/admin/boxes/create">
-          <Button className="flex items-center">
+          <button className="btn bg-primary btn-sm ">
             <Plus size={20} className="mr-2" />
             Add New Box
-          </Button>
+          </button>
         </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {boxes.map((box) => (
-          <Card key={box._id}>
-            <div className="relative h-48 mb-4">
+          <div className="card bg-base-300 shadow-xl" key={box._id}>
+            <figure className="relative h-48 overflow-hidden">
               <img
-                src={box.image?box.image : "https://images.pexels.com/photos/5739101/pexels-photo-5739101.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"}
+                src={
+                  box.image ||
+                  "https://images.pexels.com/photos/5739101/pexels-photo-5739101.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                }
                 alt={box.name}
-                className="w-full h-full object-cover rounded-lg"
+                className="w-full h-full object-cover"
               />
               <div className="absolute top-2 right-2 flex space-x-2">
                 <Link to={`/admin/boxes/edit/${box._id}`}>
-                  <Button variant="secondary" size="sm">
+                  <button className="btn btn-sm ">
                     <Edit size={16} />
-                  </Button>
+                  </button>
                 </Link>
-                <Button 
-  variant="danger" 
-  size="sm"
-  onClick={() => {
-    setSelectedBoxId(box._id);
-    setShowDeleteInput(true);
-  }}
->
-  <Trash2 size={16} />
-</Button>
-
+                <button
+                  className="btn btn-sm btn-error"
+                  onClick={() => {
+                    setSelectedBoxId(box._id);
+                    setShowDeleteInput(true);
+                  }}
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
-            </div>
-            {showDeleteInput && (
-  <div className="p-4 mt-2 bg-red-50 border border-red-300 rounded">
-    <label className="block text-sm font-medium text-red-700 mb-1">Enter Owner Code to Confirm Delete:</label>
-    <input
-      type="password"
-      value={ownerCode}
-      onChange={(e) => setOwnerCode(e.target.value)}
-      className="border border-gray-300 rounded px-3 py-1 w-full"
-      placeholder="Owner code"
-    />
-    <div className="mt-2 flex gap-2">
-      <button
-        onClick={handleDelete}
-        className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
-      >
-        Confirm Delete
-      </button>
-      <button
-        onClick={() => {
-          setShowDeleteInput(false);
-          setOwnerCode('');
-        }}
-        className="bg-gray-200 text-gray-800 px-4 py-1 rounded hover:bg-gray-300"
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-)}
+            </figure>
 
-
-            <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300 mb-2">
-              {box.name}
-            </h3>
-
-            <div className="space-y-2 text-gray-600 dark:text-gray-400 text-sm">
-              <div className="flex items-center">
-                <BoxIcon size={16} className="mr-2" />
-                <span>Rate: ${box.hourlyRate}/hour</span>
+            <div className="card-body">
+              <h2 className="card-title text-primary ">{box.name}</h2>
+              <div className="text-sm space-y-2  dark:text-gray-400">
+                <div className="flex items-center">
+                  <BoxIcon   size={16} className="mr-2 text-primary" />
+                  <span className='text-pri'>Rate: ${box.hourlyRate}/hour</span>
+                </div>
+                <p className="line-clamp-2">{box.description}</p>
               </div>
-              <p className="line-clamp-2">{box.description}</p>
+
+              {showDeleteInput && selectedBoxId === box._id && (
+                <div className="mt-4 p-4 border border-error bg-error/10 rounded space-y-3">
+                  <label className="text-sm font-medium text-error">
+                    Enter Owner Code to Confirm Delete:
+                  </label>
+                  <input
+                    type="password"
+                    value={ownerCode}
+                    onChange={(e) => setOwnerCode(e.target.value)}
+                    className="input input-bordered w-full input-error"
+                    placeholder="Owner code"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleDelete}
+                      className="btn btn-error btn-sm"
+                    >
+                      Confirm Delete
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDeleteInput(false);
+                        setOwnerCode("");
+                      }}
+                      className="btn btn-outline btn-sm"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          </Card>
+          </div>
         ))}
       </div>
     </div>

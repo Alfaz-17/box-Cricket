@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 const themes = [
-  'light',
-  'dark',
-  'cupcake',
-  'bumblebee',
-  'synthwave',
-  'valentine',
-  'halloween',
-  'garden',
-  'lofi',
-  'pastel',
-  'fantasy',
-  'luxury',
-  'dracula',
-  'cmyk',
+  // Light & Clean
+  'light', 'pastel', 'lofi', 'winter', 'cupcake', 'cmyk',
+
+  // Dark & Bold
+  'dark', 'dracula', 'synthwave', 'black', 'night', 'luxury',
+
+  // Fun & Playful
+  'bumblebee', 'valentine', 'halloween', 'fantasy', 'aqua',
+
+  // Nature Inspired
+  'garden', 'forest', 'autumn', 'emerald',
+
+  // Futuristic & High Contrast
+  'cyberpunk', 'business', 'acid', 'dim', 'coffee', 'retro',
 ];
+
 
 function SettingsPage() {
   const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || 'light');
@@ -26,24 +28,60 @@ function SettingsPage() {
   }, [currentTheme]);
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-base-200 rounded-xl shadow">
-      <h1 className="text-2xl font-bold mb-4">⚙️ UI Theme Settings</h1>
-      <label className="form-control w-full">
-        <div className="label">
-          <span className="label-text">Choose Theme</span>
-        </div>
-        <select
-          className="select select-bordered"
-          value={currentTheme}
-          onChange={(e) => setCurrentTheme(e.target.value)}
-        >
-          {themes.map((theme) => (
-            <option key={theme} value={theme}>
-              {theme.charAt(0).toUpperCase() + theme.slice(1)}
-            </option>
-          ))}
-        </select>
-      </label>
+    <div className="max-w-6xl mx-auto p-6">
+      <motion.h1
+        className="text-3xl font-bold mb-6 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        🎨 Choose Your Theme
+      </motion.h1>
+
+      <motion.div
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: {},
+          show: {
+            transition: {
+              staggerChildren: 0.05,
+            },
+          },
+        }}
+      >
+        {themes.map((theme) => (
+          <motion.div
+            key={theme}
+            className={`p-4 rounded-xl border border-base-300 cursor-pointer relative hover:scale-105 transition-transform duration-200 ${
+              currentTheme === theme ? 'ring-4 ring-primary' : ''
+            }`}
+            data-theme={theme}
+            onClick={() => setCurrentTheme(theme)}
+            whileHover={{ scale: 1.05 }}
+            variants={{
+              hidden: { opacity: 0, scale: 0.9 },
+              show: { opacity: 1, scale: 1 },
+            }}
+          >
+            <div className="flex justify-between items-center">
+              <span className="font-semibold capitalize">{theme}</span>
+              {currentTheme === theme && (
+                <div className="badge badge-primary">Selected</div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
+              <div className="bg-primary h-4 rounded"></div>
+              <div className="bg-secondary h-4 rounded"></div>
+              <div className="bg-accent h-4 rounded"></div>
+              <div className="bg-neutral h-4 rounded"></div>
+              <div className="bg-base-200 h-4 rounded"></div>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
     </div>
   );
 }

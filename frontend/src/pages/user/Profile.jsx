@@ -77,104 +77,100 @@ const Profile = () => {
   };
   if (!user) return <div>Loading profile...</div>;
 
-  return (
-<div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded shadow relative pt-20 px-6 pb-6">
-  {/* Profile Image at the top, centered and rounded */}
-<div className="absolute my-2  left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-  <div className="relative w-32 h-32">
-    {form.imagePreview ? (
-      <img
-        src={form.imagePreview}
-        alt="Profile"
-        className="w-32 h-32 rounded-full object-cover border-4 border-yellow-500 dark:border-yellow-300 shadow-lg"
-      />
-    ) : (
-      <div className="w-32 h-32 rounded-full bg-yellow-200 dark:bg-yellow-700 flex items-center justify-center text-yellow-600 dark:text-yellow-300 text-3xl font-bold border-4 border-yellow-500 dark:border-yellow-300 shadow-lg">
-        {form.name ? form.name.charAt(0).toUpperCase() : "U"}
+return (
+  <div className="max-w-md mx-auto bg-base-200 rounded-box shadow-xl relative pt-24 px-6 pb-8">
+    {/* Profile Image at the top, centered and rounded */}
+    <div className="absolute  left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <div className="relative w-32 h-32">
+        {form.imagePreview ? (
+          <img
+            src={form.imagePreview}
+            alt=""
+            className="w-32 h-32 rounded-full object-cover border-4 border-primary shadow-lg"
+          />
+        ) : (
+          <div className="w-32 h-32 rounded-full  flex items-center justify-center text-primary  text-3xl font-bold border-4 border-primary shadow-lg">
+            {form.name ? form.name.charAt(0).toUpperCase() : "U"}
+          </div>
+        )}
+
+        {/* Change button */}
+        <label
+          htmlFor="profileImgInput"
+          className="absolute bottom-0 right-0 bg-primary hover:bg-primary-focus  p-2 rounded-full shadow cursor-pointer transition-all"
+          title="Change Profile Picture"
+        >
+          <Upload size={16} />
+          <input
+            type="file"
+            id="profileImgInput"
+            name="profileImg"
+            className="sr-only "
+            onChange={handleChangeImg}
+            accept="image/*"
+          />
+        </label>
       </div>
+
+      <h2 className="text-xl font-bold mt-3 text-primary text-center">
+        {user.name}
+      </h2>
+    </div>
+
+    {/* Form */}
+    <div className="mt-20">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name Field */}
+        <div className="form-control">
+          <label htmlFor="name" className="label">
+            <span className="label-text text-primary">Name</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="input input-bordered w-full"
+          />
+        </div>
+
+        {/* Contact Number Field */}
+        <div className="form-control">
+          <label htmlFor="contactNumber" className="label">
+            <span className="label-text text-primary">Contact Number</span>
+          </label>
+          <input
+            type="text"
+            id="contactNumber"
+            name="contactNumber"
+            value={form.contactNumber}
+            // onChange={handleChange}
+            className="input input-bordered w-full"
+          />
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn btn-primary w-full"
+        >
+          {loading ? "Updating..." : "Update Profile"}
+        </button>
+      </form>
+    </div>
+
+    {/* Message */}
+    {message && (
+      <p className="mt-4 text-center text-sm text-primary-content">
+        {message}
+      </p>
     )}
-
-    {/* Change button overlaid on bottom-right */}
-    <label
-      htmlFor="profileImgInput"
-      className="absolute bottom-0 my-2 right-0 bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded-full shadow cursor-pointer transition-all"
-      title="Change Profile Picture"
-    >
-      <Upload size={16} />
-      <input
-        type="file"
-        id="profileImgInput"
-        name="profileImg"
-        className="sr-only"
-        onChange={handleChangeImg}
-        accept="image/*"
-      />
-    </label>
   </div>
+);
 
-  <h2 className="text-xl font-bold mt-2 text-yellow-800 dark:text-yellow-300 text-center">
-    {user.name}
-  </h2>
-</div>
-
-
- 
-<div className="mt-20">
-  <form onSubmit={handleSubmit} className="space-y-4">
-    <div>
-      <label
-        htmlFor="name"
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-      >
-        Name
-      </label>
-      <input
-        type="text"
-        name="name"
-        id="name"
-        value={form.name}
-        onChange={handleChange}
-        className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-        required
-      />
-    </div>
-
-    <div>
-      <label
-        htmlFor="contactNumber"
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-      >
-        Contact Number
-      </label>
-      <input
-        type="text"
-        name="contactNumber"
-        id="contactNumber"
-        value={form.contactNumber}
-        // onChange={handleChange}
-        className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-      />
-    </div>
-
-
-    <button
-      type="submit"
-      disabled={loading}
-      className="w-full py-2 px-4 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded transition-colors"
-    >
-      {loading ? "Updating..." : "Update Profile"}
-    </button>
-  </form>
-  </div>
-
-  {message && (
-    <p className="mt-4 text-center text-sm text-yellow-700 dark:text-yellow-300">
-      {message}
-    </p>
-  )}
-</div>
-
-  );
 };
 
 export default Profile;

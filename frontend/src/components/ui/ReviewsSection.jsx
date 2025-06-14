@@ -53,9 +53,9 @@ const ReviewsSection = ({ boxId }) => {
   }, [boxId]);
 
   return (
-    <Card className="p-4 md:p-6 mt-8 rounded-2xl shadow-sm bg-white dark:bg-gray-900">
+    <Card className="p-4 md:p-6 mt-8 rounded-2xl shadow-sm bg-base-300 ">
   <div className="flex justify-between items-center mb-6">
-    <h2 className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">Reviews</h2>
+    <h2 className="text-2xl font-bold text-primary">Reviews</h2>
     {isAuthenticated && (
       <Button
         variant="secondary"
@@ -78,7 +78,7 @@ const ReviewsSection = ({ boxId }) => {
             key={index}
             size={28}
             className={`cursor-pointer transition-colors hover:scale-110 ${
-              index < rating ? 'text-yellow-500 fill-current' : 'text-gray-300 dark:text-gray-600'
+              index < rating ? 'text-primary fill-current' : ' text-'
             }`}
             onClick={() => setRating(index + 1)}
           />
@@ -98,7 +98,7 @@ const ReviewsSection = ({ boxId }) => {
       <Button
         onClick={handleSubmit}
         disabled={loading}
-        className="rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 transition disabled:opacity-50"
+        className="rounded-lg btn   px-6 py-2 transition disabled:opacity-50"
       >
         {loading ? 'Submitting...' : 'Submit Review'}
       </Button>
@@ -115,7 +115,7 @@ const ReviewsSection = ({ boxId }) => {
         className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:mb-0 last:pb-0 last:border-none"
       >
         <div className="flex justify-between items-center mb-2">
-          <div className="font-semibold text-yellow-800 dark:text-yellow-300">{review.name}</div>
+          <div className="font-semibold ">{review.name}</div>
           <div className="text-sm text-gray-500 dark:text-gray-400">
             {new Date(review.createdAt).toLocaleDateString()}
           </div>
@@ -127,13 +127,13 @@ const ReviewsSection = ({ boxId }) => {
               size={18}
               className={`${
                 index < review.rating
-                  ? 'text-yellow-500 fill-current'
-                  : 'text-gray-300 dark:text-gray-600'
+                  ? 'text-primary fill-current'
+                  : 'text'
               } mr-1`}
             />
           ))}
         </div>
-        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{review.comment}</p>
+        <p className="text">{review.comment}</p>
       </div>
     ))
   )}

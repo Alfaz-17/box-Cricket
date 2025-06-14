@@ -71,6 +71,18 @@ export const completeSignup = async (req, res) => {
     if (exists)
       return res.status(400).json({ message: 'Contact number already registered' });
 
+
+    
+       if (ownerCode) {
+      if (ownerCode !== process.env.OWNER_CODE) {
+        return res.status(400).json({ message: 'Owner code is not valid' });
+      } else {
+        user.role = 'owner';
+        await user.save();
+      }
+    }
+
+
     const hashed = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
@@ -80,15 +92,7 @@ export const completeSignup = async (req, res) => {
       ownerCode,
     });
 
-    if (ownerCode) {
-      if (ownerCode !== process.env.OWNER_CODE) {
-        return res.status(400).json({ message: 'Owner code is not valid' });
-      } else {
-        user.role = 'owner';
-        await user.save();
-      }
-    }
-
+ 
     // ✅ Cleanup OTP from Redis after signup
     await redis.del(`otp:${contactNumber}`);
 

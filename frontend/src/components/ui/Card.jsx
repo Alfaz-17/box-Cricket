@@ -8,29 +8,30 @@ const Card = ({
   className = '' 
 }) => {
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-colors duration-300 ${className}`}>
-      {(title || subtitle) && (
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          {title && (
-            <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">{title}</h3>
-          )}
-          {subtitle && (
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{subtitle}</p>
-          )}
-        </div>
-      )}
-      
-      <div className="p-6">
-        {children}
+  <div className={`card bg-base-300 shadow-md transition-colors duration-300 ${className}`}>
+    {(title || subtitle) && (
+      <div className="card-header border-b border-base-300 px-6 py-4">
+        {title && (
+          <h3 className="card-title text-lg font-semibold text-primary">{title}</h3>
+        )}
+        {subtitle && (
+          <p className="text-sm text-base-content/70 mt-1">{subtitle}</p>
+        )}
       </div>
-      
-      {footer && (
-        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
-          {footer}
-        </div>
-      )}
+    )}
+
+    <div className="card-body p-6">
+      {children}
     </div>
-  );
+
+    {footer && (
+      <div className="card-footer border-t border-base-300 bg-base-200 px-6 py-4">
+        {footer}
+      </div>
+    )}
+  </div>
+);
+
 };
 
 export default Card;

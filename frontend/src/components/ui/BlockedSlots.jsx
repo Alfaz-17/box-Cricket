@@ -79,7 +79,7 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
 
   if (blockedSlots.length === 0)
     return (
-      <div className="text-center text-gray-500 bg-gray-100 p-6 rounded-lg shadow-inner">
+      <div className="text-center  bg-base-300 p-6 rounded-lg shadow-inner">
         <div className="flex justify-center mb-2">
           <CalendarX2 className="w-8 h-8 text-red-400" />
         </div>
@@ -94,26 +94,26 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
 
 
     
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-      <h2 className="text-2xl font-bold text-red-600 mb-4 flex items-center gap-2">
+    <div className="bg-base-300  rounded-xl shadow-md p-6">
+      <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
         ⛔ Blocked Slots by Boxes
       </h2>
 
       <div className="mb-4 flex flex-wrap items-center gap-4">
   <div className="flex items-center gap-2">
-    <Filter className="w-5 h-5 text-red-500" />
+    <Filter className="w-5 h-5 text-primary" />
     <input
       type="date"
       value={selectedDate}
       onChange={handleDateChange}
-      className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+      className="border rounded-lg px-3 py-1  text-sm focus:outline-none focus:ring-2 focus:ring-primary"
     />
   </div>
 
   <select
     value={selectedQuarter}
     onChange={handleQuarterChange}
-    className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+    className="border rounded-lg px-3 py-1 text-sm  bg-base-100 focus:outline-none focus:ring-2 focus:ring-primary"
   >
     <option value="">All Boxes</option>
     {[...new Set(blockedSlots.map((q) => q.quarterName))].map((name) => (
@@ -129,7 +129,7 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
       setSelectedQuarter("");
       setFilteredSlots(blockedSlots);
     }}
-    className="ml-auto text-sm text-red-600 hover:underline"
+    className="ml-auto text-sm  hover:underline"
   >
     Clear Filter
   </button>
@@ -141,11 +141,11 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
           quarter.slots.length === 0 ? null : (
             <div
               key={quarter.quarterName}
-              className="border border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700"
+              className="border border-base-100  rounded-lg p-4 bg-base-100 "
             >
               <div className="flex items-center gap-2 mb-3">
                 <Square className="w-5 h-5 text-red-500" />
-                <h3 className="text-lg font-semibold text-red-700 dark:text-red-300">
+                <h3 className="text-lg font-semibold text-primary ">
                   Boxes: {quarter.quarterName}-(box)
                 </h3>
               </div>
@@ -154,21 +154,21 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
                 {quarter.slots.map((slot) => (
                   <div
                     key={slot._id}
-                    className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm transition-all"
+                    className="border border-base-100 text-base-content rounded-lg p-3 bg-base-300 hover:bg-gray-500  shadow-sm transition-all"
                   >
-                    <div className="flex items-center gap-2 mb-1 text-gray-700 dark:text-gray-300">
-                      <Calendar className="w-4 h-4 text-red-500" />
+                    <div className="flex items-center gap-2 mb-1  ">
+                      <Calendar className="w-4 h-4 text-red-500  " />
                       <span className="font-medium">Date:</span>
                       <span>{formatDate(slot.date)}</span>
                     </div>
-                    <div className="flex items-center gap-2 mb-1 text-gray-700 dark:text-gray-300">
+                    <div className="flex items-center gap-2 mb-1 ">
                       <Clock className="w-4 h-4 text-red-500" />
                       <span className="font-medium">Time:</span>
                       <span>
                         {slot.startTime} - {slot.endTime}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <div className="flex items-center gap-2  ">
                       <Ban className="w-4 h-4 text-red-500" />
                       <span className="font-medium">Reason:</span>
                       <span>{slot.reason || "N/A"}</span>
@@ -181,7 +181,7 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
         )}
       </div>
       {noFilteredResults && (
-  <div className="text-center text-gray-600 bg-yellow-50 dark:bg-yellow-900 p-4 rounded-md shadow mb-4">
+  <div className="text-center  bg-base-100  p-4 rounded-md shadow mb-4">
     <p className="text-lg font-semibold">No blocked slots found for selected date.</p>
     <p className="text-sm">Try choosing a different date or clear the filter.</p>
   </div>

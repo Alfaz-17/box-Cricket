@@ -22,10 +22,15 @@ done:
 work:done
 backend:
 1.i done work like for admin panel like get all user .
-2.soutomize api  2 in 1 like get owner and all booking .and also for recent booking 
+2.coutmize api  2 in 1 like get owner and all booking .and also for recent booking 
 
 work:
 fontend + backend:
 1>> admin can creat box for particular owner and also delte it 
 2>>i think one api create for anylitics get all user,total booking,totoal cricket box
 like dashbord for amdmin
+
+
+
+
+when problem ser enter wrong admin code their accoun been created

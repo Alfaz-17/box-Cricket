@@ -102,167 +102,150 @@ const recentBooking = async () => {
   
 
   
-  return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="lg:flex">
-        <div className="flex-1 min-w-0">
-          <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 sm:px-6 flex justify-between items-center">
-            <h1 className="text-xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                Welcome, Admin
-              </span>
-            </div>
+return (
+  <div className="min-h-screen bg-base-300">
+    <div className="lg:flex ">
+      <div className="flex-1 min-w-0  ">
+        {/* Top Bar */}
+        <div className=" bg-base-300 border-b border-base-100 px-4 py-3 sm:px-6 flex justify-between items-center">
+          <h1 className="text-xl font-bold text-base-content">Dashboard</h1>
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-base-content opacity-70">Welcome, Admin</span>
           </div>
-          
-          <div className="py-6 px-4 sm:px-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {stats.map((stat, index) => (
-                <div 
-                  key={index} 
-                  className={`${stat.color} rounded-lg p-5 transition-transform duration-300 hover:transform hover:scale-105`}
-                >
-                  <div className="flex justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                        {stat.title}
-                      </p>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {stat.value}
-                      </p>
-                    </div>
-                    <div className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-sm">
-                      {stat.icon}
-                    </div>
-                  </div>
-                  <div className="flex items-center mt-4">
-                    <span className={`flex items-center text-sm ${
-                      stat.isIncrease ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                    }`}>
-                      {stat.isIncrease ? <ArrowUp size={16} className="mr-1" /> : <ArrowDown size={16} className="mr-1" />}
-                      {stat.change}
-                    </span>
-                    <Link to={stat.link} className="ml-auto flex items-center text-sm text-yellow-600 dark:text-yellow-400 hover:underline">
-                      View <ArrowRight size={14} className="ml-1" />
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Recent Bookings */}
-              <div className="lg:col-span-2">
-                <Card>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">
-                      Recent Bookings
-                    </h2>
-                    <Link to="/admin/bookings">
-                      <Button variant="link" size="sm" className="flex items-center">
-                        View All <ArrowRight size={14} className="ml-1" />
-                      </Button>
-                    </Link>
-                  </div>
-                  
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                      <thead>
-                        <tr>
-                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            User
-                          </th>
-                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Box
-                          </th>
-                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Date & Time
-                          </th>
-                              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                           Boxes
-                          </th>
-                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Amount
-                          </th>
-                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Status
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                        {bookings?bookings.map((booking) => (
-                          <tr key={booking._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                              {booking.user}
-                            </td>
-                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                              {booking.box.name}
-                            </td>
-                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                              <div>{booking.date}</div>
-                              <div className="text-xs">{booking.startTime} to {booking.endTime}  </div>
-                            </td>
-                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                              {booking.quarterName}
-                            </td>
-                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                              {booking.amountPaid} rs
-                            </td>
-                            <td className="px-3 py-4 whitespace-nowrap">
-                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
-                                  booking.status === 'complete' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
-                                  'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'}`}
-                              >
-                                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                              </span>
-                            </td>
-                          </tr>
-                        )):null}
-                      </tbody>
-                    </table>
-                  </div>
-                </Card>
-              </div>
-              
-              {/* Popular Boxes */}
-              <div className="lg:col-span-1">
-           
-                
-                {/* Quick Actions Card */}
-                <Card className="mt-6">
-                  <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
-                    Quick Actions
-                  </h2>
-                  <div className="space-y-3">
-                    <Link to="/admin/boxes/create">
-                      <Button variant="secondary" fullWidth className="flex items-center justify-center">
-                        <Box size={16} className="mr-2" />
-                        Create New Box
-                      </Button>
-                    </Link>
-                    <Link to="/admin/block-slot">
-                      <Button variant="secondary" fullWidth className="flex items-center justify-center">
-                        <Clock size={16} className="mr-2" />
-                        Block Time Slot
-                      </Button>
-                    </Link>
-                    <Link to="/admin/bookings">
-                      <Button variant="secondary" fullWidth className="flex items-center justify-center">
-                        <Calendar size={16} className="mr-2" />
-                        View All Bookings
-                      </Button>
-                    </Link>
-                  </div>
-                </Card>
-              </div>
-            </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="py-6 px-4 sm:px-6">
+          {/* Stats Cards */}
+      <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  {stats.map((stat, index) => (
+    <div
+      key={index}
+      className={`card shadow-md hover:shadow-lg transition-transform duration-300 hover:scale-105 ${stat.color} text-base-content`}
+    >
+      <div className="card-body p-5  bg-base-100 rounded-2xl">
+        <div className="flex justify-between items-start ">
+          <div>
+            <p className="text-sm text-primary font-medium opacity-70 mb-1">{stat.title}</p>
+            <p className="text-2xl text-primary font-bold">{stat.value}</p>
           </div>
+          <div className="p-2 rounded-full bg-base-100 shadow">
+            {stat.icon}
+          </div>
+        </div>
+        <div className="flex items-center mt-4">
+          <span
+            className={`flex items-center text-sm ${
+              stat.isIncrease ? 'text-success' : 'text-error'
+            }`}
+          >
+            {stat.isIncrease ? (
+              <ArrowUp size={16} className="mr-1" />
+            ) : (
+              <ArrowDown size={16} className="mr-1" />
+            )}
+            {stat.change}
+          </span>
+          <Link
+            to={stat.link}
+            className="ml-auto flex items-center text-primary text-sm  hover:underline"
+          >
+            View <ArrowRight size={14} className="ml-1" />
+          </Link>
         </div>
       </div>
     </div>
-  );
+  ))}
+</div>
+
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Recent Bookings */}
+            <div className="lg:col-span-2">
+              <div className="card bg-base-100 p-4 shadow">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-primary">Recent Bookings</h2>
+                  <Link to="/admin/bookings">
+                    <button className="btn btn-link btn-sm">
+                      View All <ArrowRight size={14} className="ml-1" />
+                    </button>
+                  </Link>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="table table-zebra table-sm">
+                    <thead>
+                      <tr className="text-xs text-base-content opacity-70">
+                        <th>User</th>
+                        <th>Box</th>
+                        <th>Date & Time</th>
+                        <th>Boxes</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bookings ? bookings.map((booking) => (
+                        <tr key={booking._id}>
+                          <td>{booking.user}</td>
+                          <td>{booking.box.name}</td>
+                          <td>
+                            <div>{booking.date}</div>
+                            <div className="text-xs opacity-70">{booking.startTime} to {booking.endTime}</div>
+                          </td>
+                          <td>{booking.quarterName}</td>
+                          <td>{booking.amountPaid} rs</td>
+                          <td>
+                            <span className={`badge badge-sm font-medium ${
+                              booking.status === 'confirmed' ? 'badge-success' :
+                              booking.status === 'complete' ? 'badge-warning' :
+                              'badge-error'
+                            }`}>
+                              {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                            </span>
+                          </td>
+                        </tr>
+                      )) : null}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar Actions */}
+            <div className="lg:col-span-1">
+              <div className="card bg-base-100 p-4 shadow mt-6">
+                <h2 className="text-lg font-semibold text-primary mb-4">Quick Actions</h2>
+                <div className="space-y-3">
+                  <Link to="/admin/boxes/create">
+                    <button className="btn btn-secondary w-full my-2">
+                      <Box size={16} className="mr-2" />
+                      Create New Box
+                    </button>
+                  </Link>
+                  <Link to="/admin/block-slot">
+                    <button className="btn btn-secondary w-full my-2">
+                      <Clock size={16} className="mr-2" />
+                      Block Time Slot
+                    </button>
+                  </Link>
+                  <Link to="/admin/bookings">
+                    <button className="btn btn-secondary w-full my-2">
+                      <Calendar size={16} className="mr-2" />
+                      View All Bookings
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 };
 
 export default Dashboard;

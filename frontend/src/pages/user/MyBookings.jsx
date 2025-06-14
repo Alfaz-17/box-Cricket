@@ -152,7 +152,7 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
   
   return (
     <div>
-      <h1 className="text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-300 mb-6">
+      <h1 className="text-2xl md:text-3xl font-bold text- dark:text-yellow-300 mb-6">
         My Bookings
       </h1>
       
@@ -163,8 +163,8 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
               onClick={() => setActiveTab('upcoming')}
               className={`py-4 px-6 text-sm font-medium ${
                 activeTab === 'upcoming'
-                  ? 'text-yellow-600 dark:text-yellow-300 border-b-2 border-yellow-500'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  ? 'text-primary  border-b-2 border-'
+                  : ' dark:text-gray-400 hover:text-primary'
               }`}
             >
               Upcoming
@@ -173,8 +173,8 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
               onClick={() => setActiveTab('past')}
               className={`py-4 px-6 text-sm font-medium ${
                 activeTab === 'past'
-                  ? 'text-yellow-600 dark:text-yellow-300 border-b-2 border-yellow-500'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                 ? 'text-primary  border-b-2 border-'
+                  : ' dark:text-gray-400 hover:text-primary'
               }`}
             >
               Past
@@ -183,8 +183,8 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
               onClick={() => setActiveTab('cancelled')}
               className={`py-4 px-6 text-sm font-medium ${
                 activeTab === 'cancelled'
-                  ? 'text-yellow-600 dark:text-yellow-300 border-b-2 border-yellow-500'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                 ? 'text-primary  border-b-2 border-'
+                  : ' dark:text-gray-400 hover:text-primary'
               }`}
             >
               Cancelled
@@ -200,13 +200,13 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
       ) : filteredBookings.length === 0 ? (
         <Card>
           <div className="py-6 text-center">
-            <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-              <Calendar size={24} className="text-gray-500 dark:text-gray-400" />
+            <div className="mx-auto w-16 h-16 bg-base-100 rounded-full flex items-center justify-center mb-4">
+              <Calendar size={24} className="" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+            <h3 className="text-lg font-medium   mb-1">
               No {activeTab} bookings found
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
+            <p className=" mb-6">
               {activeTab === 'upcoming' 
                 ? "You don't have any upcoming bookings." 
                 : activeTab === 'past' 
@@ -251,14 +251,14 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
       );
     } else if (status === 'completed') {
       return (
-        <div className="flex items-center text-blue-600 dark:text-blue-400">
+        <div className="flex items-center ">
           <CheckCircle size={16} className="mr-1" />
           <span className="text-sm font-medium">Completed</span>
         </div>
       );
     } else if (status === 'pending') {
       return (
-        <div className="flex items-center text-yellow-600 dark:text-yellow-400">
+        <div className="flex items-center ">
           <AlertCircle size={16} className="mr-1" />
           <span className="text-sm font-medium">Pending</span>
         </div>
@@ -334,23 +334,23 @@ const handleDownloadReceipt = async (bookingId) => {
         </div>
         <div className="sm:w-2/3 p-4">
           <div className="flex justify-between items-start">
-            <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">
+            <h3 className="text-lg font-semibold text-primary ">
               {booking.box.name}
             </h3>
             {getStatusBadge(booking.status)}
           </div>
           
-          <div className="mt-3 space-y-2 text-gray-600 dark:text-gray-400">
+          <div className="mt-3 space-y-2  ">
             <div className="flex items-center">
-              <Calendar size={16} className="mr-2 text-yellow-600 dark:text-yellow-400" />
+              <Calendar size={16} className="mr-2 text-primary" />
               <span>{formatDate(booking.date)}</span>
             </div>
             <div className="flex items-center">
-              <Clock size={16} className="mr-2 text-yellow-600 dark:text-yellow-400" />
+              <Clock size={16} className="mr-2 text-primary " />
               <span>{booking.startTime} - {booking.endTime} ({booking.duration} hour{booking.duration > 1 ? 's' : ''})</span>
             </div>
             <div className="flex items-center">
-              <MapPin size={16} className="mr-2 text-yellow-600 dark:text-yellow-400" />
+              <MapPin size={16} className="mr-2 text-primary" />
               <span>{booking.box.location}</span>
             </div>
           </div>

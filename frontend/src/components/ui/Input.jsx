@@ -8,32 +8,34 @@ const Input = forwardRef(({
   className = '',
   ...props
 }, ref) => {
-  return (
-    <div className="mb-4">
-      {label && (
-        <label 
-          htmlFor={id} 
-          className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1"
-        >
-          {label}
-        </label>
-      )}
-      <input
-        ref={ref}
-        id={id}
-        type={type}
-        className={`
-          w-full px-3 py-2 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-gray-600 
-          rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 
-          dark:text-white transition-colors duration-300
-          ${error ? 'border-red-500 focus:ring-red-500' : 'focus:border-yellow-500'}
-          ${className}
-        `}
-        {...props}
-      />
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-    </div>
-  );
+return (
+  <div className="form-control w-full mb-4">
+    {label && (
+      <label htmlFor={id} className="label">
+        <span className="label-text text-primary">{label}</span>
+      </label>
+    )}
+
+    <input
+      ref={ref}
+      id={id}
+      type={type}
+      className={`input input-bordered w-full
+        ${error ? 'input-error' : ''}
+        ${className}
+      `}
+      {...props}
+    />
+
+    {error && (
+      <label className="label">
+        <span className="label-text-alt text-error">{error}</span>
+      </label>
+    )}
+  </div>
+);
+
+
 });
 
 Input.displayName = 'Input';

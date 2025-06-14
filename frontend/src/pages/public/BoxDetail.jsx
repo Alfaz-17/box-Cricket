@@ -300,9 +300,9 @@ const checkAvailability = async () => {
 
   return (
 
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="bg-base-100 grid grid-cols-1 lg:grid-cols-3 gap-8">
       
-      <div className="lg:col-span-2">
+      <div className="lg:col-span-2 ">
         {/* Image Gallery */}
         <div className="relative mb-6 rounded-lg overflow-hidden shadow-md">
       <div className="relative h-64 md:h-96">
@@ -351,22 +351,22 @@ const checkAvailability = async () => {
     </div>
 
         {/* Box Details */}
-        <Card className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-yellow-800 dark:text-yellow-300 mb-2">
+        <Card className="mb-8 bg-base-300">
+          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">
             {displayBox.name}
           </h1>
 
           <div className="flex items-center mb-4">
             <div className="flex items-center mr-3">
               <Star className="w-5 h-5 text-yellow-500 fill-current" />
-              <span className="text-gray-700 dark:text-gray-300 font-medium ml-1">
+              <span className=" font-medium ml-1">
                 {averageRating}
               </span>
-              <span className="text-gray-500 dark:text-gray-400 ml-1">
+              <span className=" ml-1">
                 ({totalReviews} reviews)
               </span>
             </div>
-            <div className="flex items-center text-gray-600 dark:text-gray-400">
+            <div className="flex items-center ">
               <MapPin size={16} className="mr-1" />
               <span>{displayBox.location}</span>
             </div>
@@ -375,19 +375,19 @@ const checkAvailability = async () => {
 
           </div>
 
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <p className=" mb-6">
             {displayBox.description}
           </p>
 
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
-            <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
+          <div className="border-t  pt-6 mb-6">
+            <h2 className="text-xl font-semibold text-primary mb-4">
               Facilities & Amenities
             </h2>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {displayBox?.features.map((features, index) => (
                 <li
                   key={index}
-                  className="flex items-center text-gray-700 dark:text-gray-300"
+                  className="flex items-center "
                 >
                   <svg
                     className="w-4 h-4 text-green-500 mr-2"
@@ -410,16 +410,16 @@ const checkAvailability = async () => {
 
           {/* quaters */}
 
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
-  <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
+          <div className="border-t  pt-6 mb-6">
+  <h2 className="text-xl font-semibold text-primary mb-4">
     Available Boxes
   </h2>
-  <div className="flex flex-wrap gap-2 text-gray-700 dark:text-gray-300">
+  <div className="flex flex-wrap gap-2 ">
     {Array.isArray(displayBox.quarters) && displayBox.quarters.length > 0 ? (
       displayBox.quarters?.map((quarter, index) => (
         <span
           key={index}
-          className="px-3 py-1 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full text-sm"
+          className="px-3 py-2 bg-primary text-primary-content   rounded-full "
         >
           {quarter.name}
         </span>
@@ -434,15 +434,15 @@ const checkAvailability = async () => {
 
 
 
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
-            <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
+          <div className="border-t border-base  pt-6 mb-6">
+            <h2 className="text-xl font-semibold text-primary mb-4">
               Opening Hours
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
               <div className="flex items-center">
                 <Clock
                   size={18}
-                  className="mr-2 text-yellow-600 dark:text-yellow-400"
+                  className="mr-2 text-primary"
                 />
                 <div>
                   <p className="font-medium">Weekdays</p>
@@ -452,7 +452,7 @@ const checkAvailability = async () => {
               <div className="flex items-center">
                 <Calendar
                   size={18}
-                  className="mr-2 text-yellow-600 dark:text-yellow-400"
+                  className="mr-2 text-primary"
                 />
                 <div>
                   <p className="font-medium">Weekends</p>
@@ -462,8 +462,8 @@ const checkAvailability = async () => {
             </div>
           </div>
 
-         <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-  <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-4">
+         <div className="border-t border-base  pt-6">
+  <h2 className="text-xl font-semibold text-primary mb-4">
     Location
   </h2>
 
@@ -474,12 +474,12 @@ const checkAvailability = async () => {
       name={displayBox.name}
     />
   ) : (
-    <div className="w-full h-64 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-lg">
-      <p className="text-gray-500 dark:text-gray-400">No map available for this box</p>
+    <div className="w-full h-64 bg-base-200  flex items-center justify-center rounded-lg">
+      <p className="text-primary-content">No map available for this box</p>
     </div>
   )}
 
-  <p className="text-gray-700 dark:text-gray-300">
+  <p className="text-primary ">
     <span className="font-medium">Address:</span> {displayBox?.address || 'No address provided'}
   </p>
 </div>
@@ -515,25 +515,25 @@ const checkAvailability = async () => {
       {/* Booking Widget */}
       <div className="lg:col-span-1">
         <div className="sticky top-6">
-          <Card className="mb-6">
+          <Card className="mb-6 bg-base-300">
             <div className="flex justify-between items-center mb-4">
-              <div className="text-2xl font-bold text-yellow-800 dark:text-yellow-300">
+              <div className="text-2xl font-bold text-primary">
                 ₹{displayBox.hourlyRate}
-                <span className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                <span className="text-sm font-normal">
                   /hour
                 </span>
               </div>
               <div className="flex items-center">
                 <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                <span className="text-gray-700 dark:text-gray-300 font-medium ml-1">
+                <span className="  font-medium ml-1">
                   {averageRating}
                 </span>
               </div>
             </div>
 
-            <div className="mb-4">
+            <div className="form-control  mb-4">
               
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="text-primary">
                 Date
               </label>
               <div className="relative">
@@ -545,47 +545,51 @@ const checkAvailability = async () => {
                     
                   }}
                   minDate={new Date()}
-                  className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:text-white"
+            className="input input-bordered w-full bg-base-100 dark:text-white"
                   dateFormat="MMMM d, yyyy"
                 />
               </div>
             </div>
 
 
-            <div className="mb-4">
-  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-    Contact Number
-  </label>
-  <input
-    type="tel"
-    value={contactNumber}
-    onChange={(e) => setContactNumber(e.target.value)}
-    placeholder="Enter contact number"
-    className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:text-white"
-    required
-  />
+  {/* Contact Number */}
+        <div className="form-control mb-4">
+          <label className="block text-sm font-medium mb-1">
+            <span className="text-primary">Contact Number</span>
+          </label>
+          <input
+            type="tel"
+            value={contactNumber}
+            onChange={(e) => setContactNumber(e.target.value)}
+            placeholder="Enter contact number"
+            className="input input-bordered w-full bg-base-100 "
+            required
+          />
 </div>
 
             
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Time
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                <TimePicker value={selectedTime} onChange={handleTimeChange} />
-                <p>Selected Time: {selectedTime || "None"}</p>
-              </div>
-            </div>
+          
+        {/* Time Picker */}
+        <div className=" mb-4">
+          <label className="block text-sm font-medium mb-1">
+            <span className="text-primary">Time</span>
+          </label>
+          <div className="grid grid-cols-1 gap-2 ">
+            <TimePicker value={selectedTime} onChange={handleTimeChange} />
+            <p className="text-sm text-primary">Selected Time: {selectedTime || "None"}</p>
+          </div>
+        </div>
+
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm- text-primary font-medium  mb-1">
                 Duration (hours)
               </label>
               <select
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:text-white"
+            className="input input-bordered w-full bg-base-100 "
               >
                 {[1, 2, 3, 4].map((hours) => (
                   <option key={hours} value={hours}>
@@ -594,21 +598,22 @@ const checkAvailability = async () => {
                 ))}
               </select>
             </div>
+
 <div className="mb-4">
-  <label className="block text-sm font-medium mb-1">Select Quarter:</label>
+  <label className="block text-sm font-medium mb-1 text-primary">Select your Box:</label>
   <select
     value={selectedQuarter}
     onChange={(e) => setSelectedQuarter(e.target.value)}
-    className="w-full p-2 border rounded"
+            className="input input-bordered w-full bg-base-100 "
   >
-    <option value="">-- Select a quarter --</option>
+    <option className="bg-base-100" value="">-- Select a Boxes --</option>
     {displayBox.quarters?.map((quarter) => (
-      <option
+      <option className="bg-base-100"
         key={quarter._id}
         value={quarter._id}
         disabled={!quarter.isAvailable}
       >
-        {quarter.name} {quarter.isAvailable ? "" : "(Unavailable)"}
+        {quarter.name}-Box {quarter.isAvailable ? "" : "(Unavailable)"}
       </option>
     ))}
   </select>
@@ -626,14 +631,14 @@ const checkAvailability = async () => {
             </Button>
 
             {selectedTime && (
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-md mb-6">
-                <h3 className="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">
+              <div className="bg-base-100 p-4 rounded-md mb-6">
+                <h3 className="font-semibold text-primary  mb-2">
                   Booking Summary
                 </h3>
-                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <div className="flex justify-between">
-                    <span>Date:</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                <div className="text-sm   space-y-1">
+                  <div className="flex justify-between ">
+                    <span className="">  Date:</span>
+                    <span className="font-medium ">
                       {selectedDate.toLocaleDateString("en-US", {
                         weekday: "short",
                         month: "short",
@@ -643,19 +648,19 @@ const checkAvailability = async () => {
                   </div>
                   <div className="flex justify-between">
                     <span>Time:</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                    <span className="font-medium  ">
                       {selectedTime}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Duration:</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                  <div className="flex justify-between ">
+                    <span className="">Duration:</span>
+                    <span className="font-medium  ">
                       {duration} hour{duration > 1 ? "s" : ""}
                     </span>
                   </div>
-                  <div className="border-t border-yellow-200 dark:border-yellow-800 my-2 pt-2 flex justify-between">
+                  <div className="border-t  my-2 pt-2 flex justify-between">
                     <span>Total:</span>
-                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                    <span className="font-semibold text-red-600">
                       ${displayBox.hourlyRate * duration}
                     </span>
                   </div>
@@ -674,15 +679,15 @@ const checkAvailability = async () => {
             )}
           </Card>
 
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg shadow-sm">
+          <div className="bg-base-300  p-4 rounded-lg shadow-sm">
             <div className="flex items-start">
               <Info
                 size={20}
-                className="mr-2 mt-0.5 text-yellow-600 dark:text-yellow-400 flex-shrink-0"
+                className="mr-2 mt-0.5 text-primary flex-shrink-0"
               />
-              <div className="text-sm text-gray-700 dark:text-gray-300">
-                <p className="font-medium mb-1">Booking Policy</p>
-                <ul className="space-y-1 list-disc list-inside text-gray-600 dark:text-gray-400">
+              <div className="text-sm ">
+                <p className="font-medium mb-1 text-primary">Booking Policy</p>
+                <ul className="space-y-1 list-disc list-inside ">
                   <li>
                     Cancellation allowed up to 24 hours before booking time
                   </li>

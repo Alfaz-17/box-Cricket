@@ -3,7 +3,7 @@ import React from "react";
 
 const Tabs = ({ tabs, activeTab, onTabChange }) => {
   return (
-    <div className="flex justify-center border-b border-yellow-400 mb-7">
+    <div className="flex justify-center border-b border-primary mb-7">
       {tabs.map((tab, index) => (
         <button
           key={index}
@@ -11,8 +11,8 @@ const Tabs = ({ tabs, activeTab, onTabChange }) => {
           className={`relative px-3 py-3  font-semibold transition-colors duration-300
             ${
               activeTab === tab.value
-                ? "text-yellow-600 border-b-4 border-yellow-600"
-                : "text-gray-600 hover:text-yellow-500"
+                ? " border-b-4 border-base-200"
+                : " hover:text-primary"
             }
             focus:outline-none
           `}
@@ -24,7 +24,7 @@ const Tabs = ({ tabs, activeTab, onTabChange }) => {
           {/* Optional: a subtle underline animation */}
           <span
             className={`absolute bottom-0 left-0 w-full h-1 transition-all duration-300 ${
-              activeTab === tab.value ? "bg-yellow-600" : "bg-transparent"
+              activeTab === tab.value ? "bg-primary" : "bg-transparent"
             }`}
           />
         </button>
