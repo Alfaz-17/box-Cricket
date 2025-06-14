@@ -20,7 +20,8 @@ const themes = [
 
 
 function SettingsPage() {
-  const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || 'light');
+const defaultTheme = document.documentElement.getAttribute('data-theme') || 'forest';
+const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || defaultTheme);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', currentTheme);

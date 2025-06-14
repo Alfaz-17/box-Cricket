@@ -82,7 +82,7 @@ const AdminBookings = () => {
             placeholder="Search by user or box name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="input input-bordered w-full pl-10"
+            className="input input-bordered text-[16px] w-full pl-10"
           />
           <Search className="absolute left-3 top-3 h-5 w-5 text-primary" />
         </div>

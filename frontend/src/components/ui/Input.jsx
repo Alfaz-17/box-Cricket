@@ -20,7 +20,7 @@ return (
       ref={ref}
       id={id}
       type={type}
-      className={`input input-bordered w-full
+      className={`input input-bordered text-[16px] w-full
         ${error ? 'input-error' : ''}
         ${className}
       `}

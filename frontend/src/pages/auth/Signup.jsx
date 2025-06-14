@@ -257,7 +257,7 @@ return (
                 <input
                   id="terms"
                   type="checkbox"
-                  className="checkbox checkbox-primary"
+                  className="checkbox text-[16px] checkbox-primary"
                   required
                 />
                 <span className="label-text ml-2">

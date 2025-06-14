@@ -293,7 +293,7 @@ const checkAvailability = async () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -545,7 +545,7 @@ const checkAvailability = async () => {
                     
                   }}
                   minDate={new Date()}
-            className="input input-bordered w-full bg-base-100 dark:text-white"
+            className="input input-bordered  w-full bg-base-100 text-[16px] dark:text-white"
                   dateFormat="MMMM d, yyyy"
                 />
               </div>
@@ -562,7 +562,7 @@ const checkAvailability = async () => {
             value={contactNumber}
             onChange={(e) => setContactNumber(e.target.value)}
             placeholder="Enter contact number"
-            className="input input-bordered w-full bg-base-100 "
+            className="input input-bordered  w-full text-[16px] bg-base-100 "
             required
           />
 </div>
@@ -575,9 +575,9 @@ const checkAvailability = async () => {
           <label className="block text-sm font-medium mb-1">
             <span className="text-primary">Time</span>
           </label>
-          <div className="grid grid-cols-1 gap-2 ">
+          <div className="grid grid-cols-1 gap-2  ">
             <TimePicker value={selectedTime} onChange={handleTimeChange} />
-            <p className="text-sm text-primary">Selected Time: {selectedTime || "None"}</p>
+            <p className="text-sm text-primary ">Selected Time: {selectedTime || "None"}</p>
           </div>
         </div>
 
@@ -589,7 +589,7 @@ const checkAvailability = async () => {
               <select
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
-            className="input input-bordered w-full bg-base-100 "
+            className="input input-bordered text-[16px]  w-full bg-base-100 "
               >
                 {[1, 2, 3, 4].map((hours) => (
                   <option key={hours} value={hours}>
@@ -604,7 +604,7 @@ const checkAvailability = async () => {
   <select
     value={selectedQuarter}
     onChange={(e) => setSelectedQuarter(e.target.value)}
-            className="input input-bordered w-full bg-base-100 "
+            className="input input-bordered text-[16px] w-full bg-base-100 "
   >
     <option className="bg-base-100" value="">-- Select a Boxes --</option>
     {displayBox.quarters?.map((quarter) => (

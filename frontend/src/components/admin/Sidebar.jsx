@@ -69,9 +69,13 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {isOpen && (
-        <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={onClose}></div>
-      )}
+ {isOpen && (
+  <div
+    className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden"
+    onClick={onClose}
+  ></div>
+)}
+
 
       <div
         className={`h-screen w-64 bg-base-100 shadow-lg transition-transform duration-300 ease-in-out z-50
@@ -81,7 +85,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       >
         <div className="flex flex-col h-full bg-base-300">
           {/* Header */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-b border- ">
             <Link to="/" className="flex items-center  ">
               <div className="bg-base-100 p-2 rounded-md mr-2">
                 <Box size={20} />
@@ -89,8 +93,8 @@ const Sidebar = ({ isOpen, onClose }) => {
               <div className="text-primary font-bold text-xl">
                 {isAuthenticated
                   ? user?.role === 'owner'
-                    ? 'Admin Panel'
-                    : 'User Panel'
+                    ? 'BookMyBox'
+                    : 'BookMyBox'
                   : 'Welcome'}
               </div>
             </Link>
@@ -107,11 +111,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                       flex items-center px-4 py-3 rounded-md transition-colors duration-200
                       ${isActive(item.path)
                         ? 'bg-primary  text-primary-content'
-                        : ' hover:bg-primary   dark:hover:bg-base-100'}
+                        : ' hover:bg-primary   '}
                     `}
                     onClick={() => window.innerWidth < 1024 && onClose()}
                   >
-                    <span className="mr-3 text-primary-200">
+                    <span className="mr-3   ">
                       {item.icon}
                     </span>
                     <span>{item.name}</span>
@@ -128,7 +132,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 href="#"
                 className="flex items-center  rounded-md hover:bg-base-100"
               >
-                <HelpCircle size={20} className="mr-3 text-primmary-200" />
+                <HelpCircle size={20} className="mr-3 text-primary" />
                 <span>Help & Support</span>
               </a>
 

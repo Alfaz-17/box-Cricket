@@ -82,9 +82,9 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
 
   if (loading)
     return (
-      <div className="text-center py-6  animate-pulse">
-        Loading booked slots...
-      </div>
+      <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
     );
 
   if (bookedSlots.length === 0)
@@ -113,7 +113,7 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
     type="date"
     value={selectedDate}
     onChange={handleDateChange}
-    className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+    className="border rounded-lg px-3 py-1 text-sm text-[16px] focus:outline-none focus:ring-2 focus:ring-green-400"
   />
 
   <select

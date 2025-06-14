@@ -103,7 +103,7 @@ const Home = () => {
       <div className="bg-base-100 dark:bg-base-300 p-4 rounded-box shadow-md max-w-3xl">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="flex-grow">
-            <label className="input input-bordered flex items-center gap-2 w-full">
+            <label className="input input-bordered text-[16px] flex items-center gap-2 w-full">
               <Search className="w-5 h-5 " />
               <input
                 id="search"
@@ -134,7 +134,7 @@ const Home = () => {
               <label className="label text-sm font-medium text-base-content">
                 Location
               </label>
-              <label className="input input-bordered flex items-center gap-2">
+              <label className="input input-bordered text-[16px] flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-gray-400" />
                 <input
                   type="text"
@@ -151,7 +151,7 @@ const Home = () => {
             {/* Price Range */}
             <div className="flex gap-3">
               <div className="flex-1">
-                <label className="label text-sm font-medium text-base-content">
+                <label className="label text-sm text-[16px] font-medium text-base-content">
                   Min Price
                 </label>
                 <input
@@ -162,7 +162,7 @@ const Home = () => {
                   value={filters.minPrice}
                   onChange={handleFilterChange}
                   placeholder="₹0"
-                  className="input input-bordered w-full"
+                  className="input input-bordered text-[16px] w-full"
                 />
               </div>
               <div className="flex-1">
@@ -177,28 +177,12 @@ const Home = () => {
                   value={filters.maxPrice}
                   onChange={handleFilterChange}
                   placeholder="₹999"
-                  className="input input-bordered w-full"
+                  className="input input-bordered text-[16px] w-full"
                 />
               </div>
             </div>
 
-            {/* Date Picker */}
-            <div>
-              <label className="label text-sm font-medium text-base-content">
-                Date
-              </label>
-              <label className="input input-bordered flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-gray-400" />
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={filters.date}
-                  onChange={handleFilterChange}
-                  className="grow"
-                />
-              </label>
-            </div>
+          
 
             {/* Buttons */}
             <div className="md:col-span-3 flex justify-end">

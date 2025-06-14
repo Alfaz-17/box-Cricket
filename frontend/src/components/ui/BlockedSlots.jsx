@@ -72,9 +72,10 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
 
   if (loading)
     return (
-      <div className="text-center py-6 text-red-600 animate-pulse">
-        Loading blocked slots...
-      </div>
+     <div className="flex justify-center items-center h-64">
+      
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
     );
 
   if (blockedSlots.length === 0)
@@ -106,7 +107,7 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
       type="date"
       value={selectedDate}
       onChange={handleDateChange}
-      className="border rounded-lg px-3 py-1  text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+      className="border rounded-lg px-3 py-1 text-[16px]  text-sm focus:outline-none focus:ring-2 focus:ring-primary"
     />
   </div>
 

@@ -20,7 +20,7 @@ const TimePicker = ({ value, onChange }) => {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-            className="input input-bordered w-full bg-base-100 "
+            className="input input-bordered w-full text-[16px] bg-base-100 "
       aria-label="Select time"
     >
       <option className='bg-base-100' value="">Select time</option>

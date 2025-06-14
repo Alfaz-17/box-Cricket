@@ -132,7 +132,7 @@ return (
             value={form.name}
             onChange={handleChange}
             required
-            className="input input-bordered w-full"
+            className="input input-bordered text-[16px] w-full"
           />
         </div>
 
@@ -147,7 +147,7 @@ return (
             name="contactNumber"
             value={form.contactNumber}
             // onChange={handleChange}
-            className="input input-bordered w-full"
+            className="input input-bordered text-[16px] w-full"
           />
         </div>
 
@@ -164,7 +164,7 @@ return (
 
     {/* Message */}
     {message && (
-      <p className="mt-4 text-center text-sm text-primary-content">
+      <p className="mt-4 text-center ">
         {message}
       </p>
     )}
@@ -172,5 +172,6 @@ return (
 );
 
 };
+
 
 export default Profile;

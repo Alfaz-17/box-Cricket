@@ -110,7 +110,7 @@ console.log(payload)
           />
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+            <label className="block text-sm font-medium text-primary  mb-1">
               Description
             </label>
             <textarea
@@ -118,15 +118,16 @@ console.log(payload)
               value={formData.description}
               onChange={handleChange}
               rows="4"
-              className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-gray-600 rounded-md"
+              className="textarea textarea-bordered w-full px-3 py-2 bg- dark:bg-gray-700 border text-[16px]  rounded-2xl"
               required
             />
           </div>
 
         <div className="mb-6">
-  <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+  <label className="block text-sm font-medium text-primary mb-1">
     Pick Location on Map
   </label>
+ <div className="h-64 w-full rounded-lg overflow-hidden mb-3 relative z-10">
 <MapPicker
   latitude={formData.latitude}
   longitude={formData.longitude}
@@ -138,9 +139,10 @@ console.log(payload)
     }))
   }
 />
+</div>
 
   {formData.latitude && formData.longitude && (
-    <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+    <p className="mt-2 text-sm text-primary">
       Selected Coordinates: {formData.latitude.toFixed(5)}, {formData.longitude.toFixed(5)}
     </p>
   )}
@@ -184,7 +186,7 @@ console.log(payload)
           />
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+            <label className="block text-sm font-medium text-primary  mb-1">
               Features (comma-separated)
             </label>
             <textarea
@@ -192,20 +194,20 @@ console.log(payload)
               value={formData.features}
               onChange={handleChange}
               rows="3"
-              className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-gray-600 rounded-md"
+              className="textarea textarea-bordered w-full px-3 py-2  dark:bg-gray-700  rounded-2xl text-[16px]"
               placeholder="e.g., Night lights, Washroom, Synthetic turf"
               required
             />
           </div>
 <div className="mb-4">
-  <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+  <label className="block text-sm font-medium text-primary  mb-1">
     Number of Quarters
   </label>
   <select
     name="quarters"
     value={formData.quarters}
     onChange={handleChange}
-    className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-yellow-300 dark:border-gray-600 rounded-md"
+    className="input input-bordered w-full px-3 py-2  rounded-2xl"
     required
   >
     <option value=""> Boxes</option>
@@ -219,14 +221,14 @@ console.log(payload)
 
           {/* Image upload fields (same as before) */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+            <label className="block text-sm font-medium text-primary  mb-1">
               Box Image
             </label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md">
               <div className="space-y-1 text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="flex text-sm text-gray-600 dark:text-gray-400">
-                  <label className="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-yellow-600 hover:text-yellow-500 dark:text-yellow-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-yellow-500">
+                <Upload className="mx-auto h-12 w-12 text-primary" />
+                <div className="flex text-sm ">
+                  <label className="relative text-[16px] cursor-pointer  rounded-md font-medium  hover:text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary">
                     <span>Upload Main Image</span>
                     <input
                       type="file"
@@ -240,7 +242,7 @@ console.log(payload)
                 {formData.imagePreview && (
                   <img src={formData.imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded-md" />
                 )}
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs  ">
                   PNG, JPG, GIF up to 10MB
                 </p>
               </div>
@@ -248,14 +250,14 @@ console.log(payload)
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               Additional Images (optional)
             </label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md">
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2   border-dashed rounded-md">
               <div className="space-y-1 text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="flex text-sm text-gray-600 dark:text-gray-400">
-                  <label className="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-yellow-600 hover:text-yellow-500 dark:text-yellow-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-yellow-500">
+                <Upload className="mx-auto h-12 w-12 text-primary" />
+                <div className="flex text-sm  ">
+                  <label className="relative cursor-pointer rounded-md font-medium  hover:text-primary  focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary">
                     <span>Upload Additional Images</span>
                     <input
                       type="file"
@@ -274,7 +276,7 @@ console.log(payload)
                     ))}
                   </div>
                 )}
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs  ">
                   PNG, JPG, GIF up to 10MB each
                 </p>
               </div>

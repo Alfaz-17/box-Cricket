@@ -120,7 +120,7 @@ if (loading) {
                     type="password"
                     value={ownerCode}
                     onChange={(e) => setOwnerCode(e.target.value)}
-                    className="input input-bordered w-full input-error"
+                    className="input input-bordered w-full text-[16px] input-error"
                     placeholder="Owner code"
                   />
                   <div className="flex gap-2">

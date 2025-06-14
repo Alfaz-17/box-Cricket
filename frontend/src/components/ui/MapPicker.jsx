@@ -18,7 +18,12 @@ L.Icon.Default.mergeOptions({
 
 const SearchControl = ({ onResult }) => {
   const map = useMapEvents({});
+
   useEffect(() => {
+    // Prevent adding control more than once
+    if (map._searchControlAdded) return;
+    map._searchControlAdded = true;
+
     const provider = new OpenStreetMapProvider();
     const searchControl = new GeoSearchControl({
       provider,
@@ -31,18 +36,61 @@ const SearchControl = ({ onResult }) => {
 
     map.addControl(searchControl);
 
+    // Add custom styling
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .leaflet-control-geosearch .glass {
+        background-color: #f3f4f6 !important; /* Tailwind bg-base-200 */
+        font-size: 16px !important; /* Tailwind text-base */
+        color: #1f2937 !important; /* Tailwind text-gray-800 */
+        border-radius: 0.5rem !important; /* Tailwind rounded */
+        padding: 0.5rem 1rem !important;
+        border: 1px solid #d1d5db !important; /* Tailwind border-gray-300 */
+      }
+
+      .leaflet-control-geosearch .results {
+        background-color: #f3f4f6 !important;
+        font-size: 16px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 0.5rem !important;
+      }
+
+      .leaflet-control-geosearch .results > * {
+        background-color: #f3f4f6 !important;
+        color: #1f2937 !important;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+      }
+
+      .leaflet-control-geosearch .results > *:hover {
+        background-color: #e5e7eb !important; /* Tailwind bg-gray-200 */
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Event listener
     map.on('geosearch/showlocation', (result) => {
       onResult(result.location.y, result.location.x);
     });
 
-    return () => map.removeControl(searchControl);
+    // Cleanup
+    return () => {
+      map.removeControl(searchControl);
+      document.head.removeChild(style);
+      map._searchControlAdded = false;
+    };
   }, [map, onResult]);
 
   return null;
 };
 
+
+
+
+
 const MapPicker = ({ latitude, longitude, onLocationChange }) => {
   return (
+    
     <MapContainer
       center={[latitude || 20.5937, longitude || 78.9629]}
       zoom={5}
