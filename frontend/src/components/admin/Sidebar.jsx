@@ -11,7 +11,7 @@ import {
   LogOut,
   Home,
   CalendarCheck,
-  LogIn
+  LogIn,Mail 
 } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
 
@@ -25,10 +25,14 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
-    if (onClose) onClose();
-  };
+  const confirmLogout = confirm("You want to log out?");
+  if (!confirmLogout) return;
+
+  logout();
+  navigate('/');
+  if (onClose) onClose();
+};
+
 
   // Role-based menus
   const adminMenuItems = [
@@ -39,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/admin/block-slot', name: 'Block Time Slots', icon: <Clock size={20} /> },
     { path: '/my-profile', name: 'My Profile', icon:  <Users size={20} /> },
 
-    { path: '/admin/users', name: 'User Management', icon: <Users size={20} /> },
+    // { path: '/admin/users', name: 'User Management', icon: <Users size={20} /> },
          { path: '/settings', name: 'Settings', icon: <Settings size={20} /> }
 
   ];
@@ -48,14 +52,18 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/', name: 'Home', icon: <Home size={20} /> },
     { path: '/my-bookings', name: 'My Bookings', icon: <CalendarCheck size={20} /> },
     { path: '/my-profile', name: 'My Profile', icon:  <Users size={20} /> },
-         { path: '/settings', name: 'Settings', icon: <Settings size={20} /> }
+         { path: '/settings', name: 'Settings', icon: <Settings size={20} /> },
+         { path: '/support', name: 'Contact Us', icon: <Mail  size={20} /> },
+              { path: '/faq', name: ' FAQ !', icon: <HelpCircle size={20} /> }
+
 
   ];
 
   const guestMenuItems = [
     { path: '/', name: 'Home', icon: <Home size={20} /> },
     { path: '/login', name: 'Login', icon: <LogIn size={20} /> },   
-     { path: '/settings', name: 'Settings', icon: <Settings size={20} /> }
+     { path: '/settings', name: ' Settings', icon: <Settings size={20} /> },
+     { path: '/faq', name: ' FAQ !', icon: <HelpCircle size={20} /> }
 
 
   ];
@@ -124,7 +132,15 @@ const Sidebar = ({ isOpen, onClose }) => {
               ))}
             </ul>
           </nav>
-
+       {isAuthenticated && (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center w-full btn px-4 py-2 rounded-md hover:bg-base-100 "
+                >
+                  <LogOut size={20} className="mr-3 " />
+                  <span>Logout</span>
+                </button>
+              )}
           {/* Footer */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
             <div className="space-y-3">
@@ -136,15 +152,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <span>Help & Support</span>
               </a>
 
-              {isAuthenticated && (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center w-full btn px-4 py-2 rounded-md hover:bg-base-100 "
-                >
-                  <LogOut size={20} className="mr-3 " />
-                  <span>Logout</span>
-                </button>
-              )}
+       
             </div>
           </div>
         </div>

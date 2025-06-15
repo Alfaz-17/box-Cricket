@@ -21,7 +21,7 @@ app.use(
     express.raw({ type: "application/json" }),
     bookingRoutes
   );
-  app.use(cors({origin:"http://localhost:5173",credentials:true}))
+  app.use(cors({origin: 'http://172.20.10.2:5173',credentials:true}))
 
 
 
@@ -52,7 +52,7 @@ startBot().then(() => {
 
 
 console.log(process.env.PORT)
-app.listen(PORT,()=>{
+app.listen(PORT,'0.0.0.0',()=>{
     console.log("server is runnning on port",PORT);
 
 

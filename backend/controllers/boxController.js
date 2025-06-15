@@ -1,5 +1,6 @@
 import CricketBox from "../models/CricketBox.js";
-import User from "../models/User.js";
+import { HelpAndSupport } from "../models/Review.js";
+
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -197,6 +198,31 @@ export const getOwnerBoxes = async (req, res) => {
       res.status(500).json({ message: "Failed to fetch boxes" });
     }
   };
+
+export const feedBackAndSupport = async (req, res) => {
+  try {
+    const { name, contactNumber, message } = req.body;
+
+    // Validate name, contactNumber, and message
+    if (!name || !contactNumber || !message) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    // Check if contact number is exactly 10 digits and numeric
+    if (!/^\d{10}$/.test(contactNumber)) {
+      return res.status(400).json({ message: "Enter a valid 10-digit phone number." });
+    }
+
+    // Save to database
+    await HelpAndSupport.create({ name, contactNumber, message });
+
+    return res.status(201).json({ message: "Your message has been submitted." });
+  } catch (error) {
+    console.error("Error in feedBackAndSupport controller:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 
 

@@ -28,9 +28,13 @@ work:
 fontend + backend:
 1>> admin can creat box for particular owner and also delte it 
 2>>i think one api create for anylitics get all user,total booking,totoal cricket box
-like dashbord for amdmin
+like dashbord for amdm
 
 
 
 
-when problem ser enter wrong admin code their accoun been created
+
+problem:
+
+
+date not see in filter booked slot

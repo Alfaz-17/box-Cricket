@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, } from 'react';
+import {Link} from 'react-router-dom'
 import api from '../../utils/api'; // your axios config instance
 import { Upload } from 'lucide-react';
 import {uploadToCloudinary} from '../../utils/uploadToCloudinary'
+import AuthContext from '../../context/AuthContext';
+
 const Profile = () => {
   const [user, setUser] = useState();
   const [form, setForm] = useState({
@@ -12,7 +15,7 @@ const Profile = () => {
    });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-
+  const {  isAuthenticated, logout } = useContext(AuthContext);
   // Fetch user data on mount
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,6 +36,17 @@ const Profile = () => {
 
     fetchUser();
   }, []);
+
+  //logout
+const handleLogout = () => {
+  const confirmLogout = confirm("You want to log out?");
+  if (!confirmLogout) return;
+
+  logout();
+  navigate('/');
+  if (onClose) onClose();
+};
+
 
   // Handle input change
   const handleChange = (e) => {
@@ -168,6 +182,20 @@ return (
         {message}
       </p>
     )}
+        <div className="flex items-center mt-5  gap-2">
+            <span className="text-base">Forgot your password?</span>
+            <Link to="/forgot-password" className="text-primary font-medium hover:underline">
+              Reset here
+            </Link>
+          </div>
+
+          {/* Logout Button */}
+<button
+  onClick={handleLogout}
+  className="btn btn-outline btn-error w-full mt-4"
+>
+  Logout
+</button>
   </div>
 );
 

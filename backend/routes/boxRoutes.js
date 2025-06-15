@@ -5,6 +5,7 @@ import { isOwner } from '../middleware/role.js';
 import {
   createBox,
   deleteBox,
+  feedBackAndSupport,
   getOwnerBoxes,
   updateBox,
 } from '../controllers/boxController.js';
@@ -20,5 +21,5 @@ router.put("/update/:id", protectedRoute, isOwner, updateBox);
 
 router.delete("/delete/:id", protectedRoute, isOwner, deleteBox);
 router.get("/my-box", protectedRoute, isOwner, getOwnerBoxes);
-
+router.post("/support",protectedRoute,feedBackAndSupport)
 export default router;

@@ -54,7 +54,7 @@ const [ownerCode, setOwnerCode] = useState('');
 if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <span className="loading loading-spinner text-warning w-12 h-12"></span>
+        <span className="loading loading-spinner text-primary w-12 h-12"></span>
       </div>
     );
   }
@@ -64,8 +64,8 @@ if (loading) {
       <div className="flex justify-between  items-center mb-6">
         <h1 className="text-3xl font-bold">Box Management</h1>
         <Link to="/admin/boxes/create">
-          <button className="btn bg-primary btn-sm ">
-            <Plus size={20} className="mr-2" />
+          <button className="btn bg-primary rounded-2xl  btn-md text-primary-content">
+            <Plus size={20} className="mr-2 " />
             Add New Box
           </button>
         </Link>

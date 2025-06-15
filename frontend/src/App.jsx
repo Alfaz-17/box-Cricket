@@ -32,6 +32,8 @@ import api from './utils/api';
 import Profile from './pages/user/Profile';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import SettingsPage from './pages/public/SettingsPage';
+import FAQSection from './pages/public/FAQSection';
+import FeedbackSupport from './pages/user/FeedbackSupport ';
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
@@ -123,6 +125,7 @@ function App() {
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/faq" element={<FAQSection />} />
 
                   {/* User Routes */}
                   <Route
@@ -154,6 +157,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <BookingSuccess />
+                      </ProtectedRoute>
+                    }
+                  />
+                      <Route
+                    path="/support"
+                    element={
+                      <ProtectedRoute>
+                        <FeedbackSupport />
                       </ProtectedRoute>
                     }
                   />
