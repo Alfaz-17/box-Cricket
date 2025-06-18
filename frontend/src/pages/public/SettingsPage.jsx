@@ -1,31 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const themes = [
   // Light & Clean
-  'light', 'pastel', 'lofi', 'winter', 'cupcake', 'cmyk',
+  "light",
+  "pastel",
+  "lofi",
+  "winter",
+  "cupcake",
+  "cmyk",
 
   // Dark & Bold
-  'dark', 'dracula', 'synthwave', 'black', 'night', 'luxury',
+  "dark",
+  "dracula",
+  "synthwave",
+  "black",
+  "night",
+  "luxury",
 
   // Fun & Playful
-  'bumblebee', 'valentine', 'halloween', 'fantasy', 'aqua',
+  "bumblebee",
+  "valentine",
+  "halloween",
+  "fantasy",
+  "aqua",
 
   // Nature Inspired
-  'garden', 'forest', 'autumn', 'emerald',
+  "garden",
+  "forest",
+  "autumn",
+  "emerald",
 
   // Futuristic & High Contrast
-  'cyberpunk', 'business', 'acid', 'dim', 'coffee', 'retro',
+  "cyberpunk",
+  "business",
+  "acid",
+  "dim",
+  "coffee",
+  "retro",
 ];
 
-
 function SettingsPage() {
-const defaultTheme = document.documentElement.getAttribute('data-theme') || 'forest';
-const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || defaultTheme);
+  const defaultTheme =
+    document.documentElement.getAttribute("data-theme") || "forest";
+  const [currentTheme, setCurrentTheme] = useState(
+    localStorage.getItem("theme") || defaultTheme
+  );
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    localStorage.setItem('theme', currentTheme);
+    document.documentElement.setAttribute("data-theme", currentTheme);
+    localStorage.setItem("theme", currentTheme);
   }, [currentTheme]);
 
   return (
@@ -56,7 +80,7 @@ const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') |
           <motion.div
             key={theme}
             className={`p-4 rounded-xl border border-base-300 cursor-pointer relative hover:scale-105 transition-transform duration-200 ${
-              currentTheme === theme ? 'ring-4 ring-primary' : ''
+              currentTheme === theme ? "ring-4 ring-primary" : ""
             }`}
             data-theme={theme}
             onClick={() => setCurrentTheme(theme)}

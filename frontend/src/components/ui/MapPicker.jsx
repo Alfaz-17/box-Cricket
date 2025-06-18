@@ -1,19 +1,19 @@
-import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-geosearch/dist/geosearch.css';
+import React, { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-geosearch/dist/geosearch.css";
 
 // Fix marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
-    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
   iconUrl:
-    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
   shadowUrl:
-    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
 const SearchControl = ({ onResult }) => {
@@ -27,7 +27,7 @@ const SearchControl = ({ onResult }) => {
     const provider = new OpenStreetMapProvider();
     const searchControl = new GeoSearchControl({
       provider,
-      style: 'bar',
+      style: "bar",
       autoComplete: true,
       autoCompleteDelay: 250,
       showMarker: false,
@@ -37,7 +37,7 @@ const SearchControl = ({ onResult }) => {
     map.addControl(searchControl);
 
     // Add custom styling
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.innerHTML = `
       .leaflet-control-geosearch .glass {
         background-color: #f3f4f6 !important; /* Tailwind bg-base-200 */
@@ -69,7 +69,7 @@ const SearchControl = ({ onResult }) => {
     document.head.appendChild(style);
 
     // Event listener
-    map.on('geosearch/showlocation', (result) => {
+    map.on("geosearch/showlocation", (result) => {
       onResult(result.location.y, result.location.x);
     });
 
@@ -84,17 +84,12 @@ const SearchControl = ({ onResult }) => {
   return null;
 };
 
-
-
-
-
 const MapPicker = ({ latitude, longitude, onLocationChange }) => {
   return (
-    
     <MapContainer
       center={[latitude || 20.5937, longitude || 78.9629]}
       zoom={5}
-      style={{ height: '300px', width: '100%' }}
+      style={{ height: "300px", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'

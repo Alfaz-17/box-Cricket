@@ -16,6 +16,8 @@ const BlockedSlotSchema = new mongoose.Schema({
   startTime: String, // e.g., "2:00 AM"
   endTime: String,
   reason: String, // Optional (e.g., maintenance, holiday)
+  quarterId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  
 });
 
 export default mongoose.model("BlockedSlot", BlockedSlotSchema);

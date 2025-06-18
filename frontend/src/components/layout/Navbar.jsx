@@ -1,37 +1,38 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Menu, Sun, Moon, LogOut, Trophy } from 'lucide-react';
-import AuthContext from '../../context/AuthContext';
-import ThemeContext from '../../context/ThemeContext';
-import Sidebar from '../admin/Sidebar';
-import logo from '../../images/logo.png'
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, Sun, Moon, LogOut, Trophy } from "lucide-react";
+import AuthContext from "../../context/AuthContext";
+import Sidebar from "../admin/Sidebar";
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
   const { user, isAuthenticated, logout } = useContext(AuthContext);
-  const { darkMode, toggleDarkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
+
+
 
   // Update `isMobile` on window resize
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+
+  
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
     setSidebarOpen(false);
   };
 
+
   return (
     <>
-<nav className="sticky top-0 z-50 bg-base-300 shadow-md backdrop-blur bg-opacity-80">
+      <nav className="sticky top-0 z-50 bg-base-300 shadow-md backdrop-blur bg-opacity-80">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -39,25 +40,22 @@ const Navbar = () => {
               to="/"
               className="flex items-center space-x-2  dark:text-yellow-400 font-bold text-xl transition-colors duration-300"
             >
-               {/* <img
+              {/* <img
     src={logo}
     alt="BookMyBox Logo"
     className="h-13 w-13 rounded-3xl transition-transform duration-300 hover:scale-150"
   />
    */}
-   <h1 >🏏 Book My Box</h1>
+              <h1>🏏 Book My Box</h1>
             </Link>
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-6">
-              <Link
-                to="/"
-                className="btn btn-ghost text-base-content"
-              >
+              <Link to="/" className="btn btn-ghost text-base-content">
                 Home
               </Link>
 
-              {isAuthenticated && user?.role === 'user' && (
+              {isAuthenticated && user?.role === "user" && (
                 <Link
                   to="/my-bookings"
                   className="btn btn-ghost text-base-content"
@@ -66,41 +64,52 @@ const Navbar = () => {
                 </Link>
               )}
 
-             
-      {isAuthenticated && user?.role === 'owner' && (
-        <>
-          <Link to="/admin/bookings" className="btn btn-ghost text-base-content">
-            Admin Booking
-          </Link>
-          <Link to="/admin" className="btn btn-ghost text-base-content">
-            Admin Panel
-          </Link>
-          <Link to="/admin/boxes" className="btn btn-ghost text-base-content">
-            Box Management
-          </Link>
-          <Link to="/admin/block-slot" className="btn btn-ghost text-base-content">
-            Block Slot
-          </Link>
-          <Link to="/my-profile" className="btn btn-ghost text-base-content">
-            My Profile
-          </Link>
-        </>
-      )}
+              {isAuthenticated && user?.role === "owner" && (
+                <>
+                  <Link
+                    to="/admin/bookings"
+                    className="btn btn-ghost text-base-content"
+                  >
+                    Admin Booking
+                  </Link>
+                  <Link to="/admin" className="btn btn-ghost text-base-content">
+                    Admin Panel
+                  </Link>
+                  <Link
+                    to="/admin/boxes"
+                    className="btn btn-ghost text-base-content"
+                  >
+                    Box Management
+                  </Link>
+                  <Link
+                    to="/admin/block-slot"
+                    className="btn btn-ghost text-base-content"
+                  >
+                    Block Slot
+                  </Link>
+                  <Link
+                    to="/my-profile"
+                    className="btn btn-ghost text-base-content"
+                  >
+                    My Profile
+                  </Link>
+                </>
+              )}
 
               {isAuthenticated ? (
                 <button
                   onClick={handleLogout}
                   className="flex items-centerbtn btn btn-primary"
                 >
-                  <LogOut size={18} className="mr-1  btn-primary text-base-content" />
+                  <LogOut
+                    size={18}
+                    className="mr-1  btn-primary text-base-content"
+                  />
                   <span>Logout</span>
                 </button>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    className="btn btn-ghost text-base-content"
-                  >
+                  <Link to="/login" className="btn btn-ghost text-base-content">
                     Login
                   </Link>
                   <Link
@@ -109,7 +118,7 @@ const Navbar = () => {
                   >
                     Sign Up
                   </Link>
-                     <Link
+                  <Link
                     to="/settings"
                     className="btn btn-ghost text-base-content"
                   >
@@ -117,16 +126,12 @@ const Navbar = () => {
                   </Link>
                 </>
               )}
-
-             
             </div>
 
             {/* Mobile Menu Button */}
             <div className="flex md:hidden items-center space-x-3">
-           
               <button
                 onClick={() => setSidebarOpen(true)}
-
                 className="btn btn-primary"
               >
                 <Menu size={24} />

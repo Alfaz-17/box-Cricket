@@ -1,55 +1,55 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { Upload } from 'lucide-react';
-import Card from '../../components/ui/Card';
-import Input from '../../components/ui/Input';
-import Button from '../../components/ui/Button';
-import { uploadToCloudinary } from '../../utils/uploadToCloudinary';
-import api from '../../utils/api';
-import MapPicker  from '../../components/ui/MapPicker'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { Upload } from "lucide-react";
+import Card from "../../components/ui/Card";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
+import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
+import api from "../../utils/api";
+import MapPicker from "../../components/ui/MapPicker";
+
 const CreateBox = () => {
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-const [formData, setFormData] = useState({
-  name: '',
-  description: '',
-  location: '',
-  address: '',
-  hourlyRate: '',
-  mobileNumber: '',
-  features: '',
-  quarters: '',   // ← ADD THIS
-  image: null,
-  images: [],
-  imagePreview: null,
-  imagesPreview: [],
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    location: "",
+    address: "",
+    hourlyRate: "",
+    mobileNumber: "",
+    features: "",
+    quarters: "", // ← ADD THIS
+    image: null,
+    images: [],
+    imagePreview: null,
+    imagesPreview: [],
     latitude: null,
-  longitude: null,
-});
-
+    longitude: null,
+  });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-
-    if (name === 'image') {
+    if (name === "image") {
       const file = files[0];
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         image: file,
         imagePreview: URL.createObjectURL(file),
       }));
-    } else if (name === 'images') {
+    } else if (name === "images") {
       const filesArray = Array.from(files);
-      const previews = filesArray.map(file => URL.createObjectURL(file));
+      const previews = filesArray.map((file) => URL.createObjectURL(file));
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         images: filesArray,
         imagesPreview: previews,
       }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -58,7 +58,7 @@ const [formData, setFormData] = useState({
     setLoading(true);
 
     try {
-      let uploadedImageURL = '';
+      let uploadedImageURL = "";
       if (formData.image) {
         uploadedImageURL = await uploadToCloudinary(formData.image);
       }
@@ -69,29 +69,29 @@ const [formData, setFormData] = useState({
         uploadedImagesURLs.push(imgUrl);
       }
 
-   const payload = {
-  name: formData.name,
-  description: formData.description,
-  location: formData.location,
-  address: formData.address,
-  hourlyRate: formData.hourlyRate,
-  mobileNumber: formData.mobileNumber,
-  features: formData.features,
-  numberOfQuarters: Number(formData.quarters),  // ← ensure it’s a number
-  image: uploadedImageURL,
-  images: uploadedImagesURLs,
-     latitude: formData.latitude,
-  longitude: formData.longitude,
-};
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        location: formData.location,
+        address: formData.address,
+        hourlyRate: formData.hourlyRate,
+        mobileNumber: formData.mobileNumber,
+        features: formData.features,
+        numberOfQuarters: Number(formData.quarters), // ← ensure it’s a number
+        image: uploadedImageURL,
+        images: uploadedImagesURLs,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+      };
 
-console.log(payload)
-      const response = await api.post('/boxes/create', payload);
+      console.log(payload);
+      const response = await api.post("/boxes/create", payload);
 
-      toast.success(response.data.message || 'Box created successfully!');
-      navigate('/admin/boxes');
+      toast.success(response.data.message || "Box created successfully!");
+      navigate("/admin/boxes");
     } catch (err) {
-      console.error('Unexpected error:', err);
-      toast.error(err.response?.data?.message || 'Unexpected error occurred');
+      console.error("Unexpected error:", err);
+      toast.error(err.response?.data?.message || "Unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -123,38 +123,38 @@ console.log(payload)
             />
           </div>
 
-        <div className="mb-6">
-  <label className="block text-sm font-medium text-primary mb-1">
-    Pick Location on Map
-  </label>
- <div className="h-64 w-full rounded-lg overflow-hidden mb-3 relative z-10">
-<MapPicker
-  latitude={formData.latitude}
-  longitude={formData.longitude}
-  onLocationChange={(lat, lng) =>
-    setFormData((prev) => ({
-      ...prev,
-      latitude: lat,
-      longitude: lng,
-    }))
-  }
-/>
-</div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-primary mb-1">
+              Pick Location on Map
+            </label>
+            <div className="h-64 w-full rounded-lg overflow-hidden mb-3 relative z-10">
+              <MapPicker
+                latitude={formData.latitude}
+                longitude={formData.longitude}
+                onLocationChange={(lat, lng) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    latitude: lat,
+                    longitude: lng,
+                  }))
+                }
+              />
+            </div>
 
-  {formData.latitude && formData.longitude && (
-    <p className="mt-2 text-sm text-primary">
-      Selected Coordinates: {formData.latitude.toFixed(5)}, {formData.longitude.toFixed(5)}
-    </p>
-  )}
-</div>
-  <Input
+            {formData.latitude && formData.longitude && (
+              <p className="mt-2 text-sm text-primary">
+                Selected Coordinates: {formData.latitude.toFixed(5)},{" "}
+                {formData.longitude.toFixed(5)}
+              </p>
+            )}
+          </div>
+          <Input
             label="location"
             name="location"
             value={formData.location}
             onChange={handleChange}
             required
           />
-
 
           <Input
             label="Address"
@@ -199,25 +199,27 @@ console.log(payload)
               required
             />
           </div>
-<div className="mb-4">
-  <label className="block text-sm font-medium text-primary  mb-1">
-    Number of Quarters
-  </label>
-  <select
-    name="quarters"
-    value={formData.quarters}
-    onChange={handleChange}
-    className="input input-bordered w-full px-3 py-2  rounded-2xl"
-    required
-  >
-    <option value=""> Boxes</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-  </select>
-</div>
+
+          
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-primary  mb-1">
+              Number of Quarters
+            </label>
+            <select
+              name="quarters"
+              value={formData.quarters}
+              onChange={handleChange}
+              className="input input-bordered w-full px-3 py-2  rounded-2xl"
+              required
+            >
+              <option value=""> Boxes</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
 
           {/* Image upload fields (same as before) */}
           <div className="mb-6">
@@ -240,11 +242,13 @@ console.log(payload)
                   </label>
                 </div>
                 {formData.imagePreview && (
-                  <img src={formData.imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded-md" />
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="mt-2 w-32 h-32 object-cover rounded-md"
+                  />
                 )}
-                <p className="text-xs  ">
-                  PNG, JPG, GIF up to 10MB
-                </p>
+                <p className="text-xs  ">PNG, JPG, GIF up to 10MB</p>
               </div>
             </div>
           </div>
@@ -272,13 +276,16 @@ console.log(payload)
                 {formData.imagesPreview.length > 0 && (
                   <div className="flex mt-2">
                     {formData.imagesPreview.map((preview, index) => (
-                      <img key={index} src={preview} alt={`Preview ${index}`} className="w-16 h-16 object-cover rounded-md mr-2" />
+                      <img
+                        key={index}
+                        src={preview}
+                        alt={`Preview ${index}`}
+                        className="w-16 h-16 object-cover rounded-md mr-2"
+                      />
                     ))}
                   </div>
                 )}
-                <p className="text-xs  ">
-                  PNG, JPG, GIF up to 10MB each
-                </p>
+                <p className="text-xs  ">PNG, JPG, GIF up to 10MB each</p>
               </div>
             </div>
           </div>
@@ -287,14 +294,11 @@ console.log(payload)
             <Button
               type="button"
               variant="secondary"
-              onClick={() => navigate('/admin/boxes')}
+              onClick={() => navigate("/admin/boxes")}
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              isLoading={loading}
-            >
+            <Button type="submit" isLoading={loading}>
               Create Box
             </Button>
           </div>

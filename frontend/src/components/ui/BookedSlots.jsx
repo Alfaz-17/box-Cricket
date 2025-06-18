@@ -8,6 +8,7 @@ import {
   Filter,
 } from "lucide-react";
 import api from "../../utils/api";
+import { formatDate } from "../../utils/formatDate";
 
 export default function BookedSlots({ boxId }) {
   const [bookedSlots, setBookedSlots] = useState([]);
@@ -16,6 +17,8 @@ export default function BookedSlots({ boxId }) {
   const [selectedDate, setSelectedDate] = useState("");
 const [selectedQuarter, setSelectedQuarter] = useState("");
 
+
+//fetch Booked solts api
   useEffect(() => {
     async function fetchSlots() {
       try {
@@ -35,6 +38,8 @@ const [selectedQuarter, setSelectedQuarter] = useState("");
 
 // Extract unique quarters from booked slots
 const uniqueQuarters = [...new Set(bookedSlots.map(q => q.quarterName))];
+
+// add filter
 const handleQuarterChange = (e) => {
   const quarter = e.target.value;
   setSelectedQuarter(quarter);
@@ -68,11 +73,7 @@ const handleDateChange = (e) => {
 };
 
 
-  // format date to a more readable format
-    const formatDate = (dateString) => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-  };
+
 
 
 // Filter out quarters with no slots after applying date filter
@@ -119,7 +120,7 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
   <select
     value={selectedQuarter}
     onChange={handleQuarterChange}
-    className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="border rounded-lg px-3 py-1 text-sm  bg-base-100 focus:outline-none focus:ring-2 focus:ring-primary"
   >
     <option value="">All Boxes</option>
     {uniqueQuarters.map((qtr) => (

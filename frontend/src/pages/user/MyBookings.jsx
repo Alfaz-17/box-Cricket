@@ -1,190 +1,142 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { Calendar, Clock, MapPin, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import api  from '../../utils/api';;
-import { jsPDF } from 'jspdf';
-
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+} from "lucide-react";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import api from "../../utils/api";
+import { jsPDF } from "jspdf";
+import { formatDate } from "../../utils/formatDate";
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('upcoming');
-  
+  const [activeTab, setActiveTab] = useState("upcoming");
 
-useEffect(() => {
-  const fetchBookings = async () => {
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await api.get("/booking/my-bookings");
+        setBookings(response.data);
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+        toast.error("Failed to load your bookings");
+
+        // Mock data for demo
+        setBookings(mockBookings);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  const cancelBooking = async (id) => {
+    if (!confirm("Are you sure you want to cancel this booking?")) return;
+
     try {
-      const response = await api.get('/booking/my-bookings');
-      setBookings(response.data);
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      toast.error('Failed to load your bookings');
+      const response = await api.post(`/booking/cancel/${id}`);
 
-      // Mock data for demo
-      setBookings(mockBookings);
-    } finally {
-      setLoading(false);
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Failed to cancel booking");
+      }
+
+      // Axios treats non-2xx as errors, so if we’re here, it’s OK
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking._id === id ? { ...booking, status: "cancelled" } : booking
+        )
+      );
+
+      toast.success("Booking cancelled successfully");
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to cancel booking"
+      );
     }
   };
 
-  fetchBookings();
-}, []);
-
-
-const cancelBooking = async (id) => {
-  if (!confirm('Are you sure you want to cancel this booking?')) return;
-
-  try {
-    const response = await api.post(`/booking/cancel/${id}`);
-
-if(response.status !== 200){
-  throw new Error(response.data.message || 'Failed to cancel booking');
-}
-
-
-    // Axios treats non-2xx as errors, so if we’re here, it’s OK
-    setBookings(prev =>
-      prev.map(booking =>
-        booking._id === id ? { ...booking, status: 'cancelled' } : booking
-      )
-    );
-
-    toast.success('Booking cancelled successfully');
-  } catch (error) {
-    console.error('Error cancelling booking:', error);
-    toast.error(error.response?.data?.message || error.message || 'Failed to cancel booking');
-
-  
-  
-  }
-};
-
-
-
-
-
-
-// this funtion is used to conver time this "01:00 PM" to this "13" means 24 houre because 
+  // this funtion is used to conver time this "01:00 PM" to this "13" means 24 houre because
   function convertTo24Hour(timeStr) {
-  const [time, modifier] = timeStr.trim().split(' ');
-  let [hours, minutes] = time.split(':');
+    const [time, modifier] = timeStr.trim().split(" ");
+    let [hours, minutes] = time.split(":");
 
-  hours = parseInt(hours, 10);
+    hours = parseInt(hours, 10);
 
-  if (modifier === 'PM' && hours !== 12) {
-    hours += 12;
+    if (modifier === "PM" && hours !== 12) {
+      hours += 12;
+    }
+
+    if (modifier === "AM" && hours === 12) {
+      hours = 0;
+    }
+
+    return `${hours.toString().padStart(2, "0")}:${minutes}`;
   }
-
-  if (modifier === 'AM' && hours === 12) {
-    hours = 0;
-  }
-
-  return `${hours.toString().padStart(2, '0')}:${minutes}`;
-}
 
   // Filter bookings based on active tab
-  const filteredBookings = bookings.filter(booking => {
+  const filteredBookings = bookings.filter((booking) => {
     const fixedTime = convertTo24Hour(booking.startTime); // "03:30"
-const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
-
+    const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
 
     const now = new Date();
- 
-  
-  
-    if (activeTab === 'upcoming') {
-      return bookingDate > now && booking.status !== 'cancelled';
-    } else if (activeTab === 'past') {
-      return bookingDate < now && booking.status !== 'cancelled'
 
-      
+    if (activeTab === "upcoming") {
+      return bookingDate > now && booking.status !== "cancelled";
+    } else if (activeTab === "past") {
+      return bookingDate < now && booking.status !== "cancelled";
     } else {
-      return booking.status === 'cancelled';
+      return booking.status === "cancelled";
     }
   });
- 
 
-  // Mock data for demonstration
-  const mockBookings = [
-    {
-      id: '1',
-      boxId: '1',
-      boxName: 'Premium Cricket Box',
-      location: 'Central Sports Complex',
-      date: '2025-06-15',
-      startTime: '10:00',
-      endTime: '12:00',
-      duration: 2,
-      price: 90,
-      status: 'confirmed',
-      boxImage: 'https://images.pexels.com/photos/3628912/pexels-photo-3628912.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-    },
-    {
-      id: '2',
-      boxId: '2',
-      boxName: 'Standard Cricket Net',
-      location: 'Community Park',
-      date: '2025-06-05',
-      startTime: '14:00',
-      endTime: '15:00',
-      duration: 1,
-      price: 25,
-      status: 'completed',
-      boxImage: 'https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-    },
-    {
-      id: '3',
-      boxId: '3',
-      boxName: 'Professional Training Box',
-      location: 'Sports Academy',
-      date: '2025-05-20',
-      startTime: '16:00',
-      endTime: '18:00',
-      duration: 2,
-      price: 120,
-      status: 'cancelled',
-      boxImage: 'https://images.pexels.com/photos/5739101/pexels-photo-5739101.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-    }
-  ];
   
   return (
     <div>
       <h1 className="text-2xl md:text-3xl font-bold text- dark:text-yellow-300 mb-6">
         My Bookings
       </h1>
-      
+
       <div className="mb-6">
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex -mb-px">
             <button
-              onClick={() => setActiveTab('upcoming')}
+              onClick={() => setActiveTab("upcoming")}
               className={`py-4 px-6 text-sm font-medium ${
-                activeTab === 'upcoming'
-                  ? 'text-primary  border-b-2 border-'
-                  : ' dark:text-gray-400 hover:text-primary'
+                activeTab === "upcoming"
+                  ? "text-primary  border-b-2 border-"
+                  : " dark:text-gray-400 hover:text-primary"
               }`}
             >
               Upcoming
             </button>
             <button
-              onClick={() => setActiveTab('past')}
+              onClick={() => setActiveTab("past")}
               className={`py-4 px-6 text-sm font-medium ${
-                activeTab === 'past'
-                 ? 'text-primary  border-b-2 border-'
-                  : ' dark:text-gray-400 hover:text-primary'
+                activeTab === "past"
+                  ? "text-primary  border-b-2 border-"
+                  : " dark:text-gray-400 hover:text-primary"
               }`}
             >
               Past
             </button>
             <button
-              onClick={() => setActiveTab('cancelled')}
+              onClick={() => setActiveTab("cancelled")}
               className={`py-4 px-6 text-sm font-medium ${
-                activeTab === 'cancelled'
-                 ? 'text-primary  border-b-2 border-'
-                  : ' dark:text-gray-400 hover:text-primary'
+                activeTab === "cancelled"
+                  ? "text-primary  border-b-2 border-"
+                  : " dark:text-gray-400 hover:text-primary"
               }`}
             >
               Cancelled
@@ -192,7 +144,7 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
           </nav>
         </div>
       </div>
-      
+
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -207,29 +159,27 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
               No {activeTab} bookings found
             </h3>
             <p className=" mb-6">
-              {activeTab === 'upcoming' 
-                ? "You don't have any upcoming bookings." 
-                : activeTab === 'past' 
-                  ? "You don't have any past bookings." 
-                  : "You don't have any cancelled bookings."}
+              {activeTab === "upcoming"
+                ? "You don't have any upcoming bookings."
+                : activeTab === "past"
+                ? "You don't have any past bookings."
+                : "You don't have any cancelled bookings."}
             </p>
-            {activeTab === 'upcoming' && (
+            {activeTab === "upcoming" && (
               <Link to="/">
-                <Button variant="primary">
-                  Browse Cricket Boxes
-                </Button>
+                <Button variant="primary">Browse Cricket Boxes</Button>
               </Link>
             )}
           </div>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredBookings.map(booking => (
-            <BookingCard 
-              key={booking._id} 
-              booking={booking} 
-              onCancel={() => cancelBooking(booking._id)} 
-              showCancelButton={activeTab === 'upcoming'}
+          {filteredBookings.map((booking) => (
+            <BookingCard
+              key={booking._id}
+              booking={booking}
+              onCancel={() => cancelBooking(booking._id)}
+              showCancelButton={activeTab === "upcoming"}
             />
           ))}
         </div>
@@ -239,24 +189,22 @@ const bookingDate = new Date(`${booking.date}T${fixedTime}`); // ✅ valid Date
 };
 
 const BookingCard = ({ booking, onCancel, showCancelButton }) => {
-
-
   const getStatusBadge = (status) => {
-    if (status === 'confirmed') {
+    if (status === "confirmed") {
       return (
         <div className="flex items-center text-green-600 dark:text-green-400">
           <CheckCircle size={16} className="mr-1" />
           <span className="text-sm font-medium">Confirmed</span>
         </div>
       );
-    } else if (status === 'completed') {
+    } else if (status === "completed") {
       return (
         <div className="flex items-center ">
           <CheckCircle size={16} className="mr-1" />
           <span className="text-sm font-medium">Completed</span>
         </div>
       );
-    } else if (status === 'pending') {
+    } else if (status === "pending") {
       return (
         <div className="flex items-center ">
           <AlertCircle size={16} className="mr-1" />
@@ -272,63 +220,57 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
       );
     }
   };
-  
-  // Format date for display
-  const formatDate = (dateString) => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+
+
+
+  // funtion for download recipt
+  const handleDownloadReceipt = async (bookingId) => {
+    try {
+      const response = await api.get(`/booking/report/${bookingId}`);
+      const data = response.data;
+
+      const doc = new jsPDF();
+
+      // Set title
+      doc.setFontSize(18);
+      doc.text("Booking Receipt", 20, 20);
+
+      // Add details
+      doc.setFontSize(12);
+      const details = [
+        `Booking ID: ${data.bookingId}`,
+        `Box Name: ${data.boxName}`,
+        `Date: ${data.date}`,
+        `Start Time: ${data.startTime}`,
+        `End Time: ${data.endTime}`,
+        `Duration: ${data.duration} hours`,
+        `Amount Paid: ₹${data.amountPaid}`,
+        `Payment Status: ${data.paymentStatus}`,
+        `Contact Number: ${data.contactNumber}`,
+        `Quarter Name: ${data.quarterName}`,
+      ];
+
+      let y = 40;
+      details.forEach((line) => {
+        doc.text(line, 20, y);
+        y += 10;
+      });
+
+      // Save PDF
+      doc.save(`booking_receipt_${data.bookingId}.pdf`);
+    } catch (error) {
+      console.error("Download failed", error);
+      console.log("booking", error);
+    }
   };
-
-// funtion for download recipt 
-const handleDownloadReceipt = async (bookingId) => {
-  try {
-    const response = await api.get(`/booking/report/${bookingId}`);
-    const data = response.data;
-
-    const doc = new jsPDF();
-
-    // Set title
-    doc.setFontSize(18);
-    doc.text('Booking Receipt', 20, 20);
-
-    // Add details
-    doc.setFontSize(12);
-    const details = [
-      `Booking ID: ${data.bookingId}`,
-      `Box Name: ${data.boxName}`,
-      `Date: ${data.date}`,
-      `Start Time: ${data.startTime}`,
-      `End Time: ${data.endTime}`,
-      `Duration: ${data.duration} hours`,
-      `Amount Paid: ₹${data.amountPaid}`,
-      `Payment Status: ${data.paymentStatus}`,
-      `Contact Number: ${data.contactNumber}`,
-      `Quarter Name: ${data.quarterName}`
-    ];
-
-    let y = 40;
-    details.forEach(line => {
-      doc.text(line, 20, y);
-      y += 10;
-    });
-
-    // Save PDF
-    doc.save(`booking_receipt_${data.bookingId}.pdf`);
-    
-  } catch (error) {
-    console.error('Download failed', error);
-    console.log("booking",error)
-  }
-};
-
 
   return (
     <Card>
       <div className="flex flex-col sm:flex-row">
         <div className="sm:w-1/3 w-full h-32 sm:h-auto">
-          <img 
-            src={booking.box.image} 
-            alt={booking.box.name} 
+          <img
+            src={booking.box.image}
+            alt={booking.box.name}
             className="w-full h-full object-cover rounded-t-lg sm:rounded-l-lg sm:rounded-t-none"
           />
         </div>
@@ -339,7 +281,7 @@ const handleDownloadReceipt = async (bookingId) => {
             </h3>
             {getStatusBadge(booking.status)}
           </div>
-          
+
           <div className="mt-3 space-y-2  ">
             <div className="flex items-center">
               <Calendar size={16} className="mr-2 text-primary" />
@@ -347,17 +289,20 @@ const handleDownloadReceipt = async (bookingId) => {
             </div>
             <div className="flex items-center">
               <Clock size={16} className="mr-2 text-primary " />
-              <span>{booking.startTime} - {booking.endTime} ({booking.duration} hour{booking.duration > 1 ? 's' : ''})</span>
+              <span>
+                {booking.startTime} - {booking.endTime} ({booking.duration} hour
+                {booking.duration > 1 ? "s" : ""})
+              </span>
             </div>
             <div className="flex items-center">
               <MapPin size={16} className="mr-2 text-primary" />
               <span>{booking.box.location}</span>
             </div>
           </div>
-          
+
           <div className="mt-4 flex justify-between items-center">
             <div className="font-semibold text-red-500 dark:text-gray-200">
-             Paid: ₹{booking.amountPaid}
+              Paid: ₹{booking.amountPaid}
             </div>
             <div className="flex space-x-2">
               <Link to={`/box/${booking.box._id}`}>
@@ -365,21 +310,17 @@ const handleDownloadReceipt = async (bookingId) => {
                   View Box
                 </Button>
               </Link>
-                {/* Download Receipt Button */}
-  <Button 
-    variant="primary" 
-    size="sm"
-    onClick={() => handleDownloadReceipt(booking._id)}
-  >
-    Download Receipt
-  </Button>
-              
-              {showCancelButton && booking.status === 'confirmed' && (
-                <Button 
-                  variant="danger" 
-                  size="sm"
-                  onClick={onCancel}
-                >
+              {/* Download Receipt Button */}
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => handleDownloadReceipt(booking._id)}
+              >
+                Download Receipt
+              </Button>
+
+              {showCancelButton && booking.status === "confirmed" && (
+                <Button variant="danger" size="sm" onClick={onCancel}>
                   Cancel
                 </Button>
               )}

@@ -1,21 +1,23 @@
 import Booking from "../models/Booking.js";
 import CricketBox from "../models/CricketBox.js";
 
-
-
-
 export const getDasboardSummary = async (req, res) => {
   try {
     const boxes = await CricketBox.find({ owner: req.user._id });
-    const boxIds = boxes.map(box => box._id);
+    const boxIds = boxes.map((box) => box._id);
 
     const bookings = await Booking.find({ box: { $in: boxIds } });
 
-    const totalBookings = await Booking.countDocuments({ box: { $in: boxIds } });
-    const totalRevenue = bookings.reduce((sum, b) => sum + (b.amountPaid || 0), 0);
+    const totalBookings = await Booking.countDocuments({
+      box: { $in: boxIds },
+    });
+    const totalRevenue = bookings.reduce(
+      (sum, b) => sum + (b.amountPaid || 0),
+      0
+    );
     const totalBoxes = boxes.length;
 
-    const userIds = new Set(bookings.map(b => b.user.toString()));
+    const userIds = new Set(bookings.map((b) => b.user.toString()));
     const totalUsers = userIds.size;
 
     const bookingChange = 12;
@@ -31,7 +33,7 @@ export const getDasboardSummary = async (req, res) => {
       bookingChange,
       revenueChange,
       boxChange,
-      userChange
+      userChange,
     });
   } catch (error) {
     console.error("Dashboard Summary Error:", error);

@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, Clock, Ban, Square, Filter, CalendarX2 } from "lucide-react";
 import api from "../../utils/api";
+import { formatDate } from "../../utils/formatDate";
 
 export default function BlockedSlots({ boxId }) {
   const [blockedSlots, setBlockedSlots] = useState([]);
   const [filteredSlots, setFilteredSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState("");
-const [selectedQuarter, setSelectedQuarter] = useState("");
+  const [selectedQuarter, setSelectedQuarter] = useState("");
 
+
+
+// fetch block slots
   useEffect(() => {
     async function fetchSlots() {
       try {
@@ -25,57 +29,45 @@ const [selectedQuarter, setSelectedQuarter] = useState("");
   }, [boxId]);
 
 
-const filterSlots = (date, quarter) => {
-  let filtered = blockedSlots;
+//add filter for BlockSlots (date,quater)
+  const filterSlots = (date, quarter) => {
+    let filtered = blockedSlots;
 
-  if (quarter !== "") {
-    filtered = filtered.filter((q) => q.quarterName === quarter);
-  }
+    if (quarter !== "") {
+      filtered = filtered.filter((q) => q.quarterName === quarter);
+    }
 
-  filtered = filtered.map((q) => ({
-    ...q,
-    slots:
-      date === ""
-        ? q.slots
-        : q.slots.filter((slot) => slot.date === date),
-  }));
+    filtered = filtered.map((q) => ({
+      ...q,
+      slots:
+        date === "" ? q.slots : q.slots.filter((slot) => slot.date === date),
+    }));
 
-  setFilteredSlots(filtered);
-};
+    setFilteredSlots(filtered);
+  };
+  
+  const handleDateChange = (e) => {
+    const date = e.target.value;
+    setSelectedDate(date);
+    filterSlots(date, selectedQuarter);
+  };
 
-
- const handleDateChange = (e) => {
-  const date = e.target.value;
-  setSelectedDate(date);
-  filterSlots(date, selectedQuarter);
-};
-
-const handleQuarterChange = (e) => {
-  const quarter = e.target.value;
-  setSelectedQuarter(quarter);
-  filterSlots(selectedDate, quarter);
-};
-
-
-
+  const handleQuarterChange = (e) => {
+    const quarter = e.target.value;
+    setSelectedQuarter(quarter);
+    filterSlots(selectedDate, quarter);
+  };
 
   // Extract unique quarters from blocked slots
-const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
+  const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
 
 
-
-  //format date to readable format
-      const formatDate = (dateString) => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-  };
 
   if (loading)
     return (
-     <div className="flex justify-center items-center h-64">
-      
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
     );
 
   if (blockedSlots.length === 0)
@@ -92,50 +84,46 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
     );
 
   return (
-
-
-    
     <div className="bg-base-300  rounded-xl shadow-md p-6">
       <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
         ⛔ Blocked Slots by Boxes
       </h2>
 
       <div className="mb-4 flex flex-wrap items-center gap-4">
-  <div className="flex items-center gap-2">
-    <Filter className="w-5 h-5 text-primary" />
-    <input
-      type="date"
-      value={selectedDate}
-      onChange={handleDateChange}
-      className="border rounded-lg px-3 py-1 text-[16px]  text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-    />
-  </div>
+        <div className="flex items-center gap-2">
+          <Filter className="w-5 h-5 text-primary" />
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            className="border rounded-lg px-3 py-1 text-[16px]  text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
 
-  <select
-    value={selectedQuarter}
-    onChange={handleQuarterChange}
-    className="border rounded-lg px-3 py-1 text-sm  bg-base-100 focus:outline-none focus:ring-2 focus:ring-primary"
-  >
-    <option value="">All Boxes</option>
-    {[...new Set(blockedSlots.map((q) => q.quarterName))].map((name) => (
-      <option key={name} value={name}>
-        {name}-(box)
-      </option>
-    ))}
-  </select>
+        <select
+          value={selectedQuarter}
+          onChange={handleQuarterChange}
+          className="border rounded-lg px-3 py-1 text-sm  bg-base-100 focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          <option value="">All Boxes</option>
+          {[...new Set(blockedSlots.map((q) => q.quarterName))].map((name) => (
+            <option key={name} value={name}>
+              {name}-(box)
+            </option>
+          ))}
+        </select>
 
-  <button
-    onClick={() => {
-      setSelectedDate("");
-      setSelectedQuarter("");
-      setFilteredSlots(blockedSlots);
-    }}
-    className="ml-auto text-sm  hover:underline"
-  >
-    Clear Filter
-  </button>
-</div>
-
+        <button
+          onClick={() => {
+            setSelectedDate("");
+            setSelectedQuarter("");
+            setFilteredSlots(blockedSlots);
+          }}
+          className="ml-auto text-sm  hover:underline"
+        >
+          Clear Filter
+        </button>
+      </div>
 
       <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
         {filteredSlots.map((quarter) =>
@@ -181,13 +169,17 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
           )
         )}
       </div>
-      {noFilteredResults && (
-  <div className="text-center  bg-base-100  p-4 rounded-md shadow mb-4">
-    <p className="text-lg font-semibold">No blocked slots found for selected date.</p>
-    <p className="text-sm">Try choosing a different date or clear the filter.</p>
-  </div>
-)}
 
+      {noFilteredResults && (
+        <div className="text-center  bg-base-100  p-4 rounded-md shadow mb-4">
+          <p className="text-lg font-semibold">
+            No blocked slots found for selected date.
+          </p>
+          <p className="text-sm">
+            Try choosing a different date or clear the filter.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

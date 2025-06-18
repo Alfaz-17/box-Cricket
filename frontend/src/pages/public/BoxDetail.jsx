@@ -9,7 +9,7 @@ import {
   ChevronLeft,
   Star,
   Info,
-  Contact,
+
 } from "lucide-react";
 
 import DatePicker from "react-datepicker";
@@ -39,14 +39,12 @@ const BoxDetail = () => {
   const [contactNumber, setContactNumber] = useState("");
   const [activeTab, setActiveTab] = useState("details");
 const [selectedQuarter, setSelectedQuarter] = useState("");
-const [reviews, setReviews] = useState(null);
 const [averageRating, setAverageRating] = useState("");
 const [totalReviews, setTotalReviews] = useState("");
 
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Generate time slots from 12 PM to 12 PM next day
 
   useEffect(() => {
     const fetchBoxDetails = async () => {
@@ -64,9 +62,6 @@ const [totalReviews, setTotalReviews] = useState("");
     fetchBoxDetails();
   }, [id]);
 
-
-
-
 const fetchReviews = async () => {
   setLoading(true);
  
@@ -83,8 +78,6 @@ const fetchReviews = async () => {
   }
 };
 
-
-  
   useEffect(() => {
     if (id) {
       fetchReviews();
@@ -92,19 +85,18 @@ const fetchReviews = async () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]); // Refetch when box ID changes
 
-  // Format date for API
 
   const handleTimeChange = (newTime) => {
     setSelectedTime(newTime);
     setAvailableTimes(false);
   };
 
-
+//format date for api
   const formattedDate = selectedDate.toISOString().split("T")[0];
   const time = selectedTime.toString();
 
 
-const checkAvailability = async () => {
+const handleCheckAvailability = async () => {
   if (!selectedDate || !selectedTime || !duration || !contactNumber) {
     toast.error("Please fill all details");
     return;
@@ -409,7 +401,6 @@ const checkAvailability = async () => {
           </div>
 
           {/* quaters */}
-
           <div className="border-t  pt-6 mb-6">
   <h2 className="text-xl font-semibold text-primary mb-4">
     Available Boxes
@@ -429,9 +420,6 @@ const checkAvailability = async () => {
     )}
   </div>
 </div>
-
-
-
 
 
           <div className="border-t border-base  pt-6 mb-6">
@@ -467,15 +455,15 @@ const checkAvailability = async () => {
     Location
   </h2>
 
-  {displayBox?.coordinates ? (
+  {displayBox?.coordinates.lat ? (
     <BoxMap
       lat={displayBox.coordinates.lat}
       lng={displayBox.coordinates.lng}
       name={displayBox.name}
     />
   ) : (
-    <div className="w-full h-64 bg-base-200  flex items-center justify-center rounded-lg">
-      <p className="text-primary-content">No map available for this box</p>
+    <div className="w-full h-64 bg-base-200 text-center text-primary flex items-center justify-center rounded-lg">
+      <p className="text-primary">No map available for this box</p>
     </div>
   )}
 
@@ -621,7 +609,7 @@ const checkAvailability = async () => {
 
 
             <Button
-              onClick={checkAvailability}
+              onClick={handleCheckAvailability}
               variant="secondary"
               fullWidth
               isLoading={isCheckingAvailability}

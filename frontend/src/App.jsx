@@ -1,49 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
-import AuthContext from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
+import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+import AuthContext from "./context/AuthContext";
 
 // Layout components
-import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 
 // Public pages
-import Home from './pages/public/Home';
-import BoxDetail from './pages/public/BoxDetail';
+import Home from "./pages/public/Home";
+import BoxDetail from "./pages/public/BoxDetail";
 
 // Auth pages
-import Login from './pages/auth/Login';
-import Signup from './pages/auth/Signup';
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 
 // User pages
-import MyBookings from './pages/user/MyBookings';
-import Checkout from './pages/user/Checkout';
-import BookingSuccess from './pages/user/BookingSuccess';
+import MyBookings from "./pages/user/MyBookings";
+import Profile from "./pages/user/Profile";
+import SettingsPage from "./pages/public/SettingsPage";
+import FAQSection from "./pages/public/FAQSection";
+import FeedbackSupport from "./pages/user/FeedbackSupport ";
 
 // Admin pages
-import Dashboard from './pages/admin/Dashboard';
-import BoxManagement from './pages/admin/BoxManagement';
-import CreateBox from './pages/admin/CreateBox';
-import EditBox from './pages/admin/EditBox';
-import AdminBookings from './pages/admin/AdminBookings';
-import BlockSlot from './pages/admin/BlockSlot';
-import api from './utils/api';
-import Profile from './pages/user/Profile';
-import ForgotPassword from './pages/auth/ForgotPassword';
-import SettingsPage from './pages/public/SettingsPage';
-import FAQSection from './pages/public/FAQSection';
-import FeedbackSupport from './pages/user/FeedbackSupport ';
+import Dashboard from "./pages/admin/Dashboard";
+import BoxManagement from "./pages/admin/BoxManagement";
+import CreateBox from "./pages/admin/CreateBox";
+import EditBox from "./pages/admin/EditBox";
+import AdminBookings from "./pages/admin/AdminBookings";
+import BlockSlot from "./pages/admin/BlockSlot";
+
+import api from "./utils/api";
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
 
- 
-
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
- if (loading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
@@ -66,12 +67,12 @@ function App() {
     const checkAuth = async () => {
       setLoading(true);
       try {
-        const response = await api.post('/auth/me'); // ✅ Axios handles POST & cookies
+        const response = await api.post("/auth/me"); // ✅ Axios handles POST & cookies
         // Axios automatically parses response.data
         setUser(response.data.user);
         setIsAuthenticated(true);
       } catch (error) {
-        console.error('❌ Auth check error:', error);
+        console.error("❌ Auth check error:", error);
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -89,11 +90,10 @@ function App() {
 
   const logout = async () => {
     try {
-      const response=await api.post('/auth/logout');
-      toast.success(response.data.message)
-      
+      const response = await api.post("/auth/logout");
+      toast.success(response.data.message);
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       setUser(null);
       setIsAuthenticated(false);
@@ -110,10 +110,9 @@ function App() {
 
   return (
     <AuthContext.Provider value={authContextValue}>
-      <ThemeProvider>
-        <Router>
-        <div style={{ fontFamily: 'montserrat' }}>
-<div className="flex flex-col min-h-screen bg-base-100 text-base-content transition-colors duration-300">
+      <Router>
+        <div style={{ fontFamily: "montserrat" }}>
+          <div className="flex flex-col min-h-screen bg-base-100 text-base-content transition-colors duration-300">
             <Navbar />
             <main className="flex-grow container mx-auto px-4 py-8">
               {!loading && (
@@ -136,7 +135,7 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                     <Route
+                  <Route
                     path="/my-profile"
                     element={
                       <ProtectedRoute>
@@ -144,23 +143,8 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+
                   <Route
-                    path="/checkout/:bookingId"
-                    element={
-                      <ProtectedRoute>
-                        <Checkout />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/booking-success"
-                    element={
-                      <ProtectedRoute>
-                        <BookingSuccess />
-                      </ProtectedRoute>
-                    }
-                  />
-                      <Route
                     path="/support"
                     element={
                       <ProtectedRoute>
@@ -202,8 +186,8 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                          <Route
-                    path="/my-profile" 
+                  <Route
+                    path="/my-profile"
                     element={
                       <ProtectedRoute>
                         <Profile />
@@ -232,11 +216,9 @@ function App() {
             <Footer />
             <Toaster position="top-right" />
           </div>
-           </div>
-        </Router>
-      </ThemeProvider>
+        </div>
+      </Router>
     </AuthContext.Provider>
-   
   );
 }
 

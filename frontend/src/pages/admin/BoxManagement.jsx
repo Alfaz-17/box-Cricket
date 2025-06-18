@@ -1,57 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { Plus, Edit, Trash2, Box as BoxIcon } from 'lucide-react';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import api from '../../utils/api'
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { Plus, Edit, Trash2, Box as BoxIcon } from "lucide-react";
+import api from "../../utils/api";
 const BoxManagement = () => {
+  
   const [boxes, setBoxes] = useState([]);
   const [loading, setLoading] = useState(true);
-const [showDeleteInput, setShowDeleteInput] = useState(false);
-const [selectedBoxId, setSelectedBoxId] = useState(null);
-const [ownerCode, setOwnerCode] = useState('');
+  const [showDeleteInput, setShowDeleteInput] = useState(false);
+  const [selectedBoxId, setSelectedBoxId] = useState(null);
+  const [ownerCode, setOwnerCode] = useState("");
+
+
   useEffect(() => {
     fetchBoxes();
   }, []);
 
   const fetchBoxes = async () => {
-  try {
-    const response = await api.get('/boxes/my-box');
-    const data = response.data;
+    try {
+      const response = await api.get("/boxes/my-box");
+      const data = response.data;
 
-    setBoxes(data.boxes);
-  } catch (error) {
-    toast.error('Failed to fetch boxes');
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
+      setBoxes(data.boxes);
+    } catch (error) {
+      toast.error("Failed to fetch boxes");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
- const handleDelete = async () => {
-  if (!ownerCode) {
-    toast.error('Owner code is required');
-    return;
-  }
+  const handleDelete = async () => {
+    if (!ownerCode) {
+      toast.error("Owner code is required");
+      return;
+    }
 
-  if (!confirm('Are you sure you want to delete this box?')) return;
+    if (!confirm("Are you sure you want to delete this box?")) return;
 
-  try {
-    await api.delete(`/boxes/delete/${selectedBoxId}`, {
-      data: { ownerCode },
-    });
+    try {
+      await api.delete(`/boxes/delete/${selectedBoxId}`, {
+        data: { ownerCode },
+      });
 
-    toast.success('Box deleted successfully');
-    setShowDeleteInput(false);
-    setOwnerCode('');
-    fetchBoxes();
-  } catch (error) {
-    toast.error(error.response?.data?.message || error.message || 'Failed to delete box');
-  }
-};
+      toast.success("Box deleted successfully");
+      setShowDeleteInput(false);
+      setOwnerCode("");
+      fetchBoxes();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || error.message || "Failed to delete box"
+      );
+    }
+  };
 
-if (loading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <span className="loading loading-spinner text-primary w-12 h-12"></span>
@@ -105,8 +108,8 @@ if (loading) {
               <h2 className="card-title text-primary ">{box.name}</h2>
               <div className="text-sm space-y-2  dark:text-gray-400">
                 <div className="flex items-center">
-                  <BoxIcon   size={16} className="mr-2 text-primary" />
-                  <span className='text-pri'>Rate: ${box.hourlyRate}/hour</span>
+                  <BoxIcon size={16} className="mr-2 text-primary" />
+                  <span className="text-pri">Rate: ${box.hourlyRate}/hour</span>
                 </div>
                 <p className="line-clamp-2">{box.description}</p>
               </div>

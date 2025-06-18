@@ -23,6 +23,22 @@ const quarterId = quarter._id;
 // Convert date+time to full Date objects for comparison
 const startDateTime = parseDateTime(date, startTime);
 const endDateTime = parseDateTime(date, endTime);
+    const now = new Date();
+
+
+
+
+    // check start time not less than current time
+    if (startDateTime < now) {
+      return res
+        .status(400)
+        .json({ message: "Start time cannot be in the past" });
+    }
+
+
+
+
+
 
 // Check for overlapping confirmed bookings
 const overlappingBooking = await Booking.findOne({
@@ -53,7 +69,8 @@ if (overlappingBooking) {
       date,
       startTime,
       endTime,
-      reason
+      reason,
+        quarterId,
     });
 
     await newBlockedSlot.save();
