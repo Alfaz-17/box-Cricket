@@ -6,6 +6,8 @@ import {
   createBox,
   deleteBox,
   feedBackAndSupport,
+  getAllBoxes,
+  getBoxDetails,
   getOwnerBoxes,
   updateBox,
 } from '../controllers/boxController.js';
@@ -15,11 +17,16 @@ import {
 
 const router = express.Router();
 
-// No multer now, frontend uploads to Cloudinary directly
+//owner 
 router.post("/create", protectedRoute,isOwner,createBox);
 router.put("/update/:id", protectedRoute, isOwner, updateBox);
-
 router.delete("/delete/:id", protectedRoute, isOwner, deleteBox);
+router.post("/support",protectedRoute,feedBackAndSupport);
 router.get("/my-box", protectedRoute, isOwner, getOwnerBoxes);
-router.post("/support",protectedRoute,feedBackAndSupport)
+
+//public
+router.get("/public", getAllBoxes);           // List all cricket boxes
+router.get("/public/:id",getBoxDetails);     // Box details by ID
+
+
 export default router;

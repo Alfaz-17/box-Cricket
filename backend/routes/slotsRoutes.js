@@ -5,11 +5,6 @@ import { blockTimeSlot, getBlockedAndBookedSlots, unblockTimeSlot } from '../con
 
 const router =express.Router();
 
-
-
-
-
-
 router.post("/block-slots",protectedRoute,isOwner, blockTimeSlot);
 router.get("/booked-blocked-slots/:id",protectedRoute,getBlockedAndBookedSlots)
 router.delete('/unblock/:slotId', protectedRoute,isOwner, unblockTimeSlot);

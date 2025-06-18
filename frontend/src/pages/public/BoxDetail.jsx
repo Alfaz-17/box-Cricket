@@ -49,7 +49,7 @@ const [totalReviews, setTotalReviews] = useState("");
   useEffect(() => {
     const fetchBoxDetails = async () => {
       try {
-        const response = await api.get(`/public/boxes/${id}`);
+        const response = await api.get(`/boxes/public/${id}`);
         setBox(response.data);
       } catch (error) {
         console.error("Error fetching box details:", error);

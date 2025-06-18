@@ -152,7 +152,7 @@ export const createTempBooking = async (req, res) => {
     if (req.user.role === "owner") {
       return res.status(400).json({ message: "Owner cant booking Box" });
     }
-    
+
     // 3. Check for overlapping bookings on this quarter
     const overlappingBooking = await Booking.findOne({
       box: boxId,
@@ -308,7 +308,10 @@ export const cancelBooking = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-// owner controllers
+
+
+
+// owner Booking
 export const getRecenetBooking = async (req, res) => {
   try {
     const box = await CricketBox.findOne({ owner: req.user._id });

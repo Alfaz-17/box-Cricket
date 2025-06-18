@@ -19,7 +19,7 @@ const Home = () => {
   useEffect(() => {
     const fetchBoxes = async () => {
       try {
-        const response = await api.get("/public/boxes");
+        const response = await api.get("/boxes/public");
         const data = response.data;
 
         setBoxes(data);

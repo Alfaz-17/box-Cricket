@@ -36,7 +36,7 @@ const EditBox = () => {
 
   const fetchBoxDetails = async () => {
     try {
-      const response = await api.get(`/public/boxes/${id}`);
+      const response = await api.get(`/boxes/public/${id}`);
       setFormData({
         ...response.data,
         facilities: response.data.facilities?.join(", ") || "",

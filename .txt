@@ -34,9 +34,6 @@ like dashbord for amdm
 
 
 
-problem:
-
-edite box ui 
 
 
 

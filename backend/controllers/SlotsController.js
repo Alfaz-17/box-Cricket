@@ -1,6 +1,6 @@
 import BlockedSlot from "../models/BlockedSlot.js";
 import CricketBox from "../models/CricketBox.js";
-import {parseDateTime} from '../lib/parseDateTime.js'
+import { parseDateTime } from '../lib/parseDateTime.js'
 import Booking from "../models/Booking.js";
 
 export const blockTimeSlot = async (req, res) => {
@@ -13,16 +13,16 @@ export const blockTimeSlot = async (req, res) => {
     }
 
     // ✅ Check if quarter exists in box
-  // First, get the quarterId
-const quarter = box.quarters.find(q => q.name === quarterName);
-if (!quarter) {
-  return res.status(404).json({ message: `Quarter "${quarterName}" not found in this box.` });
-}
-const quarterId = quarter._id;
+    // First, get the quarterId
+    const quarter = box.quarters.find(q => q.name === quarterName);
+    if (!quarter) {
+      return res.status(404).json({ message: `Quarter "${quarterName}" not found in this box.` });
+    }
+    const quarterId = quarter._id;
 
-// Convert date+time to full Date objects for comparison
-const startDateTime = parseDateTime(date, startTime);
-const endDateTime = parseDateTime(date, endTime);
+    // Convert date+time to full Date objects for comparison
+    const startDateTime = parseDateTime(date, startTime);
+    const endDateTime = parseDateTime(date, endTime);
     const now = new Date();
 
 
@@ -40,27 +40,27 @@ const endDateTime = parseDateTime(date, endTime);
 
 
 
-// Check for overlapping confirmed bookings
-const overlappingBooking = await Booking.findOne({
-  box: box._id,
-  quarter: quarterId,
-  status: "confirmed",
-  startDateTime: { $lt: endDateTime },
-  endDateTime: { $gt: startDateTime },
-});
+    // Check for overlapping confirmed bookings
+    const overlappingBooking = await Booking.findOne({
+      box: box._id,
+      quarter: quarterId,
+      status: "confirmed",
+      startDateTime: { $lt: endDateTime },
+      endDateTime: { $gt: startDateTime },
+    });
 
-if (overlappingBooking) {
-  return res.status(409).json({
-    message: `This time slot in "${quarterName}" has a confirmed booking and cannot be blocked.`,
-  });
-}
+    if (overlappingBooking) {
+      return res.status(409).json({
+        message: `This time slot in "${quarterName}" has a confirmed booking and cannot be blocked.`,
+      });
+    }
 
 
-if (overlappingBooking) {
-  return res.status(409).json({
-    message: `This time slot in "${quarterName}" has a confirmed booking and cannot be blocked.`
-  });
-}
+    if (overlappingBooking) {
+      return res.status(409).json({
+        message: `This time slot in "${quarterName}" has a confirmed booking and cannot be blocked.`
+      });
+    }
 
 
     const newBlockedSlot = new BlockedSlot({
@@ -70,7 +70,7 @@ if (overlappingBooking) {
       startTime,
       endTime,
       reason,
-        quarterId,
+      quarterId,
     });
 
     await newBlockedSlot.save();

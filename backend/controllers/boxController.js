@@ -1,7 +1,7 @@
 import CricketBox from "../models/CricketBox.js";
 import { HelpAndSupport } from "../models/Review.js";
 
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 export const createBox = async (req, res) => {
@@ -10,8 +10,8 @@ export const createBox = async (req, res) => {
       name,
       location,
       address,
-      latitude,    // NEW
-      longitude,   // NEW
+      latitude, // NEW
+      longitude, // NEW
       hourlyRate,
       mobileNumber,
       description,
@@ -19,7 +19,7 @@ export const createBox = async (req, res) => {
       features,
       image,
       images,
-      numberOfQuarters
+      numberOfQuarters,
     } = req.body;
 
     const owner = req.user._id;
@@ -33,7 +33,7 @@ export const createBox = async (req, res) => {
     for (let i = 1; i <= numberOfQuarters; i++) {
       quartersArray.push({
         name: `Quarter ${i}`,
-        isAvailable: true
+        isAvailable: true,
       });
     }
 
@@ -50,29 +50,28 @@ export const createBox = async (req, res) => {
       description,
       image,
       images,
-      facilities: facilities ? facilities.split(',').map(f => f.trim()) : [],
-      features: features ? features.split(',').map(f => f.trim()) : [],
+      facilities: facilities ? facilities.split(",").map((f) => f.trim()) : [],
+      features: features ? features.split(",").map((f) => f.trim()) : [],
       owner,
       rating: 0,
       reviewCount: 0,
       reviews: [],
-      quarters: quartersArray
+      quarters: quartersArray,
     });
 
     res.status(201).json({
       success: true,
-      message: 'Cricket box created successfully',
+      message: "Cricket box created successfully",
       box: newBox,
     });
   } catch (err) {
-    console.error('Create Box Error:', err);
+    console.error("Create Box Error:", err);
     res.status(500).json({
       success: false,
-      message: err.message || 'Server error during box creation',
+      message: err.message || "Server error during box creation",
     });
   }
 };
-
 
 export const updateBox = async (req, res) => {
   try {
@@ -88,33 +87,32 @@ export const updateBox = async (req, res) => {
       features,
       image,
       images,
-      numberOfQuarters // NEW
+      numberOfQuarters, // NEW
     } = req.body;
-
- 
 
     const box = await CricketBox.findById(boxId);
 
     if (!box) {
-      return res.status(404).json({ message: 'Box not found' });
+      return res.status(404).json({ message: "Box not found" });
     }
 
     // Update basic fields
     box.name = name || box.name;
     box.location = location || box.location;
     box.address = address || box.address;
-    box.hourlyRate = hourlyRate !== undefined ? Number(hourlyRate) : box.hourlyRate;
+    box.hourlyRate =
+      hourlyRate !== undefined ? Number(hourlyRate) : box.hourlyRate;
     box.mobileNumber = mobileNumber || box.mobileNumber;
     box.description = description || box.description;
     box.image = image || box.image;
     box.images = images || box.images;
 
     if (facilities) {
-      box.facilities = facilities.split(',').map(f => f.trim());
+      box.facilities = facilities.split(",").map((f) => f.trim());
     }
 
     if (features) {
-      box.features = features.split(',').map(f => f.trim());
+      box.features = features.split(",").map((f) => f.trim());
     }
 
     // Handle quarters safely
@@ -127,17 +125,18 @@ export const updateBox = async (req, res) => {
         for (let i = currentCount + 1; i <= newCount; i++) {
           box.quarters.push({
             name: `Quarter ${i}`,
-            isAvailable: true
+            isAvailable: true,
           });
         }
       } else if (newCount < currentCount) {
         // Check if extra quarters are all free
         const extraQuarters = box.quarters.slice(newCount);
 
-        const anyBooked = extraQuarters.some(q => !q.isAvailable);
+        const anyBooked = extraQuarters.some((q) => !q.isAvailable);
         if (anyBooked) {
           return res.status(400).json({
-            message: 'Cannot remove quarters that are currently booked or unavailable'
+            message:
+              "Cannot remove quarters that are currently booked or unavailable",
           });
         }
 
@@ -154,34 +153,34 @@ export const updateBox = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Box updated successfully',
+      message: "Box updated successfully",
       box,
     });
   } catch (err) {
-    console.error('Update Box Error:', err);
+    console.error("Update Box Error:", err);
     res.status(500).json({
       success: false,
-      message: err.message || 'Server error during box update',
+      message: err.message || "Server error during box update",
     });
   }
 };
-
 
 export const deleteBox = async (req, res) => {
   try {
     const { id } = req.params;
     const ownerId = req.user._id;
-const{ownerCode}=req.body;
+    const { ownerCode } = req.body;
     // Validate owner code if provided
-    const code=process.env.OWNER_CODE;
+    const code = process.env.OWNER_CODE;
 
     if (ownerCode && ownerCode !== code) {
       return res.status(403).json({ message: "Invalid owner code" });
     }
 
-  
-
-    const deleted = await CricketBox.findOneAndDelete({ _id: id, owner: ownerId });
+    const deleted = await CricketBox.findOneAndDelete({
+      _id: id,
+      owner: ownerId,
+    });
     if (!deleted) return res.status(404).json({ message: "Box not found" });
 
     res.json({ message: "Box deleted" });
@@ -189,15 +188,6 @@ const{ownerCode}=req.body;
     res.status(500).json({ message: "Delete failed" });
   }
 };
-
-export const getOwnerBoxes = async (req, res) => {
-    try {
-      const boxes = await CricketBox.find({ owner: req.user._id });
-      res.json({ boxes });
-    } catch (err) {
-      res.status(500).json({ message: "Failed to fetch boxes" });
-    }
-  };
 
 export const feedBackAndSupport = async (req, res) => {
   try {
@@ -210,22 +200,51 @@ export const feedBackAndSupport = async (req, res) => {
 
     // Check if contact number is exactly 10 digits and numeric
     if (!/^\d{10}$/.test(contactNumber)) {
-      return res.status(400).json({ message: "Enter a valid 10-digit phone number." });
+      return res
+        .status(400)
+        .json({ message: "Enter a valid 10-digit phone number." });
     }
 
     // Save to database
     await HelpAndSupport.create({ name, contactNumber, message });
 
-    return res.status(201).json({ message: "Your message has been submitted." });
+    return res
+      .status(201)
+      .json({ message: "Your message has been submitted." });
   } catch (error) {
     console.error("Error in feedBackAndSupport controller:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
+// Get all cricket boxes
+export const getAllBoxes = async (req, res) => {
+  try {
+    const boxes = await CricketBox.find().select("-blockedSlots");
+    res.json(boxes);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch boxes" });
+  }
+};
 
+export const getBoxDetails = async (req, res) => {
+  try {
+    const box = await CricketBox.findById(req.params.id).select(
+      "-blockedSlots"
+    );
+    if (!box) return res.status(404).json({ message: "Box not found" });
+    res.json(box);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to get box details" });
+  }
+};
 
-
-  
-
-  
+//owner
+export const getOwnerBoxes = async (req, res) => {
+  try {
+    const boxes = await CricketBox.find({ owner: req.user._id });
+    res.json({ boxes });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch boxes" });
+  }
+};

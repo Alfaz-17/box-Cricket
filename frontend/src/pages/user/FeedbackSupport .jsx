@@ -53,7 +53,7 @@ const handleSubmit = async (e) => {
           <input
             type="text"
             name="name"
-            className="input input-bordered"
+            className="input input-bordered text-[16px] w-full"
             value={form.name}
             onChange={handleChange}
             required
@@ -67,7 +67,7 @@ const handleSubmit = async (e) => {
           <input
             type="text"
             name="contactNumber"
-            className="input input-bordered"
+            className="input input-bordered text-[16px] w-full"
             value={form.contactNumber}
             onChange={handleChange}
             required
@@ -76,11 +76,11 @@ const handleSubmit = async (e) => {
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text text-primary">Message</span>
+            <span className="label-text text-primary ">Message</span>
           </label>
           <textarea
             name="message"
-            className="textarea textarea-bordered"
+            className="textarea textarea-bordered text-[16px] w-full"
             rows={4}
             value={form.message}
             onChange={handleChange}

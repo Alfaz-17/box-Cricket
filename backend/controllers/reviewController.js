@@ -1,4 +1,4 @@
-import {Review} from "../models/Review.js";
+import { Review } from "../models/Review.js";
 
 export const addReview = async (req, res) => {
   try {
@@ -13,9 +13,9 @@ export const addReview = async (req, res) => {
     if (existingReview) {
       return res.status(400).json({ message: "You already gave a review" });
     }
-if(rating > 5){
-    return res.status(400).json({message:"give rating out of 5"})
-}
+    if (rating > 5) {
+      return res.status(400).json({ message: "give rating out of 5" });
+    }
     // Create and save new review
     const newReview = new Review({
       boxId: id,
@@ -57,4 +57,3 @@ export const getReviews = async (req, res) => {
     res.status(500).json({ message: "Failed to get reviews" });
   }
 };
-
