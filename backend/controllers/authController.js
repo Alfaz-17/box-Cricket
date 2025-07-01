@@ -234,3 +234,19 @@ export const updateProfile = async (req, res) => {
       .json({ success: false, message: "Failed to update profile" });
   }
 };
+
+export const getAllUsers = async (req,res)=>{
+  try {
+
+
+    const users = await User.find().select("-password ").select("-ownerCode");
+    res.status(200).json(users);
+
+
+
+  } catch (error) {
+    
+    res.status(500).json("intenal server error ");
+    console.log("error in getAll user controller")
+  }
+}

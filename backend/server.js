@@ -8,11 +8,19 @@ import boxRoutes from "./routes/boxRoutes.js";
 import bookingRoutes from './routes/bookingRoutes.js'
 import reviewRoutes from './routes/reviewRoutes.js';
 import slotsRoutes from './routes/slotsRoutes.js';
-import analyticsRoute from './routes/analyticsRoute.js'
-import { startBot } from './lib/whatsappBot.js'
+import analyticsRoutes from './routes/analyticsRoutes.js'
+import groupRoutes from './routes/groupRoutes.js'
+import messageRoutes from './routes/messageRoutes.js'
+import { startBot } from './lib/whatsappBot.js';
+import http from 'http';
 import cors from 'cors'
+import { initSocket } from "./lib/soket.js";
 dotenv.config();
 const app = express();
+
+//create socket server
+const server=http.createServer(app);
+initSocket(server);
 
   app.use(cors({origin: 'http://localhost:5173',credentials:true}))
 
@@ -29,8 +37,9 @@ app.use("/api/boxes", boxRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/reviews",reviewRoutes);
 app.use("/api/slots",slotsRoutes);
-app.use("/api/analytics",analyticsRoute);
-
+app.use("/api/analytics",analyticsRoutes);
+app.use("/api/group",groupRoutes);
+app.use("/api/messages",messageRoutes);
 
 //start whatsApp chaybot
 startBot().then(() => {
@@ -42,7 +51,7 @@ startBot().then(() => {
 
 
 console.log(process.env.PORT)
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     console.log("server is runnning on port",PORT);
 
 

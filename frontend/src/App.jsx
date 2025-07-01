@@ -37,6 +37,11 @@ import AdminBookings from "./pages/admin/AdminBookings";
 import BlockSlot from "./pages/admin/BlockSlot";
 
 import api from "./utils/api";
+import Group from "./pages/user/Group";
+import InviteUsers from "./pages/user/InviteUsers";
+import socket from "./utils/soket";
+import GroupChat from "./pages/user/GroupChat";
+import GroupInfo from "./pages/user/GroupInfo";
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
@@ -58,10 +63,39 @@ const ProtectedRoute = ({ children, role }) => {
   return children;
 };
 
+
+
 function App() {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+
+
+//register user in sockets
+useEffect(() => {
+  if (!user?._id) return;
+
+if (!socket.connected) {
+  socket.connect();
+} else {
+  socket.emit("register", user._id); // 🟢 Emit immediately if already connected
+}
+
+socket.on("connect", () => {
+  socket.emit("register", user._id); // 🔁 In case it reconnects later
+});
+
+
+  socket.on("connect_error", (err) => {
+    console.error("❗ Socket connect_error:", err);
+  });
+
+  return () => {
+    // don't disconnect if using singleton socket
+  };
+}, [user]);
+
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -143,6 +177,41 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  
+                  <Route
+                    path="/invite/:id"
+                    element={
+                      <ProtectedRoute>
+                        <InviteUsers />
+                      </ProtectedRoute>
+                    }
+                  />
+                             <Route
+                    path="/groups"
+                    element={
+                      <ProtectedRoute>
+                        <Group />
+                      </ProtectedRoute>
+                    }
+                  />
+                             <Route
+                    path="/groupChat/:groupName/:groupId"
+                    element={
+                      <ProtectedRoute>
+                        <GroupChat />
+                      </ProtectedRoute>
+                    }
+                  />
+                                <Route
+                    path="/groupInfo/:groupName/:groupId"
+                    element={
+                      <ProtectedRoute>
+                        <GroupInfo />
+                      </ProtectedRoute>
+                    }
+                  />
+               
+
 
                   <Route
                     path="/support"

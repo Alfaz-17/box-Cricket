@@ -48,6 +48,7 @@ const Profile = () => {
     if (onClose) onClose();
   };
 
+
   // Handle input change
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -165,7 +166,7 @@ const Profile = () => {
               id="contactNumber"
               name="contactNumber"
               value={form.contactNumber}
-              // onChange={handleChange}
+             readOnly 
               className="input input-bordered text-[16px] w-full"
             />
           </div>
