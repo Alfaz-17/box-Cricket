@@ -121,7 +121,7 @@ return (
             </div>
             <div
               className={`chat-bubble ${
-                isOwn ? "bg-primary text-white" : "bg-base-200"
+                isOwn ? "bg-primary text-primary-content" : "bg-base-200"
               }`}
             >
               {msg.content}

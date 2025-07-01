@@ -25,7 +25,7 @@ const Group = () => {
     }
   };
 
-  const joinGroup = async (groupId) => {
+  const handleJoinGroup = async (groupId) => {
     try {
       const res = await api.post("/group/join", {
         userIdToInvite: user._id,
@@ -42,11 +42,12 @@ const Group = () => {
     try {
       const res = await api.get("/group/notification");
       setNotifications(res.data);
+   
     } catch (err) {
       console.error("Error fetching notifications", err);
     }
   };
-
+  
   useEffect(() => {
     fetchGroups();
     fetchNotifications();
@@ -119,70 +120,110 @@ const Group = () => {
 
           <h2 className="text-xl font-bold text-center mb-3"> My Groups</h2>
 
-          {/* Notifications */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-md font-semibold">🔔 Notifications</h3>
-              <button
-                className="btn btn-xs btn-outline btn-info"
-                onClick={fetchNotifications}
-              >
-                Refresh
-              </button>
+{/* Notifications */}
+
+<div className="mb-4">
+  <div className="flex justify-between items-center mb-2">
+    <h3 className="text-lg font-bold">🔔 Notifications</h3>
+    <button
+      className="btn btn-sm btn-outline btn-info"
+      onClick={fetchNotifications}
+    >
+      Refresh
+    </button>
+  </div>
+
+  <div className="space-y-3 max-h-60 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300">
+    {notifications.length === 0 ? (
+      <div className="text-center text-sm text-gray-500">
+        No new notifications
+      </div>
+    ) : (
+      notifications
+        .filter((n) => !n.isRead)
+        .map((n) => (
+          <div
+            key={n._id}
+            className="relative bg-base-100 border border-base-300 rounded-lg p-4 shadow hover:shadow-md transition-all"
+          >
+                 {/* Top Row: Sender + Date */}
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-2">
+                {n.fromUser?.profileImg && (
+                  <img
+                    src={n.fromUser.profileImg}
+                    alt="User"
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                )}
+                <h4 className="font-medium text-sm text-base-content">
+                  {n.fromUser?.name || "System"}
+                </h4>
+              </div>
+              <span className="text-[11px] text-gray-400 whitespace-nowrap mt-2 ml-4">
+                {new Date(n.createdAt).toLocaleString()}
+              </span>
             </div>
-          <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-thin pr-1">
-  {notifications.length === 0 ? (
-    <div className="text-center text-sm text-gray-500">
-      No new notifications
-    </div>
-  ) : (
-    notifications
-      .filter((n) => !n.isRead)
-      .map((n) => (
-        <div
-          key={n._id}
-          className="card shadow-sm bg-base-100 border border-base-300 p-4"
-        >
-          <div className="flex items-center justify-between mb-1">
-            <h3 className="font-semibold text-sm">
-              {n.fromUser?.name || "System"}
-            </h3>
-            <span className="badge badge-xs badge-secondary text-[10px]">
-              {new Date(n.createdAt).toLocaleString()}
-            </span>
-          </div>
 
-          <p className="text-sm text-gray-600">{n.message}</p>
-
-          {n.groupId && (
-            <p className="text-xs text-blue-500 mt-1">
-              Group: <span className="font-medium">{n.groupId.name}</span>
+            {/* Main Message */}
+            <p className="text-sm text-base-content font-semibold mt-2">
+              {n.message}
             </p>
-          )}
 
-          <div className="mt-3 flex flex-col gap-2">
-            <button
-              className="btn btn-xs btn-outline btn-error w-full"
-              onClick={() => handleDeleteNotification(n._id)}
-            >
-              <i className="mr-1 ri-delete-bin-line" /> Delete
-            </button>
+            {/* Group Info & Join Button */}
+            {n.groupId && (
+              <div className="mt-2 flex justify-between items-center">
+                <p className="text-xs text-blue-600">
+                  Group: <span className="font-medium">{n.groupId.name}</span>
+                </p>
 
-            {n.type === "invite" && n.groupId && (
-              <button
-                className="btn btn-xs btn-success w-full"
-                onClick={() => joinGroup(n.groupId._id)}
-              >
-                <i className="mr-1 ri-group-line" /> Join Group
-              </button>
+             
+                     {n.type === "invite" && (
+                  <button
+                    onClick={() => handleJoinGroup(n.groupId._id)}
+                    className="tooltip text-blue-500 hover:text-blue-700 transition"
+                    data-tip="Join Group"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M16 14c2.21 0 4 1.79 4 4v2h-4v-2c0-.73-.19-1.41-.52-2H20c0-1.1-.9-2-2-2h-2zm-8 0c2.21 0 4 1.79 4 4v2H4v-2c0-2.21 1.79-4 4-4zm8-2c1.66 0 3-1.34 3-3S17.66 6 16 6s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 6 8 6 5 7.34 5 9s1.34 3 3 3z" />
+                    </svg>
+                  </button>
+                )}
+              </div>
             )}
+
+            {/* Delete Button (top-right corner) */}
+            <button
+              onClick={() => handleDeleteNotification(n._id)}
+              className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition"
+              aria-label="Delete"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
-        </div>
-      ))
-  )}
+        ))
+    )}
+  </div>
 </div>
 
-          </div>
 
           {/* Create Group */}
           <div className="flex gap-2">

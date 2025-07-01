@@ -160,8 +160,8 @@ export const groupNotification = async (req, res) => {
   try {
     const Notifications =await Notification.find({toUser:req.user._id})
            .sort({ createdAt: -1 })
-            .populate('toUser', 'name')
-      .populate('groupId', 'name').populate('fromUser','name')
+            .populate('toUser', 'profileImg name')
+      .populate('groupId', 'name').populate('fromUser','profileImg name')
 
    
     

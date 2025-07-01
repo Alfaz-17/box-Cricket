@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
-import { UserPlus } from "lucide-react";
+import { ArrowLeft, UserPlus } from "lucide-react";
 import api from "../../utils/api";
 import toast from "react-hot-toast";
 
@@ -14,9 +14,6 @@ const InviteUsers = () => {
   const [groups, setGroups] = useState([]);
   const { id } = useParams(); // id = groupId
 
-
-
-    
   const fetchGroups = async () => {
     try {
       const res = await api.get("/group/myGroups");
@@ -31,13 +28,10 @@ const InviteUsers = () => {
     try {
       const res = await api.post("/auth/me");
       setCurrentUser(res.data.user);
-
     } catch (err) {
       console.error("Failed to fetch current user:", err);
     }
   };
-
-  
 
   // Fetch all users
   const fetchUsers = async () => {
@@ -55,51 +49,55 @@ const InviteUsers = () => {
     fetchGroups();
   }, []);
 
-const handleInvite = async (userIdToInvite) => {
-  try {
-    setInviting((prev) => ({ ...prev, [userIdToInvite]: true }));
+  const handleInvite = async (userIdToInvite) => {
+    try {
+      setInviting((prev) => ({ ...prev, [userIdToInvite]: true }));
 
-    const res = await api.post("/group/invite", { groupId: id, userIdToInvite });
-    
-    toast.success(res.data.message || "User invited successfully");
-  } catch (err) {
-    console.error("Error inviting user:", err);
-    const msg =
-      err?.response?.data?.message ||
-      "Failed to invite user.";
+      const res = await api.post("/group/invite", {
+        groupId: id,
+        userIdToInvite,
+      });
 
-    if (msg.toLowerCase().includes("already invited")) {
-      toast.error("User has already been invited.");
-    } else {
-      toast.error(msg);
+      toast.success(res.data.message || "User invited successfully");
+    } catch (err) {
+      console.error("Error inviting user:", err);
+      const msg = err?.response?.data?.message || "Failed to invite user.";
+
+      if (msg.toLowerCase().includes("already invited")) {
+        toast.error("User has already been invited.");
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setInviting((prev) => ({ ...prev, [userIdToInvite]: false }));
     }
+  };
 
-  } finally {
-    setInviting((prev) => ({ ...prev, [userIdToInvite]: false }));
-  }
-};
+  // Filter users based on search term and group membership and  current user
+  const currentGroup = groups.find((group) => group._id === id);
+  const groupMemberIds =
+    currentGroup?.members?.map((member) => member._id) || [];
 
-  
+  const filteredUsers = allUsers.filter((user) => {
+    const isCurrentUser = user._id === currentUser?._id;
+    const isAlreadyMember = groupMemberIds.includes(user._id);
+    const matchesSearch = user.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
 
-
-
-
-// Filter users based on search term and group membership and  current user
-const currentGroup = groups.find(group => group._id === id);
-const groupMemberIds = currentGroup?.members?.map(member => member._id) || [];
-
-const filteredUsers = allUsers.filter((user) => {
-  const isCurrentUser = user._id === currentUser?._id;
-  const isAlreadyMember = groupMemberIds.includes(user._id);
-  const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-  return !isCurrentUser && !isAlreadyMember && matchesSearch;
-});
-
+    return !isCurrentUser && !isAlreadyMember && matchesSearch;
+  });
 
   return (
     <div className="p-4 bg-base-100 shadow rounded-xl">
-      <h3 className="text-lg font-semibold mb-2">Invite Users</h3>
+      <h3 className="text-lg font-semibold mb-2">
+        <Link to={`/groups`}>
+          <button className="btn btn-sm btn-ghost">
+            <ArrowLeft />
+          </button>
+        </Link>
+        Invite Users
+      </h3>
       <input
         type="text"
         placeholder="Search users..."

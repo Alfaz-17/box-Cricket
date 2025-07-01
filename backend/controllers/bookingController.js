@@ -148,7 +148,7 @@ export const createTempBooking = async (req, res) => {
     }
 
 
-    //owner cant booked box
+    // owner cant booked box
     if (req.user.role === "owner") {
       return res.status(400).json({ message: "Owner cant booking Box" });
     }
