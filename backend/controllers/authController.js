@@ -86,10 +86,8 @@ export const completeSignup = async (req, res) => {
     if (ownerCode) {
       if (ownerCode !== process.env.OWNER_CODE) {
         return res.status(400).json({ message: "Owner code is not valid" });
-      } else {
-        user.role = "owner";
-        await user.save();
-      }
+      } 
+      
     }
 
     const hashed = await bcrypt.hash(password, 10);
@@ -100,7 +98,7 @@ export const completeSignup = async (req, res) => {
       role,
       ownerCode,
     });
-
+await user.save();
     // ✅ Cleanup OTP from Redis after signup
     await redis.del(`otp:${contactNumber}`);
 

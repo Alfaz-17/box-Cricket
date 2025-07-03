@@ -67,12 +67,10 @@ const fetchReviews = async () => {
  
   try {
     const res = await api.get(`/reviews/${id}`);
-    setReviews(res.data.reviews);
     setAverageRating(res.data.averageRating);
     setTotalReviews(res.data.reviewCount);
   } catch (err) {
     console.error(err);
-    setError('Failed to load reviews. Please try again.');
   } finally {
     setLoading(false);
   }
@@ -457,8 +455,8 @@ const handleCheckAvailability = async () => {
 
   {displayBox?.coordinates.lat ? (
     <BoxMap
-      lat={displayBox.coordinates.lat}
-      lng={displayBox.coordinates.lng}
+      lat={displayBox.coordinates?.lat}
+      lng={displayBox.coordinates?.lng}
       name={displayBox.name}
     />
   ) : (
