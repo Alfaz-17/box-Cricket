@@ -22,7 +22,7 @@ const app = express();
 const server=http.createServer(app);
 initSocket(server);
 
-  app.use(cors({origin: 'http://localhost:5173',credentials:true}))
+  app.use(cors({origin: 'http://172.20.10.2:5173',credentials:true}))
 
 
 
