@@ -453,7 +453,7 @@ const handleCheckAvailability = async () => {
     Location
   </h2>
 
-  {displayBox?.coordinates.lat ? (
+  {displayBox?.coordinates?.lat ? (
     <BoxMap
       lat={displayBox.coordinates?.lat}
       lng={displayBox.coordinates?.lng}
