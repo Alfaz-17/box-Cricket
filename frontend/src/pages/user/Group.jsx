@@ -229,7 +229,7 @@ const Group = () => {
           <div className="flex gap-2">
             <input
               type="text"
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full text-[16px]"
               placeholder="New Group Name"
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}

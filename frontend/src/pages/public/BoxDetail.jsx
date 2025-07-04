@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   Star,
   Info,
+  Phone
 
 } from "lucide-react";
 
@@ -51,6 +52,7 @@ const [totalReviews, setTotalReviews] = useState("");
       try {
         const response = await api.get(`/boxes/public/${id}`);
         setBox(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching box details:", error);
         toast.error("Failed to load cricket box details");
@@ -497,6 +499,30 @@ const handleCheckAvailability = async () => {
       
 {activeTab === "details" && (
   <>
+       <div className="lg:col-span-1">
+          <div className="sticky top-6 space-y-6">
+            {/* ⛔️ Online booking disabled – show call card */}
+            <Card className="bg-base-300">
+              
+              <h2 className="text-xl font-semibold text-primary mb-3">
+              ⛔️  Book Offline
+              </h2>
+              <p className="mb-4 text-xl">
+                Online booking is currently <strong>unavailable (In development)</strong>.
+                Please call the number below to reserve this box.
+              </p>
+              <a
+                href={`tel:${displayBox.mobileNumber}`}
+                className="btn btn-primary w-full flex items-center justify-center gap-2"
+              >
+                <Phone size={18} />
+               +91 - {displayBox.mobileNumber || "N/A"}
+              </a>
+            </Card>
+
+         
+          </div>
+        </div>
    
       {/* Booking Widget */}
       <div className="lg:col-span-1">
@@ -612,11 +638,15 @@ const handleCheckAvailability = async () => {
               fullWidth
               isLoading={isCheckingAvailability}
               className="mb-4"
+              disabled
             >
               Check Availability
             </Button>
 
-            {selectedTime && (
+
+
+            {/* currently in commented out  */}
+            {/* {selectedTime && (
               <div className="bg-base-100 p-4 rounded-md mb-6">
                 <h3 className="font-semibold text-primary  mb-2">
                   Booking Summary
@@ -646,13 +676,13 @@ const handleCheckAvailability = async () => {
                   </div>
                   <div className="border-t  my-2 pt-2 flex justify-between">
                     <span>Total:</span>
-                    <span className="font-semibold text-red-600">
-                      ${displayBox.hourlyRate * duration}
+                    <span disabled className="font-semibold text-red-600">
+                      Rs.{displayBox.hourlyRate * duration}
                     </span>
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
             {contactNumber && availableTimes && duration && selectedDate && selectedTime && (
               <Button

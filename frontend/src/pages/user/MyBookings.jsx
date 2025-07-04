@@ -24,13 +24,12 @@ const MyBookings = () => {
     const fetchBookings = async () => {
       try {
         const response = await api.get("/booking/my-bookings");
-        setBookings(response.data);
+        setBookings(response.data || []);;
       } catch (error) {
         console.error("Error fetching bookings:", error);
         toast.error("Failed to load your bookings");
 
-        // Mock data for demo
-        setBookings(mockBookings);
+       
       } finally {
         setLoading(false);
       }
