@@ -32,7 +32,7 @@ export async function startBot() {
       version,
       auth: state,
       logger: P({ level: 'error' }),
-      printQRInTerminal: true,
+   
     });
 
     sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
