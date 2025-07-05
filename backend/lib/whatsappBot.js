@@ -1,47 +1,73 @@
-// whatsappBot.js
-import { makeWASocket, DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion } from '@whiskeysockets/baileys';
-import { Boom } from '@hapi/boom';
+import { MongoClient } from 'mongodb';
+import baileys from '@whiskeysockets/baileys';
+import { useMongoDBAuthState } from 'mongo-baileys';
 import qrcode from 'qrcode-terminal';
 import P from 'pino';
+import { Boom } from '@hapi/boom';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 let sock = null;
 let isConnected = false;
 
-// Initialize the bot
 export async function startBot() {
-  const { version } = await fetchLatestBaileysVersion();
-  console.log(`Using Baileys version: ${version.join('.')}`);
+  try {
+    const { version } = await baileys.fetchLatestBaileysVersion();
+    console.log(`✅ Using Baileys version: ${version.join('.')}`);
 
-  const { state, saveCreds } = await useMultiFileAuthState('./auth');
+    // Connect to MongoDB
+    const client = new MongoClient(process.env.MONGO_URI);
+    await client.connect();
+    console.log('✅ Connected to MongoDB');
 
-  sock = makeWASocket({ version, auth: state,logger: P({ level: 'error' }) });
+    const db = client.db('test');
+    const collection = db.collection('whatsappAuth');
 
-  sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
-    if (qr) {
-      console.log('Scan this QR code with your WhatsApp:');
-      qrcode.generate(qr, { small: true });
-    }
+    // Auth state using mongo-baileys
+    const { state, saveCreds } = await useMongoDBAuthState(collection);
 
-    if (connection === 'close') {
-      const statusCode = lastDisconnect?.error ? new Boom(lastDisconnect.error).output.statusCode : 0;
-      console.log(`Connection closed with status: ${statusCode}`);
-      isConnected = false;
+    // Create WhatsApp socket
+    sock = baileys.makeWASocket({
+      version,
+      auth: state,
+      logger: P({ level: 'error' }),
+      printQRInTerminal: true,
+    });
 
-      if (statusCode === DisconnectReason.loggedOut) {
-        console.log('Logged out. Delete auth folder to restart login.');
-      } else {
-        console.log('Reconnecting...');
-        setTimeout(startBot, 5000);
+    sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
+      if (qr) {
+        console.log('📲 Scan the QR code with WhatsApp:');
+        qrcode.generate(qr, { small: true });
       }
-    } else if (connection === 'open') {
-      console.log('✅ WhatsApp bot connected');
-      isConnected = true;
-    }
-  });
 
-  sock.ev.on('creds.update', saveCreds);
+      if (connection === 'close') {
+        const statusCode = lastDisconnect?.error
+          ? new Boom(lastDisconnect.error).output.statusCode
+          : 0;
+
+        isConnected = false;
+        console.log(`❌ Connection closed with code: ${statusCode}`);
+
+        if (statusCode === baileys.DisconnectReason.loggedOut) {
+          console.log('⚠️ Logged out. Delete MongoDB credentials to restart login.');
+        } else {
+          console.log('🔁 Reconnecting...');
+          setTimeout(startBot, 5000);
+        }
+      } else if (connection === 'open') {
+        console.log('✅ WhatsApp bot connected');
+        isConnected = true;
+      }
+    });
+
+    sock.ev.on('creds.update', saveCreds);
+  } catch (err) {
+    console.error('❌ Failed to start WhatsApp bot:', err);
+  }
 }
 
-// Export sendMessage for use in routes/controllers
+// Send a message
 export async function sendMessage(number, text) {
   if (!isConnected || !sock) {
     console.log('⚠️ WhatsApp bot not connected yet');
