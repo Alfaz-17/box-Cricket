@@ -8,12 +8,12 @@ export const generateToken = (userId, res) => {
     expiresIn: "7d",
   });
 
-  res.cookie("token", token, {
-    httpOnly: true,          // Prevent access via JS (for security)
-     secure: false,          // Send only over HTTPS (important for Vercel + Render)
-    sameSite: "None",        // Allow cross-origin cookie sharing (Vercel ↔ Render)
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", // true in production (HTTPS)
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Cross-site only in production
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+});
 
   return token;
 };
