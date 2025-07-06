@@ -1,11 +1,10 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
-dotenv.config();
+
 
 
 
 const api = axios.create({
-  baseURL: process.env.BASE_URL || 'http://localhost:5001/api',
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`,
   withCredentials: true // Important for cookies
 });
 
