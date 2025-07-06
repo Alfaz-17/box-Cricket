@@ -8,7 +8,7 @@ export const generateToken = (userId, res) => {
     expiresIn: "7d",
   });
 
-res.cookie("token", token,);
+res.cookie("token", token);
 
   return token;
 };
