@@ -10,7 +10,7 @@ export const generateToken = (userId, res) => {
 
   res.cookie("token", token, {
     httpOnly: true,          // Prevent access via JS (for security)
-     secure: process.env.NODE_ENV === "production",          // Send only over HTTPS (important for Vercel + Render)
+     secure: false,          // Send only over HTTPS (important for Vercel + Render)
     sameSite: "None",        // Allow cross-origin cookie sharing (Vercel ↔ Render)
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
