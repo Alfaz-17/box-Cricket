@@ -106,6 +106,7 @@ const Signup = () => {
       const data = response.data;
 
       login(data.user, data.token);
+      localStorage.setItem("token", data.token); 
 
       toast.success("Account created successfully");
       navigate("/");

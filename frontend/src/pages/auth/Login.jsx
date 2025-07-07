@@ -48,7 +48,8 @@ const Login = () => {
         { contactNumber, password },
         { withCredentials: true } // important for cookies
       );
-
+      
+localStorage.setItem("token",response.data.token);
       const { user } = response.data;
 
       login(user); // no need to pass token

@@ -101,10 +101,10 @@ export const completeSignup = async (req, res) => {
 await user.save();
     // ✅ Cleanup OTP from Redis after signup
     await redis.del(`otp:${contactNumber}`);
-
+const token=generateToken(user._id);
     res.status(200).json({
       message: "Signup successful",
-      token: generateToken(user._id, res),
+      token ,
       user: {
         id: user._id,
         name: user.name,
@@ -128,10 +128,12 @@ export const login = async (req, res) => {
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ message: "Invalid password" });
+ // ▶️ NEW: token returned in JSON only
+    const token = generateToken(user._id);
 
     res.status(200).json({
       message: "Login successful",
-      token: generateToken(user._id, res),
+      token,
       user: {
         id: user._id,
         username: user.username,

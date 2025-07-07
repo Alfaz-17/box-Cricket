@@ -40,6 +40,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     if (!confirmLogout) return;
     logout();
     navigate("/");
+    localStorage.removeItem("token"); 
     if (onClose) onClose();
   };
 

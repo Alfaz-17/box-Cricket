@@ -1,8 +1,12 @@
+// middleware/auth.js  –– token‑auth branch
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import dotenv from "dotenv";
 dotenv.config();
 
+/* ───────────────────────────────────────────
+   Owner‑only guard
+─────────────────────────────────────────── */
 export const isOwner = (req, res, next) => {
   if (!req.user || req.user.role !== "owner") {
     return res
@@ -12,15 +16,28 @@ export const isOwner = (req, res, next) => {
   next();
 };
 
+/* ───────────────────────────────────────────
+   Auth guard (header‑token version)
+─────────────────────────────────────────── */
 export const protectedRoute = async (req, res, next) => {
   try {
-    const token = req.cookies?.token;
+    /* 1. Grab token from  Authorization: Bearer <token>  */
+    let token = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    }
+
+    /* (optional) fallback to cookie for dev/Postman */
+    if (!token && req.cookies?.token) token = req.cookies.token;
+
     if (!token) {
       return res
         .status(401)
         .json({ success: false, message: "Unauthorized – no token provided" });
     }
 
+    /* 2. Verify token */
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -30,6 +47,7 @@ export const protectedRoute = async (req, res, next) => {
         .json({ success: false, message: "Unauthorized – invalid token" });
     }
 
+    /* 3. Attach user to request */
     const user = await User.findById(decoded.userId).select("-password");
     if (!user) {
       return res
@@ -41,7 +59,6 @@ export const protectedRoute = async (req, res, next) => {
     next();
   } catch (err) {
     console.error("protectRoute error:", err);
-    // Delegate to global error handler
-    next(err);
+    next(err); // delegate to global error handler
   }
 };
