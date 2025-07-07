@@ -499,6 +499,7 @@ const handleCheckAvailability = async () => {
       
 {activeTab === "details" && (
   <>
+  
        <div className="lg:col-span-1">
           <div className="sticky top-6 space-y-6">
             {/* ⛔️ Online booking disabled – show call card */}
@@ -523,7 +524,27 @@ const handleCheckAvailability = async () => {
          
           </div>
         </div>
-   
+   <div className="overflow-hidden border border-error rounded-md mb-4 h-10 relative">
+  <div
+    className="absolute  whitespace-nowrap text-error font-semibold text-xl"
+    style={{
+      animation: 'marquee 10s linear infinite',
+    }}
+  >
+    ⚠️ Online booking temporarily unavailable – Please call to book!
+  </div>
+
+  {/* Inline @keyframes using style tag */}
+  <style>
+    {`
+      @keyframes marquee {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+    `}
+  </style>
+</div>
+
       {/* Booking Widget */}
       <div className="lg:col-span-1">
         <div className="sticky top-6">
