@@ -75,7 +75,7 @@ export const completeSignup = async (req, res) => {
   try {
     const { name, contactNumber, ownerCode, password, role } = req.body;
 
-    const exists = await User.findOne({ contactNumber });
+    const exists = await User.findOne({ contactNumber ,role: "user"});
     if (exists)
       return res
         .status(400)
