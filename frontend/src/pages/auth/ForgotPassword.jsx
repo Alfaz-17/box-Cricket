@@ -5,14 +5,13 @@ import Card from "../../components/ui/Card";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import api from "../../utils/api";
-import { error } from "qrcode-terminal";
+
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1);
   const [contactNumber, setContactNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const validateContact = () => {
@@ -20,7 +19,7 @@ const ForgotPassword = () => {
     if (!contactNumber) errs.contactNumber = "Contact number is required";
     else if (contactNumber.length !== 10)
       errs.contactNumber = "Must be 10 digits";
-    setErrors(errs);
+
     return Object.keys(errs).length === 0;
   };
 
@@ -33,7 +32,7 @@ const ForgotPassword = () => {
       setStep(2);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to send OTP");
-      console.log(error);
+     
     }
   };
 
@@ -81,7 +80,6 @@ const ForgotPassword = () => {
               value={contactNumber}
               onChange={(e) => setContactNumber(e.target.value)}
               placeholder="Enter your registered number"
-              error={errors.contactNumber}
             />
             <Button variant="primary" fullWidth onClick={handleSendOtp}>
               Send OTP
