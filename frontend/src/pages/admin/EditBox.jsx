@@ -12,6 +12,8 @@ const EditBox = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [newPricing, setNewPricing] = useState({ duration: "", price: "" });
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -26,6 +28,10 @@ const EditBox = () => {
     images: [],
     imagePreview: null,
     imagesPreview: [],
+    existingImages: [],
+      customPricing: [], // ← NEW
+
+     // ✅ old uploaded images
   });
 
 
@@ -37,13 +43,16 @@ const EditBox = () => {
   const fetchBoxDetails = async () => {
     try {
       const response = await api.get(`/boxes/public/${id}`);
+      console.log(response.data.images)
       setFormData({
         ...response.data,
         facilities: response.data.facilities?.join(", ") || "",
         features: response.data.features?.join(", ") || "",
-        numberOfQuarters: response.data.quarters?.length || 0,
+        numberOfQuarters: response.data.quarters?.length ,
         image: null,
         images: [],
+          existingImages: response.data.images || [], // ✅ Store existing URLs
+
       });
     } catch (error) {
       toast.error("Failed to fetch box details");
@@ -86,11 +95,12 @@ const EditBox = () => {
         uploadedImageURL = await uploadToCloudinary(formData.image);
       }
 
-      const uploadedImagesURLs = [];
-      for (const imgFile of formData.images) {
-        const imgUrl = await uploadToCloudinary(imgFile);
-        uploadedImagesURLs.push(imgUrl);
-      }
+     const uploadedImagesURLs = [];
+for (const imgFile of formData.images) {
+  const imgUrl = await uploadToCloudinary(imgFile);
+    uploadedImagesURLs.push(imgUrl);
+}
+const allImages = [...formData.existingImages, ...uploadedImagesURLs];
 
       const payload = {
         name: formData.name,
@@ -100,9 +110,11 @@ const EditBox = () => {
         hourlyRate: formData.hourlyRate,
         mobileNumber: formData.mobileNumber,
         features: formData.features,
-        numberOfQuarters: Number(formData.quarters), // ← ensure it’s a number
+        numberOfQuarters: Number(formData.numberOfQuarters), // ← ensure it’s a number
         image: uploadedImageURL,
-        images: uploadedImagesURLs,
+        images: allImages,
+          customPricing: formData.customPricing, // ← ADD THIS
+
       };
 
       const response = await api.put(`/boxes/update/${id}`, payload);
@@ -117,6 +129,16 @@ const EditBox = () => {
       setLoading(false);
     }
   };
+
+
+  //delete existing images
+  const removeExistingImage = (indexToRemove) => {
+  setFormData((prev) => ({
+    ...prev,
+    existingImages: prev.existingImages.filter((_, index) => index !== indexToRemove),
+  }));
+};
+
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -174,6 +196,92 @@ const EditBox = () => {
               required
             />
           </div>
+          <div className="mb-6">
+  <label className="block text-sm font-medium text-primary mb-2">
+    Custom Pricing (Optional)
+  </label>
+  <div className="flex gap-4 mb-2">
+    <Input
+      label="Duration (hrs)"
+      type="number"
+      name="duration"
+      value={newPricing.duration}
+      onChange={(e) =>
+        setNewPricing({ ...newPricing, duration: e.target.value })
+      }
+      min="1"
+      step="1"
+    />
+    <Input
+      label="Price (₹)"
+      type="number"
+      name="price"
+      value={newPricing.price}
+      onChange={(e) =>
+        setNewPricing({ ...newPricing, price: e.target.value })
+      }
+      min="1"
+    />
+    <Button
+      type="button"
+      onClick={() => {
+        if (
+          newPricing.duration &&
+          newPricing.price &&
+          !formData.customPricing.find(
+            (item) => item.duration === Number(newPricing.duration)
+          )
+        ) {
+          setFormData((prev) => ({
+            ...prev,
+            customPricing: [
+              ...prev.customPricing,
+              {
+                duration: Number(newPricing.duration),
+                price: Number(newPricing.price),
+              },
+            ],
+          }));
+          setNewPricing({ duration: "", price: "" });
+        } else {
+          toast.error("Invalid or duplicate entry");
+        }
+      }}
+    >
+      Add
+    </Button>
+  </div>
+
+  {formData.customPricing.length > 0 && (
+    <div className="space-y-2">
+      {formData.customPricing.map((item, idx) => (
+        <div
+          key={idx}
+          className="flex items-center justify-between bg-gray-100 p-2 rounded-md"
+        >
+          <span>
+            {item.duration} hrs - ₹{item.price}
+          </span>
+          <button
+            type="button"
+            className="text-red-500 text-sm"
+            onClick={() =>
+              setFormData((prev) => ({
+                ...prev,
+                customPricing: prev.customPricing.filter(
+                  (_, i) => i !== idx
+                ),
+              }))
+            }
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
 
           <Input
             label="Features (comma separated)"
@@ -187,7 +295,7 @@ const EditBox = () => {
             </label>
             <select
               name="quarters"
-              value={formData.quarters}
+              value={formData.numberOfQuarters}
               onChange={handleChange}
               className="input input-bordered w-full px-3 py-2  rounded-2xl"
               required
@@ -270,6 +378,33 @@ const EditBox = () => {
                    </div>
                  </div>
                </div>
+               {formData.existingImages.length > 0 && (
+  <div className="mb-6">
+    <label className="block text-sm font-medium text-primary mb-2">
+      Existing Images
+    </label>
+    <div className="flex flex-wrap gap-2">
+      {formData.existingImages.map((imgUrl, index) => (
+        <div key={index} className="relative group">
+          <img
+            src={imgUrl}
+            alt={`Existing ${index}`}
+            className="w-20 h-20 object-cover rounded-md"
+          />
+          <button
+            type="button"
+            onClick={() => removeExistingImage(index)}
+            className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs opacity-50 group-hover:opacity-100 transition"
+            title="Remove"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
 
           <div className="flex justify-end space-x-4">
             <Button

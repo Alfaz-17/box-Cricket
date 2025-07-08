@@ -421,6 +421,29 @@ const handleCheckAvailability = async () => {
   </div>
 </div>
 
+{Array.isArray(displayBox.customPricing) && displayBox.customPricing.length > 0 && (
+  <div className="border-t pt-6 mb-6">
+    <h2 className="text-xl font-semibold text-primary mb-4">
+      Custom Pricing
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {displayBox.customPricing.map((item, index) => (
+        <div
+          key={index}
+          className="p-4 bg-base-200 rounded-lg flex justify-between items-center shadow"
+        >
+          <span className="text-primary font-medium">
+            {item.duration} hour{item.duration > 1 ? "s" : ""}
+          </span>
+          <span className="text-success font-semibold text-lg">
+            ₹{item.price}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
 
           <div className="border-t border-base  pt-6 mb-6">
             <h2 className="text-xl font-semibold text-primary mb-4">

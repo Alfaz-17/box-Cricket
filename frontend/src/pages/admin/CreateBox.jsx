@@ -28,7 +28,11 @@ const CreateBox = () => {
     imagesPreview: [],
     latitude: null,
     longitude: null,
+      customPricing: [], // ← NEW
+
   });
+  const [newPricing, setNewPricing] = useState({ duration: "", price: "" });
+
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -82,6 +86,8 @@ const CreateBox = () => {
         images: uploadedImagesURLs,
         latitude: formData.latitude,
         longitude: formData.longitude,
+          customPricing: formData.customPricing, // ← ADD THIS
+
       };
 
       console.log(payload);
@@ -174,6 +180,92 @@ const CreateBox = () => {
             step="0.01"
             required
           />
+          <div className="mb-6">
+  <label className="block text-sm font-medium text-primary mb-2">
+    Custom Pricing (Optional)
+  </label>
+  <div className="flex gap-4 mb-2">
+    <Input
+      label="Duration (hrs)"
+      type="number"
+      name="duration"
+      value={newPricing.duration}
+      onChange={(e) =>
+        setNewPricing({ ...newPricing, duration: e.target.value })
+      }
+      min="1"
+      step="1"
+    />
+    <Input
+      label="Price (₹)"
+      type="number"
+      name="price"
+      value={newPricing.price}
+      onChange={(e) =>
+        setNewPricing({ ...newPricing, price: e.target.value })
+      }
+      min="1"
+    />
+    <Button
+      type="button"
+      onClick={() => {
+        if (
+          newPricing.duration &&
+          newPricing.price &&
+          !formData.customPricing.find(
+            (item) => item.duration === Number(newPricing.duration)
+          )
+        ) {
+          setFormData((prev) => ({
+            ...prev,
+            customPricing: [
+              ...prev.customPricing,
+              {
+                duration: Number(newPricing.duration),
+                price: Number(newPricing.price),
+              },
+            ],
+          }));
+          setNewPricing({ duration: "", price: "" });
+        } else {
+          toast.error("Invalid or duplicate entry");
+        }
+      }}
+    >
+      Add
+    </Button>
+  </div>
+
+  {formData.customPricing.length > 0 && (
+    <div className="space-y-2">
+      {formData.customPricing.map((item, idx) => (
+        <div
+          key={idx}
+          className="flex items-center justify-between bg-gray-100 p-2 rounded-md"
+        >
+          <span>
+            {item.duration} hrs - ₹{item.price}
+          </span>
+          <button
+            type="button"
+            className="text-red-500 text-sm"
+            onClick={() =>
+              setFormData((prev) => ({
+                ...prev,
+                customPricing: prev.customPricing.filter(
+                  (_, i) => i !== idx
+                ),
+              }))
+            }
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
 
           <Input
             label="Mobile Number"
