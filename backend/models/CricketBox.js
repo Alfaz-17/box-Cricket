@@ -36,6 +36,7 @@ const cricketBoxSchema = new mongoose.Schema({
   address: { type: String }, // Optional but mock data has it
   hourlyRate: { type: Number, required: true },
 
+
   mobileNumber: {
     type: String,
     required: true,
@@ -47,6 +48,13 @@ const cricketBoxSchema = new mongoose.Schema({
   },
   image: { type: String },        // Primary image
   images: [{ type: String }],     // Multiple images from Cloudinary
+
+  customPricing: [
+  {
+    duration: { type: Number, required: true }, // in hours
+    price: { type: Number, required: true }     // in rupees
+  }
+],
 
   features: [{ type: String }],   // List of features
 

@@ -17,6 +17,7 @@ export const createBox = async (req, res) => {
       description,
       facilities,
       features,
+      customPricing,
       image,
       images,
       numberOfQuarters,
@@ -25,9 +26,10 @@ export const createBox = async (req, res) => {
     const owner = req.user._id;
 
     const ownerHaveBox = await CricketBox.find({ owner });
-    if (ownerHaveBox.length > 0) {
-      return res.status(400).json({ message: "You already created a box" });
-    }
+    //temporarily commented out the owner box check
+    // if (ownerHaveBox.length > 0) {
+    //   return res.status(400).json({ message: "You already created a box" });
+    // }
 
     const quartersArray = [];
     for (let i = 1; i <= numberOfQuarters; i++) {
@@ -52,6 +54,8 @@ export const createBox = async (req, res) => {
       images,
       facilities: facilities ? facilities.split(",").map((f) => f.trim()) : [],
       features: features ? features.split(",").map((f) => f.trim()) : [],
+        customPricing: Array.isArray(customPricing) ? customPricing : [], // ✅ ADD THIS
+
       owner,
       rating: 0,
       reviewCount: 0,
@@ -87,6 +91,7 @@ export const updateBox = async (req, res) => {
       features,
       image,
       images,
+      customPricing,
       numberOfQuarters, // NEW
     } = req.body;
 
@@ -95,6 +100,10 @@ export const updateBox = async (req, res) => {
     if (!box) {
       return res.status(404).json({ message: "Box not found" });
     }
+    
+if (customPricing) {
+  box.customPricing = customPricing;
+}
 
     // Update basic fields
     box.name = name || box.name;
