@@ -46,7 +46,6 @@ const Login = () => {
       const response = await api.post(
         "/auth/login",
         { contactNumber, password },
-        { withCredentials: true } // important for cookies
       );
       
 localStorage.setItem("token",response.data.token);

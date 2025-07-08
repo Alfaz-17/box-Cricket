@@ -104,6 +104,7 @@ socket.on("connect", () => {
         const response = await api.post("/auth/me"); // ✅ Axios handles POST & cookies
         // Axios automatically parses response.data
         setUser(response.data.user);
+        
         setIsAuthenticated(true);
       } catch (error) {
         console.error("❌ Auth check error:", error);
