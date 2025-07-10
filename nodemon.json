@@ -1,5 +1,4 @@
 {
   "watch": ["backend/src"],  
-  "ext": "js,json",
-  "ignore": ["node_modules", ".env", "auth", "sessions"]
+  "ext": "js,json"
 }

@@ -93,118 +93,123 @@ const Home = () => {
   return (
     <div>
       <section className="relative mb-12">
-        <div className="bg-base-300    rounded-xl shadow-xl overflow-hidden">
-          <div className="relative z-10 p-8 md:p-12 lg:p-16">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold  mb-4">
-              Find and Book Cricket Boxes
-            </h1>
-            <p className="text-lg md:text-xl  opacity-90 mb-8 max-w-2xl">
-              Book high-quality cricket boxes for practice and matches. Improve
-              your game with the best facilities.
-            </p>
+     <div className="bg-base-300 rounded-xl shadow-xl overflow-hidden">
+  <div className="relative z-10 p-8 md:p-12 lg:p-16">
+    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+      Find and Book Cricket Boxes
+    </h1>
+    <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl">
+      Reserve top-quality cricket boxes for both practice sessions and matches. Experience the best facilities to elevate your game.
+    </p>
 
-            <div className="bg-base-100 dark:bg-base-300 p-4 rounded-box shadow-md max-w-3xl">
-              <div className="flex flex-col md:flex-row gap-3">
-                <div className="flex-grow">
-                  <label className="input input-bordered text-[16px] flex items-center gap-2 w-full">
-                    <Search className="w-5 h-5 " />
-                    <input
-                      id="search"
-                      type="text"
-                      placeholder="Search by name, location or description"
-                      className="grow"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </label>
-                </div>
+    {/* Search & Filter Container */}
+    <div className="bg-base-100 dark:bg-base-300 p-4 rounded-box shadow-md max-w-3xl">
+      <div className="flex flex-col md:flex-row gap-3">
+        {/* Search Input */}
+        <div className="flex-grow">
+          <label className="input input-bordered text-base flex items-center gap-2 w-full">
+            <Search className="w-5 h-5 text-base-content" />
+            <input
+              id="search"
+              type="text"
+              placeholder="Search by name, location, or description"
+              className="grow"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </label>
+        </div>
 
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="btn btn-outline btn-secondary flex items-center justify-center"
-                >
-                  <Filter size={18} className="mr-2" />
-                  Filters
-                </button>
+        {/* Toggle Filters */}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="btn btn-outline btn-secondary flex items-center justify-center"
+        >
+          <Filter size={18} className="mr-2" />
+          Filters
+        </button>
 
-                <button className="btn btn-primary">Search</button>
-              </div>
+        {/* Search Button */}
+        <button className="btn btn-primary">Search</button>
+      </div>
 
-              {showFilters && (
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Location Input */}
-                  <div>
-                    <label className="label text-sm font-medium text-base-content">
-                      Location
-                    </label>
-                    <label className="input input-bordered text-[16px] flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        id="location"
-                        name="location"
-                        value={filters.location}
-                        onChange={handleFilterChange}
-                        placeholder="Any location"
-                        className="grow"
-                      />
-                    </label>
-                  </div>
+      {/* Filter Section */}
+      {showFilters && (
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Location Filter */}
+          <div>
+            <label className="label text-sm font-medium text-base-content">
+              Location
+            </label>
+            <label className="input input-bordered text-base flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                id="location"
+                name="location"
+                placeholder="Any location"
+                value={filters.location}
+                onChange={handleFilterChange}
+                className="grow"
+              />
+            </label>
+          </div>
 
-                  {/* Price Range */}
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <label className="label text-sm text-[16px] font-medium text-base-content">
-                        Min Price
-                      </label>
-                      <input
-                        type="number"
-                        id="minPrice"
-                        name="minPrice"
-                        min="0"
-                        value={filters.minPrice}
-                        onChange={handleFilterChange}
-                        placeholder="₹0"
-                        className="input input-bordered text-[16px] w-full"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label className="label text-sm font-medium text-base-content">
-                        Max Price
-                      </label>
-                      <input
-                        type="number"
-                        id="maxPrice"
-                        name="maxPrice"
-                        min="0"
-                        value={filters.maxPrice}
-                        onChange={handleFilterChange}
-                        placeholder="₹999"
-                        className="input input-bordered text-[16px] w-full"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="md:col-span-3 flex justify-end">
-                    <button
-                      className="btn btn-outline btn-secondary mr-2"
-                      onClick={clearFilters}
-                    >
-                      Clear Filters
-                    </button>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => setShowFilters(false)}
-                    >
-                      Apply Filters
-                    </button>
-                  </div>
-                </div>
-              )}
+          {/* Price Range Filter */}
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="label text-sm font-medium text-base-content">
+                Min Price
+              </label>
+              <input
+                type="number"
+                id="minPrice"
+                name="minPrice"
+                min="0"
+                placeholder="₹0"
+                value={filters.minPrice}
+                onChange={handleFilterChange}
+                className="input input-bordered w-full text-base"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="label text-sm font-medium text-base-content">
+                Max Price
+              </label>
+              <input
+                type="number"
+                id="maxPrice"
+                name="maxPrice"
+                min="0"
+                placeholder="₹999"
+                value={filters.maxPrice}
+                onChange={handleFilterChange}
+                className="input input-bordered w-full text-base"
+              />
             </div>
           </div>
+
+          {/* Filter Actions */}
+          <div className="md:col-span-3 flex justify-end gap-2">
+            <button
+              className="btn btn-outline btn-secondary"
+              onClick={clearFilters}
+            >
+              Clear Filters
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowFilters(false)}
+            >
+              Apply Filters
+            </button>
+          </div>
         </div>
+      )}
+    </div>
+  </div>
+</div>
+
       </section>
 
       {/* Boxes Section */}

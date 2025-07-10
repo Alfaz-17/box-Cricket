@@ -140,9 +140,18 @@ const Signup = () => {
   return (
     <div className="max-w-md mx-auto">
       <Card
-        title="Create an Account"
-        subtitle="Sign up to start booking cricket boxes"
+        
       >
+           <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-primary ">Book My Box</h1>
+          <p className="text-sm text-base-content opacity-70">
+            Book your perfect cricket box—fast, easy, and local.
+        </p>
+
+      </div>
+
+      <h1 className="text-xl font-bold  ">Signup</h1>
+      <p className="text-sm text-base-content opacity-50 mb-4" >Fill up the details below to create an account.</p>
         <form onSubmit={handleSubmit}>
           {/* Phase 1: OTP Verification */}
           {!isOtpVerified && (

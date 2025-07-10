@@ -67,9 +67,19 @@ localStorage.setItem("token",response.data.token);
   return (
     <div className="max-w-md mx-auto">
       <Card
-        title="Welcome Back"
-        subtitle="Log in to your account to book cricket boxes"
+      
       >
+          {/* Branding Section */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-primary ">Book My Box</h1>
+          <p className="text-sm text-base-content opacity-70">
+            Book your perfect cricket box—fast, easy, and local.
+        </p>
+      </div>
+
+      <h1 className="text-xl font-bold ">Login</h1>
+            <p className="text-sm text-base-content opacity-50 mb-4" >Fill up the details below to login to your account.</p>
+
         <form onSubmit={handleSubmit}>
           <Input
             label="Contact Number"

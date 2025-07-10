@@ -42,6 +42,7 @@ import InviteUsers from "./pages/user/InviteUsers";
 import socket from "./utils/soket";
 import GroupChat from "./pages/user/GroupChat";
 import GroupInfo from "./pages/user/GroupInfo";
+import "@fontsource/mulish"; // Loads 400 weight by default
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
@@ -146,7 +147,7 @@ socket.on("connect", () => {
   return (
     <AuthContext.Provider value={authContextValue}>
       <Router>
-        <div style={{ fontFamily: "Poppins" }}>
+        <div style={{ fontFamily: "mulish" }}>
           <div className="flex flex-col min-h-screen bg-base-100 text-base-content transition-colors duration-300">
             <Navbar />
             <main className="flex-grow container mx-auto px-4 py-8">

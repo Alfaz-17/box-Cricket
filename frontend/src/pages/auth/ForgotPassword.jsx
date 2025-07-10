@@ -70,7 +70,11 @@ const ForgotPassword = () => {
 
   return (
     <div className="max-w-md mx-auto">
-      <Card title="Forgot Password" subtitle="Reset your password in 3 steps">
+      <Card >
+       
+
+      <h1 className="text-xl font-bold ">Forgot Password</h1>
+            <p className="text-sm text-base-content opacity-50 mb-4" >Forgot your password in 3 steps.</p>
         {step === 1 && (
           <>
             <Input
