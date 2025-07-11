@@ -732,7 +732,7 @@ const paymentLink = paymentRes.data.payment_link;
               fullWidth
               isLoading={isCheckingAvailability}
               className="mb-4"
-             
+             disabled
             >
               Check Availability
             </Button>
