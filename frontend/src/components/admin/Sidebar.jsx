@@ -18,6 +18,7 @@ import {
 
 } from "lucide-react";
 import AuthContext from "../../context/AuthContext";
+import BookMyBoxLogo from '../../assets/cri.png';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
@@ -102,20 +103,30 @@ const Sidebar = ({ isOpen, onClose }) => {
       >
         <div className="flex flex-col h-full bg-base-300">
           {/* Header */}
-          <div className="p-4 border-b border- ">
-            <Link to="/" className="flex items-center  ">
-              <div className="bg-base-100 p-2 rounded-md mr-2">
-                <Box size={20} />
-              </div>
-              <div className="text-primary font-bold text-xl">
-                {isAuthenticated
-                  ? user?.role === "owner"
-                    ? "BookMyBox"
-                    : "BookMyBox"
-                  : "Welcome"}
-              </div>
-            </Link>
-          </div>
+       <div className="p-4 border-b bg-base-100 flex items-center justify-between">
+  {/* Left Logo + Branding */}
+  <div className="flex items-center space-x-2">
+    <img
+      className="h-10 w-10 object-contain"
+      src={BookMyBoxLogo}
+      alt="BookMyBox Logo"
+    />
+    <div
+      style={{ fontFamily: "Bebas Neue" }}
+      className="text-primary font-bold text-3xl tracking-wide"
+    >
+      {isAuthenticated
+        ? user?.role === "owner"
+          ? "BookMyBox"
+          : "BookMyBox"
+        : "Welcome"}
+    </div>
+  </div>
+
+  {/* Optional right side (could be user avatar, logout, etc.) */}
+  {/* <div>Right Actions</div> */}
+</div>
+
 
           {/* Menu Items */}
           <nav className="flex-1 px-2 py-4 overflow-y-auto">
