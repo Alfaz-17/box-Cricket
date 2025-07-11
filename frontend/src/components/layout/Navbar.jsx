@@ -42,7 +42,7 @@ const Navbar = () => {
               className="flex items-center space-x-2  dark:text-yellow-400 font-bold text-xl transition-colors duration-300"
             >
 
-              <h1 style={{ fontFamily: "Bebas Neue" }}  className="flex items-center   font-bold text-xl" >
+              <h1 style={{ fontFamily: "Bebas Neue" }}  className="flex items-center   font-bold text-2xl" >
                             <img className="h-15 w-15 m-[-13px]" src={BookMyBoxLogo} alt="BookMyBox Logo" />Book My Box
 
                  </h1>

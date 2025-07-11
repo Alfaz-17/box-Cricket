@@ -102,7 +102,7 @@ const Home = () => {
           className="h-30 mt-[-40px] mx-[-30px] w-30  "
           src={BookMyBoxLogo}
           alt="BookMyBox Logo"
-        />   Book.... play.... win....</h1>
+        />   Book.. play.. win..</h1>
     <h1 style={{ fontFamily: "Bebas Neue" }} className=" mt-[-20px] text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
       Find and Book Cricket Boxes
     </h1>
