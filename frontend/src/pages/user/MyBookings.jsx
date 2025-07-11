@@ -154,7 +154,7 @@ const MyBookings = () => {
             <div className="mx-auto w-16 h-16 bg-base-100 rounded-full flex items-center justify-center mb-4">
               <Calendar size={24} className="" />
             </div>
-            <h3 className="text-lg font-medium   mb-1">
+            <h3 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-medium   mb-1">
               No {activeTab} bookings found
             </h3>
             <p className=" mb-6">
@@ -275,7 +275,7 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
         </div>
         <div className="sm:w-2/3 p-4">
           <div className="flex justify-between items-start">
-            <h3 className="text-lg font-semibold text-primary ">
+            <h3 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-semibold text-primary ">
               {booking.box.name}
             </h3>
             {getStatusBadge(booking.status)}

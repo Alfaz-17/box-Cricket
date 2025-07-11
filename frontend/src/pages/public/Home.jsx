@@ -95,7 +95,7 @@ const Home = () => {
       <section className="relative mb-12">
      <div className="bg-base-300 rounded-xl shadow-xl overflow-hidden">
   <div className="relative z-10 p-8 md:p-12 lg:p-16">
-    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+    <h1 style={{ fontFamily: "Bebas Neue" }} className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
       Find and Book Cricket Boxes
     </h1>
     <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl">
@@ -216,7 +216,7 @@ const Home = () => {
       {/* Boxes Section */}
       <section>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold ">Available Cricket Boxes</h2>
+          <h2 style={{ fontFamily: "Bebas Neue" }} className="text-2xl font-bold ">Available Cricket Boxes</h2>
           <div className="text-sm text-base-content/70">
             Showing {filteredBoxes.length} results
           </div>
@@ -265,6 +265,7 @@ const Home = () => {
               Easy Booking
             </h3>
             <p className="text-base-content/70">
+
               Find and book cricket boxes with just a few clicks. Filter by
               location, price, and availability.
             </p>
@@ -323,7 +324,7 @@ const BoxCard = ({ box }) => {
       </figure>
 
       <div className="card-body p-4">
-        <h3 className="card-title text-primary  text-lg">{box.name}</h3>
+        <h3 style={{ fontFamily: "Bebas Neue" }} className="card-title text-primary  text-lg">{box.name}</h3>
 
         <div className="flex items-center mb-2">
           <div className="flex items-center mr-2">

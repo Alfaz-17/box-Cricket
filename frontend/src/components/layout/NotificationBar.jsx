@@ -39,7 +39,7 @@ const NotificationBar = ({ token, userId }) => {
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="flex items-center gap-2 p-3 bg-yellow-100 border-b border-yellow-300">
           <Bell className="text-yellow-500" />
-          <h3 className="font-semibold text-yellow-700">Notifications</h3>
+          <h3 style={{ fontFamily: "Bebas Neue" }}  className="font-semibold text-yellow-700">Notifications</h3>
         </div>
         <ul className="max-h-80 overflow-y-auto">
           {notifications.length === 0 && (

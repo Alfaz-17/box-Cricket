@@ -124,7 +124,7 @@ const Group = () => {
 
 <div className="mb-4">
   <div className="flex justify-between items-center mb-2">
-    <h3 className="text-lg font-bold">🔔 Notifications</h3>
+    <h3 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-bold">🔔 Notifications</h3>
     <button
       className="btn btn-sm btn-outline btn-info"
       onClick={fetchNotifications}
@@ -156,7 +156,7 @@ const Group = () => {
                     className="w-6 h-6 rounded-full object-cover"
                   />
                 )}
-                <h4 className="font-medium text-sm text-base-content">
+                <h4   className="font-medium text-md text-base-content">
                   {n.fromUser?.name || "System"}
                 </h4>
               </div>
@@ -265,7 +265,7 @@ const Group = () => {
                     </div>
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold">{group.name}</h3>
+                    <h3 style={{ fontFamily: "Bebas Neue" }}  className="font-semibold">{group.name}</h3>
                     <p className="text-xs text-gray-500">
                       Admin: {group.admin?.name}
                     </p>

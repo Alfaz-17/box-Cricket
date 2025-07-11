@@ -82,7 +82,7 @@ return (
     <ArrowLeft />
   </button>
   </Link>
-  <h2 className="text-xl font-bold">{groupName}</h2>
+  <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-bold">{groupName}</h2>
 </div>
 </Link>
 

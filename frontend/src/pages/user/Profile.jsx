@@ -132,7 +132,7 @@ const Profile = () => {
           </label>
         </div>
 
-        <h2 className="text-xl font-bold mt-3 text-primary text-center">
+        <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-bold mt-3 text-primary text-center">
           {user.name}
         </h2>
       </div>

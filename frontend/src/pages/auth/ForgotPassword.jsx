@@ -73,7 +73,7 @@ const ForgotPassword = () => {
       <Card >
        
 
-      <h1 className="text-xl font-bold ">Forgot Password</h1>
+      <h1  style={{ fontFamily: "Bebas Neue" }} className="text-xl font-bold ">Forgot Password</h1>
             <p className="text-sm text-base-content opacity-50 mb-4" >Forgot your password in 3 steps.</p>
         {step === 1 && (
           <>

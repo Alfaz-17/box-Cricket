@@ -110,7 +110,7 @@ const Dashboard = () => {
         <div className="flex-1 min-w-0  ">
           {/* Top Bar */}
           <div className=" bg-base-300 border-b border-base-100 px-4 py-3 sm:px-6 flex justify-between items-center">
-            <h1 className="text-xl font-bold text-base-content">Dashboard</h1>
+            <h1 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-bold text-base-content">Dashboard</h1>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-base-content opacity-70">
                 Welcome, Admin
@@ -171,7 +171,7 @@ const Dashboard = () => {
               <div className="lg:col-span-2">
                 <div className="card bg-base-100 p-4 shadow">
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold text-primary">
+                    <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-semibold text-primary">
                       Recent Bookings
                     </h2>
                     <Link to="/admin/bookings">
@@ -233,7 +233,7 @@ const Dashboard = () => {
               {/* Sidebar Actions */}
               <div className="lg:col-span-1">
                 <div className="card bg-base-100 p-4 shadow mt-6">
-                  <h2 className="text-lg font-semibold text-primary mb-4">
+                  <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-semibold text-primary mb-4">
                     Quick Actions
                   </h2>
                   <div className="space-y-3">

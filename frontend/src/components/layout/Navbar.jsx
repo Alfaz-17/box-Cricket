@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, Sun, Moon, LogOut, Trophy } from "lucide-react";
 import AuthContext from "../../context/AuthContext";
 import Sidebar from "../admin/Sidebar";
-import BookMyBoxLogo from '../../assets/BookMyBox.png';
+import BookMyBoxLogo from '../../assets/cri.png';
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -42,9 +42,13 @@ const Navbar = () => {
               className="flex items-center space-x-2  dark:text-yellow-400 font-bold text-xl transition-colors duration-300"
             >
 
-              <h1> BookMyBox</h1>
+              <h1 style={{ fontFamily: "Bebas Neue" }}  className="flex items-center   font-bold text-xl" >
+                            <img className="h-15 w-15 m-[-13px]" src={BookMyBoxLogo} alt="BookMyBox Logo" />Book My Box
+
+                 </h1>
 
             </Link>
+            
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-6">

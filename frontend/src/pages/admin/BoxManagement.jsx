@@ -65,7 +65,7 @@ const BoxManagement = () => {
   return (
     <div className="container  mx-auto px-4">
       <div className="flex justify-between  items-center mb-6">
-        <h1 className="text-3xl font-bold">Box Management</h1>
+        <h1 style={{ fontFamily: "Bebas Neue" }}  className="text-3xl font-bold">Box Management</h1>
         <Link to="/admin/boxes/create">
           <button className="btn bg-primary rounded-2xl  btn-md text-primary-content">
             <Plus size={20} className="mr-2 " />
@@ -105,7 +105,7 @@ const BoxManagement = () => {
             </figure>
 
             <div className="card-body">
-              <h2 className="card-title text-primary ">{box.name}</h2>
+              <h2 style={{ fontFamily: "Bebas Neue" }}  className="card-title text-primary ">{box.name}</h2>
               <div className="text-sm space-y-2  dark:text-gray-400">
                 <div className="flex items-center">
                   <BoxIcon size={16} className="mr-2 text-primary" />

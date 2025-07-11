@@ -73,7 +73,7 @@ const AdminBookings = () => {
   return (
     <div className="container mx-auto px-4">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold  mb-4">Booking Management</h1>
+        <h1 style={{ fontFamily: "Bebas Neue" }} className="text-2xl font-bold  mb-4">Booking Management</h1>
 
         {/* Filters */}
         <div className="flex flex-col md:flex-row items-center gap-4 mb-6">

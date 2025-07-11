@@ -43,7 +43,7 @@ const [selectedQuarter, setSelectedQuarter] = useState("");
 const [averageRating, setAverageRating] = useState("");
 const [totalReviews, setTotalReviews] = useState("");
 
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated ,user} = useContext(AuthContext);
   const navigate = useNavigate();
 
 
@@ -144,7 +144,7 @@ const handleCheckAvailability = async () => {
   }
 };
 
-  const handleBooking = async () => {
+const handleBooking = async () => {
   if (!isAuthenticated) {
     toast.error("Please log in to book a cricket box");
     navigate("/login", { state: { from: `/box/${id}` } });
@@ -155,46 +155,96 @@ const handleCheckAvailability = async () => {
     toast.error("Please select date, time and duration");
     return;
   }
-    if (!contactNumber) {
-    toast.error("Please enter your contact number");
+
+  if (!contactNumber || !/^\d{10}$/.test(contactNumber)) {
+    toast.error("Enter a valid 10-digit contact number");
     return;
   }
-
 
   if (!availableTimes) {
     toast.error("This time is not available");
     return;
   }
-  if (!selectedQuarter) {
-  toast.error("Please select a quarter");
-  return;
-}
 
+  if (!selectedQuarter) {
+    toast.error("Please select a quarter");
+    return;
+  }
 
   setIsProcessingBooking(true);
 
   try {
-    const response = await api.post("/booking/temp-booking", {
-      boxId: id,
-      date: formattedDate,
-      startTime: time,
-     quarterId: selectedQuarter,  // add this
-      duration: duration,
-      contactNumber,
-    });
+    const amount = 500;
 
-    toast.success("Your booking is confirmed");
-    setAvailableTimes(false);
-    console.log(response.data);
+    // ✅ Step 1: Create order
+    const paymentRes = await api.post("/booking/create-order", {
+      amount,
+      customerName: user?.name || "Guest",
+      phone: contactNumber,
+    });
+    console.log(paymentRes.data)
+
+    const orderId = paymentRes.data.order_id;
+const paymentLink = paymentRes.data.payment_link;
+    // ✅ Step 2: Open Cashfree payment link
+    window.open(paymentLink, "_blank");
+   
+
+    // ✅ Step 3: Poll for payment status
+    let retries = 0;
+    const maxRetries = 12;
+
+    const pollForPayment = async () => {
+      try {
+        const statusResponse = await axios.get(`https://sandbox.cashfree.com/pg/orders/${orderId}`, {
+          headers: {
+            "x-api-version": "2022-09-01",
+            "x-client-id": "TEST10711021ae5eb2bda5a8afb1010412011701",
+            "x-client-secret": "cfsk_ma_test_64a9d11f1182e1d48c6bc2b9f61a8f3f_fd041df7",
+          },
+        });
+
+        const status = statusResponse.data.order_status;
+
+        if (status === "PAID") {
+          // ✅ Step 4: Verify and create booking
+          const bookingRes = await api.post("/booking/verify-and-create", {
+            orderId,
+            boxId: id,
+            quarterId: selectedQuarter,
+            date: formattedDate,
+            startTime: time,
+            duration,
+            contactNumber,
+          });
+
+          toast.success("🎉 Booking confirmed!");
+          setAvailableTimes(false);
+          setIsProcessingBooking(false);
+          console.log(bookingRes.data);
+        } else {
+          if (++retries < maxRetries) {
+            setTimeout(pollForPayment, 5000);
+          } else {
+            toast.error("Payment not completed in time.");
+            setIsProcessingBooking(false);
+          }
+        }
+      } catch (pollErr) {
+        toast.error("Error verifying payment.");
+        setIsProcessingBooking(false);
+      }
+    };
+
+    pollForPayment();
   } catch (error) {
-    console.error("Error creating booking:", error);
-    toast.error(
-      error.response?.data?.message || "Failed to create booking"
-    );
-  } finally {
+    console.error("Booking error:", error);
+    toast.error(error.response?.data?.message || "Booking failed");
     setIsProcessingBooking(false);
   }
 };
+
+
 
 
 
@@ -344,7 +394,7 @@ const handleCheckAvailability = async () => {
 
         {/* Box Details */}
         <Card className="mb-8 bg-base-300">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">
+          <h1 style={{ fontFamily: "Bebas Neue" }}  className="text-2xl md:text-3xl font-bold text-primary mb-2">
             {displayBox.name}
           </h1>
 
@@ -372,7 +422,7 @@ const handleCheckAvailability = async () => {
           </p>
 
           <div className="border-t  pt-6 mb-6">
-            <h2 className="text-xl font-semibold text-primary mb-4">
+            <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-semibold text-primary mb-4">
               Facilities & Amenities
             </h2>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -402,7 +452,7 @@ const handleCheckAvailability = async () => {
 
           {/* quaters */}
           <div className="border-t  pt-6 mb-6">
-  <h2 className="text-xl font-semibold text-primary mb-4">
+  <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-semibold text-primary mb-4">
     Available Boxes
   </h2>
   <div className="flex flex-wrap gap-2 ">
@@ -423,7 +473,7 @@ const handleCheckAvailability = async () => {
 
 {Array.isArray(displayBox.customPricing) && displayBox.customPricing.length > 0 && (
   <div className="border-t pt-6 mb-6">
-    <h2 className="text-xl font-semibold text-primary mb-4">
+    <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-semibold text-primary mb-4">
       Custom Pricing
     </h2>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -446,7 +496,7 @@ const handleCheckAvailability = async () => {
 
 
           <div className="border-t border-base  pt-6 mb-6">
-            <h2 className="text-xl font-semibold text-primary mb-4">
+            <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-semibold text-primary mb-4">
               Opening Hours
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
@@ -474,7 +524,7 @@ const handleCheckAvailability = async () => {
           </div>
 
          <div className="border-t border-base  pt-6">
-  <h2 className="text-xl font-semibold text-primary mb-4">
+  <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-semibold text-primary mb-4">
     Location
   </h2>
 
@@ -528,7 +578,7 @@ const handleCheckAvailability = async () => {
             {/* ⛔️ Online booking disabled – show call card */}
             <Card className="bg-base-300">
               
-              <h2 className="text-xl font-semibold text-primary mb-3">
+              <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-semibold text-primary mb-3">
               ⛔️  Book Offline
               </h2>
               <p className="mb-4 text-xl">
@@ -682,7 +732,7 @@ const handleCheckAvailability = async () => {
               fullWidth
               isLoading={isCheckingAvailability}
               className="mb-4"
-              disabled
+             
             >
               Check Availability
             </Button>

@@ -103,7 +103,7 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
 
   return (
     <div className="bg-base-300 rounded-xl shadow-md p-6">
-      <h2 className="text-2xl font-bold  mb-4 flex items-center gap-2">
+      <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-2xl font-bold  mb-4 flex items-center gap-2">
         📅 Booked Slots by Boxes
       </h2>
 
@@ -152,7 +152,7 @@ const noFilteredResults = filteredSlots.every((q) => q.slots.length === 0);
             >
               <div className="flex items-center gap-2 mb-3">
                 <Square className="w-5 h-5  text-primary" />
-                <h3 className="text-lg font-semibold text-primary">
+                <h3 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-semibold text-primary">
                   Boxes:{quarter.quarterName}-(box)
                 </h3>
               </div>

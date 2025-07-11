@@ -90,7 +90,7 @@ const InviteUsers = () => {
 
   return (
     <div className="p-4 bg-base-100 shadow rounded-xl">
-      <h3 className="text-lg font-semibold mb-2">
+      <h3 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-semibold mb-2">
         <Link to={`/groups`}>
           <button className="btn btn-sm btn-ghost">
             <ArrowLeft />

@@ -8,7 +8,7 @@ const Card = ({ children, title, subtitle, footer, className = "" }) => {
       {(title || subtitle) && (
         <div className="card-header border-b border-base-300 px-6 py-4">
           {title && (
-            <h3 className="card-title text-lg font-semibold text-primary">
+            <h3 style={{ fontFamily: "Bebas Neue" }}  className="card-title text-lg font-semibold text-primary">
               {title}
             </h3>
           )}

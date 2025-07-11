@@ -137,7 +137,7 @@ const BlockSlot = () => {
       {/* Block a Time Slot Form */}
       <div className="card bg-base-300 shadow-md">
         <div className="card-body">
-          <h2 className="card-title text-2xl">Block a Time Slot</h2>
+          <h2 style={{ fontFamily: "Bebas Neue" }}  className="card-title text-2xl">Block a Time Slot</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
 
             {/* Select Box */}
@@ -258,7 +258,7 @@ const BlockSlot = () => {
       {/* Blocked Slots Card */}
       <div className="card bg-base-100 shadow-md">
         <div className="card-body">
-          <h2 className="card-title text-lg">Blocked Slots</h2>
+          <h2 style={{ fontFamily: "Bebas Neue" }}  className="card-title text-lg">Blocked Slots</h2>
 
           {/* Filter Quarters */}
           {selectedBoxId && (

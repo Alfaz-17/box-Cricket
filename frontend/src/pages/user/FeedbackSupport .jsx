@@ -41,7 +41,7 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="max-w-xl mx-auto p-6 mt-10 bg-base-300 rounded-box shadow-lg">
-      <h2 className="text-2xl font-bold text-primary mb-4 text-center">
+      <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-2xl font-bold text-primary mb-4 text-center">
         Feedback & Support
       </h2>
 

@@ -85,7 +85,7 @@ export default function BlockedSlots({ boxId }) {
 
   return (
     <div className="bg-base-300  rounded-xl shadow-md p-6">
-      <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
+      <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
         ⛔ Blocked Slots by Boxes
       </h2>
 
@@ -134,7 +134,7 @@ export default function BlockedSlots({ boxId }) {
             >
               <div className="flex items-center gap-2 mb-3">
                 <Square className="w-5 h-5 text-red-500" />
-                <h3 className="text-lg font-semibold text-primary ">
+                <h3 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-semibold text-primary ">
                   Boxes: {quarter.quarterName}-(box)
                 </h3>
               </div>

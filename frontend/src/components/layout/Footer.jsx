@@ -31,7 +31,7 @@ export default function Footer() {
           {/* Links */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="font-semibold text-lg mb-4">Support</h3>
+              <h3 style={{ fontFamily: "Bebas Neue" }}  className="font-semibold text-lg mb-4">Support</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a href="#" className="hover:text-primary  transition-colors">
@@ -52,7 +52,7 @@ export default function Footer() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+              <h3 style={{ fontFamily: "Bebas Neue" }}  className="font-semibold text-lg mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link to="/" className="hover:text-primary transition-colors">
@@ -79,7 +79,7 @@ export default function Footer() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-lg mb-4">Contact Us</h3>
+              <h3 style={{ fontFamily: "Bebas Neue" }}  className="font-semibold text-lg mb-4">Contact Us</h3>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center">
                   <Mail size={16} className="mr-2 text-primary " />

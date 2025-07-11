@@ -7,6 +7,8 @@ import Card from "../../components/ui/Card";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import api from "../../utils/api";
+import BookMyBoxLogo from '../../assets/cri.png';
+
 const Login = () => {
   const [contactNumber, setContactNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -70,14 +72,25 @@ localStorage.setItem("token",response.data.token);
       
       >
           {/* Branding Section */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-primary ">Book My Box</h1>
-          <p className="text-sm text-base-content opacity-70">
-            Book your perfect cricket box—fast, easy, and local.
-        </p>
-      </div>
+   {/* Branding Section */}
+<div className="text-center mb-6">
+  <div className="flex justify-center items-center gap-3 mb-2">
+    <img
+      src={BookMyBoxLogo}
+      alt="BookMyBox Logo"
+      className="h-20 w-20  mx-[-25px] object-contain"
+    /> 
+    <h1 style={{ fontFamily: "Bebas Neue" }} className="text-3xl font-bold  text-primary">
+      Book My Box
+    </h1>
+  </div>
+  <p className="text-sm text-base-content opacity-70">
+    Book your perfect cricket box — fast, easy, and local.
+  </p>
+</div>
 
-      <h1 className="text-xl font-bold ">Login</h1>
+
+      <h1 style={{ fontFamily: "Bebas Neue" }} className="text-xl font-bold ">Login</h1>
             <p className="text-sm text-base-content opacity-50 mb-4" >Fill up the details below to login to your account.</p>
 
         <form onSubmit={handleSubmit}>

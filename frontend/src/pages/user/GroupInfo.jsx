@@ -72,7 +72,7 @@ const handleDeleteGroup = async () => {
           <ArrowLeft />
         </button>
         </Link>
-        <h2 className="text-xl font-bold">{groupName}  Info</h2>
+        <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-bold">{groupName}  Info</h2>
       </div>
 
       {/* Admin */}
