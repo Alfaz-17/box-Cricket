@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Search, MapPin, Clock, Calendar, Filter } from "lucide-react";
 
 import api from "../../utils/api";
+import BookMyBoxLogo from '../../assets/cri.png';
+
 const Home = () => {
   const [boxes, setBoxes] = useState([]);
   const [filteredBoxes, setFilteredBoxes] = useState([]);
@@ -94,10 +96,17 @@ const Home = () => {
     <div>
       <section className="relative mb-12">
      <div className="bg-base-300 rounded-xl shadow-xl overflow-hidden">
-  <div className="relative z-10 p-8 md:p-12 lg:p-16">
-    <h1 style={{ fontFamily: "Bebas Neue" }} className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+  <div className="relative  z-10 p-8 md:p-12 lg:p-16">
+       <h1 style={{ fontFamily: "Bebas Neue" }} className=" flex text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+  <img
+          className="h-30 mt-[-40px] mx-[-30px] w-30  "
+          src={BookMyBoxLogo}
+          alt="BookMyBox Logo"
+        />   Book.... play.... win....</h1>
+    <h1 style={{ fontFamily: "Bebas Neue" }} className=" mt-[-20px] text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
       Find and Book Cricket Boxes
     </h1>
+     
     <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl">
       Reserve top-quality cricket boxes for both practice sessions and matches. Experience the best facilities to elevate your game.
     </p>
