@@ -15,6 +15,7 @@ import { startBot } from './lib/whatsappBot.js';
 import http from 'http';
 import cors from 'cors'
 import { initSocket } from "./lib/soket.js";
+import "./workers/otpWorker.js"
 dotenv.config();
 const app = express();
 
