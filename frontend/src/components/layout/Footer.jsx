@@ -8,6 +8,7 @@ import {
   Instagram,
   Twitter,
 } from "lucide-react";
+import BookMyBoxLogo from '../../assets/cri.png';
 
 const currentYear = new Date().getFullYear();
 
@@ -19,8 +20,11 @@ export default function Footer() {
           {/* Branding */}
           <div>
             <Link to="/" className="flex items-center mb-4 btn btn-ghost">
-              <Trophy size={24} className="btn btn-ghost mr-2" />
-              <span className="font-bold text-2xl">Book My Box</span>
+            
+                          <h1 style={{ fontFamily: "Bebas Neue" }}  className="flex items-center   font-bold text-3xl" >
+                                        <img className="h-15 w-15 m-[-13px]" src={BookMyBoxLogo} alt="BookMyBox Logo" />Book My Box
+            
+                             </h1>
             </Link>
             <p className="max-w-sm text-sm text-primary">
               Discover and book top-notch cricket boxes for your matches and

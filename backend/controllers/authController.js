@@ -2,8 +2,9 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { generateToken } from "../lib/generateToken.js";
 import dotenv from "dotenv";
+import {otpQueue} from '../queues/otpQueue.js'
 import redis from "../lib/redis.js";
-import { sendMessage } from "../lib/whatsappBot.js";
+import { connection } from "../lib/redisClient.js";
 dotenv.config();
 
 export const sendOtp = async (req, res) => {
@@ -12,33 +13,37 @@ export const sendOtp = async (req, res) => {
     // add action for diffrefnt aaspact
     const { contactNumber, action } = req.body;
 
-    const userExists = await User.findOne({ contactNumber });
+    // const userExists = await User.findOne({ contactNumber });
 
-    if (action === "signup") {
-      if (userExists) {
-        return res
-          .status(400)
-          .json({ message: "Contact number already registered" });
-      }
-    } else if (action === "forgot-password") {
-      if (!userExists) {
-        return res
-          .status(404)
-          .json({ message: "Contact number not registered" });
-      }
-    } else {
-      return res.status(400).json({ message: "Invalid action" });
-    }
+    // if (action === "signup") {
+    //   if (userExists) {
+    //     return res
+    //       .status(400)
+    //       .json({ message: "Contact number already registered" });
+    //   }
+    // } else if (action === "forgot-password") {
+    //   if (!userExists) {
+    //     return res
+    //       .status(404)
+    //       .json({ message: "Contact number not registered" });
+    //   }
+    // } else {
+    //   return res.status(400).json({ message: "Invalid action" });
+    // }
 
     const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
     const ttl = 300; // 5 minutes
 
 
-    //set otp in redis
-    await redis.set(`otp:${contactNumber}`, otp, "EX", ttl);
+    //add otp queue
+await otpQueue.add("sendOtpJob", {
+  contactNumber,
+  otp,
+  ttl
+});
 
-    //send message in whatsapp using chatBot
-    sendMessage(`91${contactNumber}`, `Your OTP is: ${otp}`);
+
+
 
     console.log(`OTP for ${contactNumber}: ${otp}`);
 
@@ -55,7 +60,7 @@ export const verifyOtp = async (req, res) => {
     const { contactNumber, otp } = req.body;
 
     // Check OTP from Redis
-    const storedOtp = await redis.get(`otp:${contactNumber}`);
+    const storedOtp = await connection.get(`otp:${contactNumber}`);
     if (!storedOtp) {
       return res.status(400).json({ message: "OTP expired or not found" });
     }
