@@ -105,7 +105,7 @@ export const completeSignup = async (req, res) => {
     });
 await user.save();
     // ✅ Cleanup OTP from Redis after signup
-    await redis.del(`otp:${contactNumber}`);
+    await connection.del(`otp:${contactNumber}`);
 const token=generateToken(user._id);
     res.status(200).json({
       message: "Signup successful",
