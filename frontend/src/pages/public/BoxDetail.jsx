@@ -52,7 +52,6 @@ const [totalReviews, setTotalReviews] = useState("");
       try {
         const response = await api.get(`/boxes/public/${id}`);
         setBox(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching box details:", error);
         toast.error("Failed to load cricket box details");
@@ -151,8 +150,8 @@ const handleBooking = async () => {
     return;
   }
 
-  if (!selectedDate || !selectedTime || !duration) {
-    toast.error("Please select date, time and duration");
+  if (!selectedDate || !selectedTime || !duration || !selectedQuarter) {
+    toast.error("Please select all booking details");
     return;
   }
 
@@ -166,83 +165,28 @@ const handleBooking = async () => {
     return;
   }
 
-  if (!selectedQuarter) {
-    toast.error("Please select a quarter");
-    return;
-  }
-
   setIsProcessingBooking(true);
 
   try {
-    const amount = 500;
-
-    // ✅ Step 1: Create order
-    const paymentRes = await api.post("/booking/create-order", {
-      amount,
-      customerName: user?.name || "Guest",
-      phone: contactNumber,
+    const res = await api.post("/booking/temporary-booking", {
+      boxId: id,
+      quarterId: selectedQuarter,
+      date: formattedDate,
+      startTime: time,
+      duration,
+      contactNumber,
     });
-    console.log(paymentRes.data)
 
-    const orderId = paymentRes.data.order_id;
-const paymentLink = paymentRes.data.payment_link;
-    // ✅ Step 2: Open Cashfree payment link
-    window.open(paymentLink, "_blank");
-   
-
-    // ✅ Step 3: Poll for payment status
-    let retries = 0;
-    const maxRetries = 12;
-
-    const pollForPayment = async () => {
-      try {
-        const statusResponse = await axios.get(`https://sandbox.cashfree.com/pg/orders/${orderId}`, {
-          headers: {
-            "x-api-version": "2022-09-01",
-            "x-client-id": "TEST10711021ae5eb2bda5a8afb1010412011701",
-            "x-client-secret": "cfsk_ma_test_64a9d11f1182e1d48c6bc2b9f61a8f3f_fd041df7",
-          },
-        });
-
-        const status = statusResponse.data.order_status;
-
-        if (status === "PAID") {
-          // ✅ Step 4: Verify and create booking
-          const bookingRes = await api.post("/booking/verify-and-create", {
-            orderId,
-            boxId: id,
-            quarterId: selectedQuarter,
-            date: formattedDate,
-            startTime: time,
-            duration,
-            contactNumber,
-          });
-
-          toast.success("🎉 Booking confirmed!");
-          setAvailableTimes(false);
-          setIsProcessingBooking(false);
-          console.log(bookingRes.data);
-        } else {
-          if (++retries < maxRetries) {
-            setTimeout(pollForPayment, 5000);
-          } else {
-            toast.error("Payment not completed in time.");
-            setIsProcessingBooking(false);
-          }
-        }
-      } catch (pollErr) {
-        toast.error("Error verifying payment.");
-        setIsProcessingBooking(false);
-      }
-    };
-
-    pollForPayment();
+    toast.success("🎉 Temporary booking confirmed!");
+    setAvailableTimes(false);
   } catch (error) {
-    console.error("Booking error:", error);
+    console.error("Temp Booking error:", error);
     toast.error(error.response?.data?.message || "Booking failed");
+  } finally {
     setIsProcessingBooking(false);
   }
 };
+
 
 
 
@@ -732,7 +676,7 @@ const paymentLink = paymentRes.data.payment_link;
               fullWidth
               isLoading={isCheckingAvailability}
               className="mb-4"
-             disabled
+             
             >
               Check Availability
             </Button>

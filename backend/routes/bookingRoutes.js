@@ -8,16 +8,14 @@ import {
   getMyBookingRecipt,
   getOwnersBookings,
   getRecenetBooking,
-  createTestOrder,
-  verifyAndCreateBooking,
+  
+  createTemporaryBooking,
   
 } from "../controllers/bookingController.js";
 import { protectedRoute } from "../middleware/auth.js";
 
 const router = express.Router();
-router.post('/create-order', protectedRoute, createTestOrder);
-router.post('/verify-and-create', protectedRoute, verifyAndCreateBooking);
-// router.get("/paymentStatus/:bookingId", protectedRoute, getPaymentStatus);
+router.post('/temporary-booking', protectedRoute, createTemporaryBooking);
 router.post("/check-slot", protectedRoute, checkSlotAvailability);
 router.post('/cancel/:id', protectedRoute, cancelBooking);
 router.get("/report/:id", protectedRoute,getMyBookingRecipt);

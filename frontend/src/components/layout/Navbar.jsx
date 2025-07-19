@@ -1,16 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Sun, Moon, LogOut, Trophy } from "lucide-react";
+import { Menu, Bell,  LogOut, Trophy } from "lucide-react";
 import AuthContext from "../../context/AuthContext";
 import Sidebar from "../admin/Sidebar";
 import BookMyBoxLogo from '../../assets/cri.png';
-
+import api from '../../utils/api'
+import useNotificationStore from "../../store/useNotificationStore";
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const { user, isAuthenticated, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
+  const { fetchUnreadCount } = useNotificationStore.getState();
 
 
   // Update `isMobile` on window resize
@@ -20,7 +23,14 @@ const Navbar = () => {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+    
   }, []);
+
+  useEffect(()=>{
+fetchUnreadCount()
+  },[fetchUnreadCount])
+
+  
 
 
   
@@ -29,6 +39,8 @@ const Navbar = () => {
     navigate("/");
     setSidebarOpen(false);
   };
+
+
 
 
   return (
@@ -131,11 +143,22 @@ const Navbar = () => {
 
             {/* Mobile Menu Button */}
             <div className="flex md:hidden items-center space-x-3">
+   <Link to="/notifications" className="relative">
+  <Bell className="w-6 h-6 text-primary" />
+  {unreadCount > 0 && (
+    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-bounce ">
+      {unreadCount}
+    </span>
+  )}
+</Link>
+
+
               <button
                 onClick={() => setSidebarOpen(true)}
                 className="btn btn-primary"
               >
                 <Menu size={24} />
+
               </button>
             </div>
           </div>
@@ -144,7 +167,9 @@ const Navbar = () => {
 
       {/* Render Sidebar only on mobile */}
       {isMobile && (
+        
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
       )}
     </>
   );

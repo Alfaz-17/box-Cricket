@@ -118,7 +118,7 @@ const InviteUsers = () => {
             <div className="flex items-center gap-3">
               <div className="avatar">
                 <div className="w-8 rounded-full">
-                  <img src={user.profileImg} alt={user.name} />
+                  <img src={user.profileImg || null} alt={user.name} />
                 </div>
               </div>
               <p className="text-sm font-medium">{user.name}</p>

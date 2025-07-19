@@ -46,6 +46,10 @@ import "@fontsource/inter"; // Loads 400 weight by default
 import "@fontsource/mulish";
 import "@fontsource/poppins";
 import "@fontsource/roboto";
+import Notifications from "./pages/user/Notifications";
+import useNotificationStore from './store/useNotificationStore'
+
+
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext);
@@ -73,7 +77,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-
+const{fetchNotifications,fetchUnreadCount,markAllAsRead}=useNotificationStore();
 
 //register user in sockets
 useEffect(() => {
@@ -98,6 +102,33 @@ socket.on("connect", () => {
     // don't disconnect if using singleton socket
   };
 }, [user]);
+
+
+// use soket to show real time notification alert 
+  useEffect(() => {
+
+    const handleNotification = (data) => {
+      toast.success(data.message);
+      // refereh all componnet when sokets alert 
+      
+            fetchUnreadCount(); 
+            fetchNotifications();
+            markAllAsRead();
+   
+    };
+
+    socket.on("group-invite", handleNotification);
+    socket.on("group-join-success", handleNotification);
+    socket.on("group-joined", handleNotification);
+    socket.on("new_notification", handleNotification);
+
+    return () => {
+      socket.off("group-invite", handleNotification);
+      socket.off("group-join-success", handleNotification);
+      socket.off("group-joined", handleNotification);
+      socket.off("new_notification", handleNotification);
+    };
+  }, [fetchUnreadCount,fetchNotifications]);
 
 
 
@@ -146,6 +177,7 @@ socket.on("connect", () => {
     login,
     logout,
   };
+  
 
   return (
     <AuthContext.Provider value={authContextValue}>
@@ -223,6 +255,15 @@ socket.on("connect", () => {
                     element={
                       <ProtectedRoute>
                         <FeedbackSupport />
+                      </ProtectedRoute>
+                    }
+                  />
+                  
+                  <Route
+                    path="/notifications"
+                    element={
+                      <ProtectedRoute>
+                        <Notifications  />
                       </ProtectedRoute>
                     }
                   />

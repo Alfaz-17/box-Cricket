@@ -11,6 +11,7 @@ import slotsRoutes from './routes/slotsRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js'
 import groupRoutes from './routes/groupRoutes.js'
 import messageRoutes from './routes/messageRoutes.js'
+import notificationRoutes from './routes/notificationRoutes.js'
 import { startBot } from './lib/whatsappBot.js';
 import http from 'http';
 import cors from 'cors'
@@ -45,6 +46,7 @@ app.use("/api/slots",slotsRoutes);
 app.use("/api/analytics",analyticsRoutes);
 app.use("/api/group",groupRoutes);
 app.use("/api/messages",messageRoutes);
+app.use("/api/notification",notificationRoutes)
 
 //start whatsApp chaybot
 startBot().then(() => {

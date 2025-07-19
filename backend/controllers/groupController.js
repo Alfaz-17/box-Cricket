@@ -54,7 +54,9 @@ export const inviteToGroup = async (req, res) => {
     const io =getIO();
     const onlineUsers=getOnlineUsers();
     const soketId=onlineUsers.get((String(userIdToInvite)));
-    //meas
+
+    
+    //means user is online 
     if(soketId){
       io.to(soketId).emit("group-invite",{
         groupId:group._id,
@@ -156,23 +158,8 @@ export const joinGroup = async (req, res) => {
   }
 };
 
-export const groupNotification = async (req, res) => {
-  try {
-    const Notifications =await Notification.find({toUser:req.user._id})
-           .sort({ createdAt: -1 })
-            .populate('toUser', 'profileImg name')
-      .populate('groupId', 'name').populate('fromUser','profileImg name')
 
-   
-    
 
-res.status(200).json(Notifications);
-    
-  } catch (error) {
-    res.status(500).json({ error: "internal server error" });
-    console.log("error in group notification controoler", error);
-  }
-};
 
 export const myGroups = async (req, res) => {
   try {

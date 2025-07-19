@@ -7,6 +7,8 @@ import Card from "../../components/ui/Card";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import api from "../../utils/api";
+import BookMyBoxLogo from '../../assets/cri.png';
+
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -143,15 +145,20 @@ const Signup = () => {
         
       >
            <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-primary ">Book My Box</h1>
+      
+          <h1 style={{ fontFamily: "Bebas Neue" }} className="text-3xl flex  font-bold text-primary ">        <img
+      src={BookMyBoxLogo}
+      alt="BookMyBox Logo"
+      className="h-20 w-20  text-center"
+    /> Book My Box</h1>
           <p className="text-sm text-base-content opacity-70">
             Book your perfect cricket box—fast, easy, and local.
         </p>
 
       </div>
 
-      <h1 className="text-xl font-bold  ">Signup</h1>
-      <p className="text-sm text-base-content opacity-50 mb-4" >Fill up the details below to create an account.</p>
+
+         <p className="text-sm text-base-content opacity-50 mb-4" >Fill up the details below to create an account.</p>
         <form onSubmit={handleSubmit}>
           {/* Phase 1: OTP Verification */}
           {!isOtpVerified && (

@@ -6,9 +6,9 @@ dotenv.config();
 import { parseDateTime } from "../lib/parseDateTime.js";
 import BlockedSlot from "../models/BlockedSlot.js";
 import { sendMessage } from "../lib/whatsappBot.js";
-import axios from 'axios'
-
-
+import axios from "axios";
+import { getIO, getOnlineUsers } from "../lib/soket.js";
+import Notification from "../models/Notification.js";
 
 export const checkSlotAvailability = async (req, res) => {
   try {
@@ -20,7 +20,7 @@ export const checkSlotAvailability = async (req, res) => {
     }
 
     const now = new Date();
-    const start=parseDateTime(date,startTime)
+    const start = parseDateTime(date, startTime);
     const end = new Date(start.getTime() + duration * 60 * 60 * 1000); // Calculate end time by adding duration (in hours)
 
     //  Disallow bookings in the past
@@ -99,126 +99,66 @@ export const checkSlotAvailability = async (req, res) => {
   }
 };
 
-// TEMP: Create booking directly (no Stripe, no conflict check)
-export const createTestOrder = async (req, res) => {
+export const createTemporaryBooking = async (req, res) => {
   try {
-    const { amount, customerName, phone } = req.body;
+    const { boxId, quarterId, date, startTime, duration, contactNumber } =
+      req.body;
 
-    const response = await axios.post(
-      'https://sandbox.cashfree.com/pg/orders',
-      {
-        order_amount: amount,
-        order_currency: 'INR',
-        customer_details: {
-          customer_id: `user_${Date.now()}`,
-          customer_name: customerName,
-          customer_phone: phone,
-        },
-        order_note: 'Booking test',
-        order_meta: {
-          return_url: 'https://example.com/payment-success',
-        },
-      },
-      {
-        headers: {
-          'x-api-version': '2022-09-01',
-          'Content-Type': 'application/json',
-          'x-client-id': "TEST10711021ae5eb2bda5a8afb1010412011701",
-          'x-client-secret': "cfsk_ma_test_b415d8b0205450838573f72b1c14dd2a_3e544748",
-        },
-      }
-    );
-const paymentLink = response.data.payments?.url; // ✅ Use the correct URL provided by Cashfree
-
-    console.log("Cashfree create order response:", response.data);
-
-    if (!paymentLink) {
-      return res.status(500).json({ message: "No payment link returned from Cashfree" });
-    }
-
-      res.status(200).json({
-      success: true,
-      payment_link: paymentLink, // ✅ frontend will use this
-      order_id: response.data.order_id,
-      cf_order_id: response.data.cf_order_id,
-    });
-  } catch (err) {
-    console.error('Error creating Cashfree order:', err.response?.data || err.message);
-    res.status(500).json({ message: 'Failed to create order' });
-  }
-};
-
-
-export const verifyAndCreateBooking = async (req, res) => {
-  try {
-    const {
-      boxId,
-      quarterId,
-      date,
-      startTime,
-      duration,
-      contactNumber,
-      orderId,
-    } = req.body;
-
-    // ✅ Verify payment with Cashfree
-    const { data } = await axios.get(
-      `https://sandbox.cashfree.com/pg/orders/${orderId}`,
-      {
-        headers: {
-          'x-client-id': "TEST10711021ae5eb2bda5a8afb1010412011701",
-          'x-client-secret': "cfsk_ma_test_b415d8b0205450838573f72b1c14dd2a_3e544748",
-          'x-api-version': '2022-09-01',
-        },
-      }
-    );
-
-    if (data.order_status !== 'PAID') {
-      return res.status(400).json({ message: 'Payment not completed' });
-    }
-
-    // ✅ Rest of your booking logic (same as your current logic)
     const now = new Date();
     const start = parseDateTime(date, startTime);
     const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
-    const formattedTime = end.toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    }).replace(/am|pm/i, (match) => match.toUpperCase());
 
     if (!/^\d{10}$/.test(contactNumber)) {
-      return res.status(400).json({ message: 'Invalid contact number' });
+      return res.status(400).json({ message: "Invalid contact number" });
     }
 
     if (start < now) {
-      return res.status(400).json({ message: 'Start time cannot be in the past' });
+      return res.status(400).json({ message: "Start time is in the past" });
     }
 
     const box = await CricketBox.findById(boxId);
-    if (!box) return res.status(404).json({ message: 'Box not found' });
+    if (!box) return res.status(404).json({ message: "Box not found" });
 
     const quarter = box.quarters.find((q) => q._id.toString() === quarterId);
     if (!quarter || !quarter.isAvailable) {
-      return res.status(400).json({ message: 'Quarter not available' });
+      return res.status(400).json({ message: "Quarter not available" });
     }
 
-    if (req.user.role === 'owner') {
-      return res.status(400).json({ message: 'Owner cannot book' });
+    if (req.user.role === "owner") {
+      return res.status(403).json({ message: "Owner cannot book" });
     }
 
-    const overlappingBooking = await Booking.findOne({
+    const existing = await Booking.findOne({
       box: boxId,
       quarter: quarterId,
       date,
       $or: [{ startDateTime: { $lt: end }, endDateTime: { $gt: start } }],
     });
 
-    if (overlappingBooking) {
-      return res.status(400).json({
-        message: `Quarter ${quarter.name} is already booked.`,
-      });
+    if (existing) {
+      return res
+        .status(400)
+        .json({ message: `Quarter ${quarter.name} already booked` });
     }
+
+ const formattedDate = new Date(date).toLocaleDateString("en-IN", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+});
+
+const formattedStartTime = start.toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+});
+
+const formattedEndTime = end.toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+});
+
 
     const booking = await Booking.create({
       user: req.user.name,
@@ -228,35 +168,48 @@ export const verifyAndCreateBooking = async (req, res) => {
       quarterName: quarter.name,
       date,
       startTime,
-      endTime: formattedTime,
+      endTime: formattedEndTime,
       duration,
       contactNumber,
       startDateTime: start,
       endDateTime: end,
-      amountPaid: data.order_amount,
-      paymentIntentId: orderId,
-      paymentStatus: data.order_status.toLowerCase(),
+      amountPaid: 0,
+      paymentIntentId: "TEMP",
+      paymentStatus: "paid",
     });
+const notification = await Notification.create({
+  fromUser: req.user._id,
+  toUser: box.owner._id,
+  type: "booking_created",
+  message: `New booking for Quarter "${quarter.name}" on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs).`,
+});
+
+    //add real time notification using soket io
+    const io = getIO();
+    const onlineUser = getOnlineUsers();
+    const soketId = onlineUser.get(String(box.owner._id));
+
+    //send notifiaction if user is online
+    if (soketId) {
+      io.to(soketId).emit("new_notification", {
+        toUser: req.user._id,
+        message: notification.message,
+        type:notification.type,
+
+      });
+    }
 
     await sendMessage(
       `91${contactNumber}`,
-      `Your booking for ${box.name} on ${date} from ${startTime} for ${duration} hours has been confirmed.`
+      `Your temporary booking for ${box.name} on ${date} from ${startTime} for ${duration} hour(s) is confirmed.`
     );
 
-    // await sendMessage(
-    //   `91${box.mobileNumber}`,
-    //   `New booking for ${box.name} by ${req.user.name} on ${date} from ${startTime} (${duration} hrs).`
-    // );
-
-    res.status(201).json({ message: 'Booking successful', booking });
+    res.status(201).json({ message: "Temporary booking confirmed", booking });
   } catch (err) {
-    console.error('Booking failed:', err.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Temp Booking Error:", err.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
 
 export const getPaymentStatus = async (req, res) => {
   try {
@@ -279,13 +232,16 @@ export const getPaymentStatus = async (req, res) => {
     // Otherwise, query Cashfree using your paymentIntentId
     const paymentIntentId = booking.paymentIntentId; // this should be your orderId
 
-    const response = await axios.get(`https://sandbox.cashfree.com/pg/orders/${paymentIntentId}`, {
-      headers: {
-        "x-api-version": "2022-09-01",
-        "x-client-id": process.env.CASHFREE_APP_ID,
-        "x-client-secret": process.env.CASHFREE_SECRET_KEY,
-      },
-    });
+    const response = await axios.get(
+      `https://sandbox.cashfree.com/pg/orders/${paymentIntentId}`,
+      {
+        headers: {
+          "x-api-version": "2022-09-01",
+          "x-client-id": process.env.CASHFREE_APP_ID,
+          "x-client-secret": process.env.CASHFREE_SECRET_KEY,
+        },
+      }
+    );
 
     const cashfreeStatus = response.data.order_status;
 
@@ -306,7 +262,6 @@ export const getPaymentStatus = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 export const getMyBookingRecipt = async (req, res) => {
   try {
@@ -392,8 +347,6 @@ export const cancelBooking = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 // owner Booking
 export const getRecenetBooking = async (req, res) => {
