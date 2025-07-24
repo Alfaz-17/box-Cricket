@@ -24,7 +24,10 @@ const bookingSchema = new mongoose.Schema({
   completedAt: { type: Date },
   notes: { type: String },
   startDateTime: { type: Date },  // ✅ Needed for accurate slot checking
-  endDateTime: { type: Date }
+  endDateTime: { type: Date },
+  bookedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // owner/admin who created the booking
+isOffline: { type: Boolean, default: false },
+method:String
 }, { timestamps: true });
 
 export default mongoose.model("Booking", bookingSchema);

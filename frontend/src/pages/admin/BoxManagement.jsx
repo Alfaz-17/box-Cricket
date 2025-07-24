@@ -3,32 +3,18 @@ import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Plus, Edit, Trash2, Box as BoxIcon } from "lucide-react";
 import api from "../../utils/api";
+import useBoxStore from "../../store/boxStore";
 const BoxManagement = () => {
-  
-  const [boxes, setBoxes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showDeleteInput, setShowDeleteInput] = useState(false);
+    const [showDeleteInput, setShowDeleteInput] = useState(false);
   const [selectedBoxId, setSelectedBoxId] = useState(null);
   const [ownerCode, setOwnerCode] = useState("");
 
+  const { boxes, loading, fetchBoxes } = useBoxStore();
 
   useEffect(() => {
     fetchBoxes();
   }, []);
 
-  const fetchBoxes = async () => {
-    try {
-      const response = await api.get("/boxes/my-box");
-      const data = response.data;
-
-      setBoxes(data.boxes);
-    } catch (error) {
-      toast.error("Failed to fetch boxes");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDelete = async () => {
     if (!ownerCode) {

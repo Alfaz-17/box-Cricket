@@ -56,7 +56,7 @@ const [totalReviews, setTotalReviews] = useState("");
         console.error("Error fetching box details:", error);
         toast.error("Failed to load cricket box details");
       } finally {
-        setLoading(false);
+        setLoading(false);F
       }
     };
 

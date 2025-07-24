@@ -103,6 +103,7 @@ export const createTemporaryBooking = async (req, res) => {
   try {
     const { boxId, quarterId, date, startTime, duration, contactNumber } =
       req.body;
+const isOffline = req.body.isOffline === true;
 
     const now = new Date();
     const start = parseDateTime(date, startTime);
@@ -122,10 +123,6 @@ export const createTemporaryBooking = async (req, res) => {
     const quarter = box.quarters.find((q) => q._id.toString() === quarterId);
     if (!quarter || !quarter.isAvailable) {
       return res.status(400).json({ message: "Quarter not available" });
-    }
-
-    if (req.user.role === "owner") {
-      return res.status(403).json({ message: "Owner cannot book" });
     }
 
     const existing = await Booking.findOne({
@@ -160,9 +157,21 @@ const formattedEndTime = end.toLocaleTimeString([], {
 });
 
 
+if (isOffline) {
+  if (req.user.role !== "owner") {
+    return res.status(403).json({ message: "Only owners can create offline bookings" });
+  }
+
+  if (!req.body.user || !req.body.contactNumber) {
+    return res.status(400).json({ message: "Customer name and contact required" });
+  }
+}
+
+
+
     const booking = await Booking.create({
-      user: req.user.name,
-      userId: req.user._id,
+    user: isOffline ? req.body.user : req.user.name,
+  userId: isOffline ? (req.body.userId || null) : req.user._id,
       box: boxId,
       quarter: quarterId,
       quarterName: quarter.name,
@@ -175,7 +184,12 @@ const formattedEndTime = end.toLocaleTimeString([], {
       endDateTime: end,
       amountPaid: 0,
       paymentIntentId: "TEMP",
-      paymentStatus: "paid",
+  paymentStatus: isOffline ? "paid" : "pending",
+        bookedBy: req.user._id,
+        isOffline,
+          method: isOffline ? "offline" : "online",
+
+
     });
 const notification = await Notification.create({
   fromUser: req.user._id,

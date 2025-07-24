@@ -48,6 +48,7 @@ import "@fontsource/poppins";
 import "@fontsource/roboto";
 import Notifications from "./pages/user/Notifications";
 import useNotificationStore from './store/useNotificationStore'
+import OfflineBookingForm from "./pages/admin/OfflineBookingForm";
 
 
 
@@ -322,6 +323,14 @@ socket.on("connect", () => {
                     element={
                       <ProtectedRoute role="owner">
                         <BlockSlot />
+                      </ProtectedRoute>
+                    }
+                  />
+                   <Route
+                    path="/admin/offline-booking"
+                    element={
+                      <ProtectedRoute role="owner">
+                        <OfflineBookingForm />
                       </ProtectedRoute>
                     }
                   />

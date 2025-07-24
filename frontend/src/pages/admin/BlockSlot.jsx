@@ -3,8 +3,6 @@ import { toast } from 'react-hot-toast';
 import { Calendar as CalendarIcon, Clock, Trash2 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
 import TimePicker from '../../components/ui/TimePicker';
 import api from '../../utils/api';
 import { formatDate } from '../../utils/formatDate';
