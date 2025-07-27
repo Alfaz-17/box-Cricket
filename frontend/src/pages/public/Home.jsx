@@ -5,6 +5,7 @@ import { Search, MapPin, Clock, Calendar, Filter } from "lucide-react";
 import api from "../../utils/api";
 import BookMyBoxLogo from '../../assets/cri.png';
 import TimePicker from "../../components/ui/TimePicker";
+import toast from "react-hot-toast";
 
 const Home = () => {
   const [boxes, setBoxes] = useState([]);
@@ -24,18 +25,35 @@ const [filters, setFilters] = useState({
 
 
 
-  const fetchFilteredBoxes = async () => {
+const fetchFilteredBoxes = async () => {
   try {
+    // ✅ Basic validation
+    if (!filters.date) {
+      toast.error("Please select a date.");
+      return;
+    }
+    if (!filters.startTime) {
+      toast.error("Please select a start time.");
+      return;
+    }
+    if (!filters.duration) {
+      toast.error("Please select a duration.");
+      return;
+    }
+
     setIsLoading(true);
+
     const payload = {
       date: filters.date,
-      startTime: filters.startTime , // default if needed
+      startTime: filters.startTime,
       duration: filters.duration || 2,
     };
-    console.log(filters.startTime)
-    const response = await api.post("/boxes/availableBoxes", payload); 
+
+    console.log("Payload:", payload);
+
+    const response = await api.post("/boxes/availableBoxes", payload);
     setFilteredBoxes(response.data);
-    console.log(response.data)
+    console.log("Filtered boxes:", response.data);
 
   } catch (error) {
     console.error("Error fetching filtered boxes:", error);
@@ -43,6 +61,7 @@ const [filters, setFilters] = useState({
     setIsLoading(false);
   }
 };
+
 
     const fetchBoxes = async () => {
       try {
@@ -129,7 +148,7 @@ const [filters, setFilters] = useState({
           className="btn btn-outline btn-secondary flex items-center justify-center"
         >
           <Filter size={18} className="mr-2" />
-          Filters
+  Find Your Booking
         </button>
 
         {/* Search Button */}
@@ -176,21 +195,28 @@ const [filters, setFilters] = useState({
         </div>
 
 {/* Duration Filter */}
-<div>
-  <label className="label text-sm font-medium text-base-content">
-    Duration (hours)
-  </label>
-  <input
-    type="number"
-    id="duration"
-    name="duration"
-    min="1"
-    placeholder="2"
-    value={filters.duration}
-    onChange={handleFilterChange}
-    className="input input-bordered w-full text-base"
-  />
-</div>
+ <div className="mb-6">
+              <label className="block text-sm- text-primary font-medium  mb-1">
+                Duration (hours)
+              </label>
+          <select
+  value={filters.duration}
+  onChange={(e) =>
+    setFilters((prev) => ({
+      ...prev,
+      duration: e.target.value,
+    }))
+  }
+  className="input input-bordered text-[16px] w-full bg-base-100"
+>
+  {[1, 2, 3, 4].map((hours) => (
+    <option key={hours} value={hours}>
+      {hours} hour{hours > 1 ? "s" : ""}
+    </option>
+  ))}
+</select>
+
+            </div>
 
 
      
