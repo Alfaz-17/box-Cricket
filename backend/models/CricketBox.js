@@ -67,7 +67,6 @@ const cricketBoxSchema = new mongoose.Schema({
 quarters: [
   {
     name: String,         // e.g., "Quarter 1"
-    isAvailable: { type: Boolean, default: true }
   }
 ],
 

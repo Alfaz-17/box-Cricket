@@ -18,8 +18,11 @@ export const otpWorker = new Worker(
     await connection.set(rateLimitKey, 'true', 'EX', 60);
 
     // Send WhatsApp Message
-    await sendMessage(`${contactNumber}`, `Your OTP is: ${otp}`);
-  },
+ await sendMessage(
+      `91${contactNumber}`,
+      `Your SignUp Otp is: ${otp}. It is valid for 5 minutes.`
+    );
+    },
   { connection }
 );
 

@@ -34,8 +34,7 @@ export const createBox = async (req, res) => {
     const quartersArray = [];
     for (let i = 1; i <= numberOfQuarters; i++) {
       quartersArray.push({
-        name: `Quarter ${i}`,
-        isAvailable: true,
+        name: `Box - ${i}`,
       });
     }
 
@@ -133,21 +132,14 @@ if (customPricing) {
         // Add new quarters
         for (let i = currentCount + 1; i <= newCount; i++) {
           box.quarters.push({
-            name: `Quarter ${i}`,
-            isAvailable: true,
+            name: `Box - ${i}`,
           });
         }
       } else if (newCount < currentCount) {
         // Check if extra quarters are all free
         const extraQuarters = box.quarters.slice(newCount);
 
-        const anyBooked = extraQuarters.some((q) => !q.isAvailable);
-        if (anyBooked) {
-          return res.status(400).json({
-            message:
-              "Cannot remove quarters that are currently booked or unavailable",
-          });
-        }
+  
 
         // Remove extra quarters safely
         box.quarters = box.quarters.slice(0, newCount);

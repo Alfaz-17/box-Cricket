@@ -4,6 +4,7 @@ import { Search, MapPin, Clock, Calendar, Filter } from "lucide-react";
 
 import api from "../../utils/api";
 import BookMyBoxLogo from '../../assets/cri.png';
+import TimePicker from "../../components/ui/TimePicker";
 
 const Home = () => {
   const [boxes, setBoxes] = useState([]);
@@ -11,18 +12,43 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    location: "",
-    minPrice: "",
-    maxPrice: "",
-    date: "",
-  });
+const [filters, setFilters] = useState({
 
-  useEffect(() => {
+  date: "",
+  startTime: "",
+  duration: "",
+});
+
+
+
+
+
+
+  const fetchFilteredBoxes = async () => {
+  try {
+    setIsLoading(true);
+    const payload = {
+      date: filters.date,
+      startTime: filters.startTime , // default if needed
+      duration: filters.duration || 2,
+    };
+    console.log(filters.startTime)
+    const response = await api.post("/boxes/availableBoxes", payload); 
+    setFilteredBoxes(response.data);
+    console.log(response.data)
+
+  } catch (error) {
+    console.error("Error fetching filtered boxes:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
     const fetchBoxes = async () => {
       try {
         const response = await api.get("/boxes/public");
         const data = response.data;
+        console.log(data)
 
         setBoxes(data);
         setFilteredBoxes(data);
@@ -33,45 +59,13 @@ const Home = () => {
       }
     };
 
+  useEffect(() => {
+
+
     fetchBoxes();
   }, []);
 
-  useEffect(() => {
-    // Filter boxes based on search query and filters
-    let results = boxes;
 
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      results = results.filter(
-        (box) =>
-          box.name.toLowerCase().includes(query) ||
-          box.location.toLowerCase().includes(query) ||
-          box.description.toLowerCase().includes(query)
-      );
-    }
-
-    if (filters.location) {
-      results = results.filter((box) =>
-        box.location.toLowerCase().includes(filters.location.toLowerCase())
-      );
-    }
-
-    if (filters.minPrice) {
-      results = results.filter(
-        (box) => box.hourlyRate >= parseFloat(filters.minPrice)
-      );
-    }
-
-    if (filters.maxPrice) {
-      results = results.filter(
-        (box) => box.hourlyRate <= parseFloat(filters.maxPrice)
-      );
-    }
-
-    // Date filtering would be more complex and would depend on availability data
-
-    setFilteredBoxes(results);
-  }, [searchQuery, filters, boxes]);
 
   
   const handleFilterChange = (e) => {
@@ -84,10 +78,10 @@ const Home = () => {
 
   const clearFilters = () => {
     setFilters({
-      location: "",
-      minPrice: "",
-      maxPrice: "",
+    
       date: "",
+      startTime:"",
+      duration:""
     });
     setSearchQuery("");
   };
@@ -145,58 +139,61 @@ const Home = () => {
       {/* Filter Section */}
       {showFilters && (
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Location Filter */}
-          <div>
-            <label className="label text-sm font-medium text-base-content">
-              Location
-            </label>
-            <label className="input input-bordered text-base flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                id="location"
-                name="location"
-                placeholder="Any location"
-                value={filters.location}
-                onChange={handleFilterChange}
-                className="grow"
-              />
-            </label>
-          </div>
+          
 
-          {/* Price Range Filter */}
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="label text-sm font-medium text-base-content">
-                Min Price
-              </label>
-              <input
-                type="number"
-                id="minPrice"
-                name="minPrice"
-                min="0"
-                placeholder="₹0"
-                value={filters.minPrice}
-                onChange={handleFilterChange}
-                className="input input-bordered w-full text-base"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="label text-sm font-medium text-base-content">
-                Max Price
-              </label>
-              <input
-                type="number"
-                id="maxPrice"
-                name="maxPrice"
-                min="0"
-                placeholder="₹999"
-                value={filters.maxPrice}
-                onChange={handleFilterChange}
-                className="input input-bordered w-full text-base"
-              />
-            </div>
+          {/* Date Filter */}
+<div>
+  <label className="label text-sm font-medium text-base-content">
+    Date
+  </label>
+  <input
+    type="date"
+    id="date"
+    name="date"
+    value={filters.date}
+    onChange={handleFilterChange}
+    className="input input-bordered w-full text-base"
+  />
+</div>
+
+{/* Start Time Filter */}
+ <div className=" mb-4">
+          <label className="block text-sm font-medium mb-1">
+            <span className="text-primary">Time</span>
+          </label>
+          <div className="grid grid-cols-1 gap-2  ">
+<TimePicker
+  value={filters.startTime}
+  onChange={(value) =>
+    setFilters((prev) => ({
+      ...prev,
+      startTime: value,
+    }))
+  }
+/>
+            <p className="text-sm text-primary ">Selected Time: {filters.startTime }</p>
           </div>
+        </div>
+
+{/* Duration Filter */}
+<div>
+  <label className="label text-sm font-medium text-base-content">
+    Duration (hours)
+  </label>
+  <input
+    type="number"
+    id="duration"
+    name="duration"
+    min="1"
+    placeholder="2"
+    value={filters.duration}
+    onChange={handleFilterChange}
+    className="input input-bordered w-full text-base"
+  />
+</div>
+
+
+     
 
           {/* Filter Actions */}
           <div className="md:col-span-3 flex justify-end gap-2">
@@ -206,12 +203,16 @@ const Home = () => {
             >
               Clear Filters
             </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowFilters(false)}
-            >
-              Apply Filters
-            </button>
+ <button
+  className="btn btn-primary"
+  onClick={() => {
+    setShowFilters(false);
+    fetchFilteredBoxes();
+  }}
+>
+  Apply Filters
+</button>
+
           </div>
         </div>
       )}

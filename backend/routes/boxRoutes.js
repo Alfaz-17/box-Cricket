@@ -11,6 +11,7 @@ import {
   getOwnerBoxes,
   updateBox,
 } from '../controllers/boxController.js';
+import { getAvailableBoxes } from '../controllers/bookingController.js';
 
 
 
@@ -26,7 +27,8 @@ router.get("/my-box", protectedRoute, isOwner, getOwnerBoxes);
 
 //public
 router.get("/public", getAllBoxes);           // List all cricket boxes
-router.get("/public/:id",getBoxDetails);     // Box details by ID
+router.get("/public/:id",getBoxDetails); 
+router.post("/availableBoxes",getAvailableBoxes)    // Box details by ID
 
 
 export default router;

@@ -123,6 +123,7 @@ const handleCheckAvailability = async () => {
       startTime: time,
       duration,
     });
+    console.log(formattedDate,time)
 
     const data = response.data;
 
