@@ -20,7 +20,7 @@ export const otpWorker = new Worker(
     // Send WhatsApp Message
  await sendMessage(
       `91${contactNumber}`,
-      `Your SignUp Otp is: ${otp}. It is valid for 5 minutes.`
+      `Book My Box OTP: ${otp}. It is valid for 5 minutes.`
     );
     },
   { connection }

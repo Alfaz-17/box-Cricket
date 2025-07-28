@@ -118,6 +118,9 @@ const fetchFilteredBoxes = async () => {
         />   Book.. play.. win..</h1>
     <h1 style={{ fontFamily: "Bebas Neue" }} className=" mt-[-20px] text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
       Find and Book Cricket Boxes
+
+
+
     </h1>
      
     <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl">
@@ -148,7 +151,7 @@ const fetchFilteredBoxes = async () => {
           className="btn btn-outline btn-secondary flex items-center justify-center"
         >
           <Filter size={18} className="mr-2" />
-  Find Your Booking
+  Check your Booking Slot
         </button>
 
         {/* Search Button */}

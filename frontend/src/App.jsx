@@ -180,14 +180,21 @@ socket.on("connect", () => {
   };
   
 
+  
   return (
+
+   
     <AuthContext.Provider value={authContextValue}>
       <Router>
         <div style={{ fontFamily: "roboto" }}>
           <div className="flex flex-col min-h-screen bg-base-100 text-base-content transition-colors duration-300">
             <Navbar />
             <main className="flex-grow container mx-auto px-4 py-8">
-              {!loading && (
+  {loading ? (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
+  ) : (
                 <Routes>
                   {/* Public Routes */}
                   <Route path="/" element={<Home />} />
