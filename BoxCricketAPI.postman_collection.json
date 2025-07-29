@@ -1,0 +1,343 @@
+{
+  "info": {
+    "name": "Box Cricket API",
+    "_postman_id": "box-cricket-api-2025",
+    "description": "Postman collection for Box Cricket backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/verify-otp"
+          }
+        },
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/signup"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/login"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/forgot-password"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/auth/update-profile"
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/logout"
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/auth/users"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Booking",
+      "item": [
+        {
+          "name": "Temporary Booking",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/booking/temporary-booking"
+          }
+        },
+        {
+          "name": "Check Slot",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/booking/check-slot"
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/booking/cancel/:id"
+          }
+        },
+        {
+          "name": "Get Report",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/booking/report/:id"
+          }
+        },
+        {
+          "name": "My Bookings",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/booking/my-bookings"
+          }
+        },
+        {
+          "name": "Owner Bookings",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/booking/owner-bookings"
+          }
+        },
+        {
+          "name": "Owner Recent Bookings",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/booking/owner-recent-bookings"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Boxes",
+      "item": [
+        {
+          "name": "Create Box",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/boxes/create"
+          }
+        },
+        {
+          "name": "Update Box",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/boxes/update/:id"
+          }
+        },
+        {
+          "name": "Delete Box",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/boxes/delete/:id"
+          }
+        },
+        {
+          "name": "My Boxes",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/boxes/my-box"
+          }
+        },
+        {
+          "name": "Get All Boxes",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/boxes/public"
+          }
+        },
+        {
+          "name": "Get Box Details",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/boxes/public/:id"
+          }
+        },
+        {
+          "name": "Available Boxes",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/boxes/availableBoxes"
+          }
+        },
+        {
+          "name": "Support",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/boxes/support"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Group",
+      "item": [
+        {
+          "name": "Create Group",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/group/create"
+          }
+        },
+        {
+          "name": "Invite",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/group/invite"
+          }
+        },
+        {
+          "name": "Join",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/group/join"
+          }
+        },
+        {
+          "name": "My Groups",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/group/myGroups"
+          }
+        },
+        {
+          "name": "Get Members",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/group/getMembers/:groupId"
+          }
+        },
+        {
+          "name": "Delete Group",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/group/delete/:groupId"
+          }
+        },
+        {
+          "name": "Leave Group",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/group/leave/:groupId"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Add Review",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/reviews/create/:id"
+          }
+        },
+        {
+          "name": "Get Reviews",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/reviews/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/notification/"
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/notification/deleteNotification/:notificationId"
+          }
+        },
+        {
+          "name": "Mark All Read",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/notification/mark-all-read"
+          }
+        },
+        {
+          "name": "Unread Count",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/notification/unread-count"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/messages/send"
+          }
+        },
+        {
+          "name": "Get All Messages",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/messages/all/:groupId"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Slots",
+      "item": [
+        {
+          "name": "Block Slots",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/slots/block-slots"
+          }
+        },
+        {
+          "name": "Get Blocked and Booked Slots",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/slots/booked-blocked-slots/:id"
+          }
+        },
+        {
+          "name": "Unblock Slot",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/slots/unblock/:slotId"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://box-cricket-rd1r.onrender.com/api"
+    }
+  ]
+}
