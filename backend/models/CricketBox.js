@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema({
@@ -7,8 +6,8 @@ const reviewSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  name:{
-    type:String,
+  name: {
+    type: String,
   },
 
   rating: {
@@ -36,7 +35,6 @@ const cricketBoxSchema = new mongoose.Schema({
   address: { type: String }, // Optional but mock data has it
   hourlyRate: { type: Number, required: true },
 
-
   mobileNumber: {
     type: String,
     required: true,
@@ -46,29 +44,29 @@ const cricketBoxSchema = new mongoose.Schema({
     lat: Number,
     lng: Number,
   },
-  image: { type: String },        // Primary image
-  images: [{ type: String }],     // Multiple images from Cloudinary
+  image: { type: String }, // Primary image
+  images: [{ type: String }], // Multiple images from Cloudinary
 
   customPricing: [
-  {
-    duration: { type: Number, required: true }, // in hours
-    price: { type: Number, required: true }     // in rupees
-  }
-],
+    {
+      duration: { type: Number, required: true }, // in hours
+      price: { type: Number, required: true }, // in rupees
+    },
+  ],
 
-  features: [{ type: String }],   // List of features
+  features: [{ type: String }], // List of features
 
   facilities: [{ type: String }], // Optional: From mock data if you want this separately
 
   openingHours: {
-    weekdays: { type: String ,default:"6:00 AM - 12:00 PM"},
-    weekends: { type: String ,default:"12:00 AM - 12:00 AM(24 houres)"},
+    weekdays: { type: String, default: "6:00 AM - 12:00 PM" },
+    weekends: { type: String, default: "12:00 AM - 12:00 AM(24 houres)" },
   },
-quarters: [
-  {
-    name: String,         // e.g., "Quarter 1"
-  }
-],
+  quarters: [
+    {
+      name: String, // e.g., "Quarter 1"
+    },
+  ],
 
   reviews: [reviewSchema],
 
@@ -77,13 +75,13 @@ quarters: [
       date: { type: String },
       startTime: { type: String },
       endTime: { type: String },
-      reason:{type:String}
+      reason: { type: String },
     },
   ],
-  updatedAt:{type:Date},
+  updatedAt: { type: Date },
 
-  rating: { type: Number, default: 0 },        // Optional: Computed later
-  reviewCount: { type: Number, default: 0 },   // Optional: Computed later
+  rating: { type: Number, default: 0 }, // Optional: Computed later
+  reviewCount: { type: Number, default: 0 }, // Optional: Computed later
 });
 
 export default mongoose.model("CricketBox", cricketBoxSchema);

@@ -49,21 +49,19 @@ export const inviteToGroup = async (req, res) => {
       });
     }
 
-
     // {add Real Time Notificayion using socket}
-    const io =getIO();
-    const onlineUsers=getOnlineUsers();
-    const soketId=onlineUsers.get((String(userIdToInvite)));
+    const io = getIO();
+    const onlineUsers = getOnlineUsers();
+    const soketId = onlineUsers.get(String(userIdToInvite));
 
-    
-    //means user is online 
-    if(soketId){
-      io.to(soketId).emit("group-invite",{
-        groupId:group._id,
-        groupName:group.name,
+    //means user is online
+    if (soketId) {
+      io.to(soketId).emit("group-invite", {
+        groupId: group._id,
+        groupName: group.name,
         fromUser,
-    message: `You've been invited to join the group "${group.name}"`,
-      })
+        message: `You've been invited to join the group "${group.name}"`,
+      });
     }
 
     res.status(200).json({ message: "User invited and notified." });
@@ -91,7 +89,7 @@ export const joinGroup = async (req, res) => {
     }
 
     // Remove from invite list
-    group.invites = group.invites.filter(id => String(id) !== String(userId));
+    group.invites = group.invites.filter((id) => String(id) !== String(userId));
     await group.save();
 
     // Update previous invite notification for the user
@@ -110,7 +108,7 @@ export const joinGroup = async (req, res) => {
           message: `You have joined the group "${group.name}"`,
           isRead: false,
           createdAt: new Date(),
-        }
+        },
       }
     );
 
@@ -158,21 +156,15 @@ export const joinGroup = async (req, res) => {
   }
 };
 
-
-
-
 export const myGroups = async (req, res) => {
   try {
-  
-    const group = await Group.find({members:req.user._id})
+    const group = await Group.find({ members: req.user._id })
       .populate("members", "name email") // populate members
-      .populate("admin", "name email");  // populate admin
+      .populate("admin", "name email"); // populate admin
 
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
-
-
 
     res.status(200).json(group);
   } catch (error) {
@@ -181,72 +173,59 @@ export const myGroups = async (req, res) => {
   }
 };
 
-
-
 export const getGroupMembers = async (req, res) => {
   try {
     const groupId = req.params.groupId;
 
-    const group =await Group.findById(groupId);
+    const group = await Group.findById(groupId);
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
 
+    const membersId = group.members.map((member) => member._id);
 
-    const membersId=group.members.map(member=>member._id);
+    const members = await User.find({ _id: { $in: membersId } });
 
-    const members =await User.find({_id:{$in:membersId}})
-
-const admin =await User.findById(group.admin);
+    const admin = await User.findById(group.admin);
 
     if (!members) {
-      return res.status(404).json({ message: "No members found in this group" });
+      return res
+        .status(404)
+        .json({ message: "No members found in this group" });
     }
 
-    res.status(200).json({admin:admin,members:members});
-
-
-    
-  }catch(error){
-
+    res.status(200).json({ admin: admin, members: members });
+  } catch (error) {
     console.error("❌ Error in getGroup members controller:", error);
     res.status(500).json({ message: "Internal server error" });
-
   }
+};
 
-
-}
-
-export const deleteGroup =async (req,res) =>{
+export const deleteGroup = async (req, res) => {
   try {
-    
-  const groupId = req.params.groupId;
+    const groupId = req.params.groupId;
     const userId = req.user._id;
 
     const group = await Group.findById(groupId);
 
-
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
 
-
-    if(group.admin.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Only group admin can delete the group" });
+    if (group.admin.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: "Only group admin can delete the group" });
     }
-    
-   await Group.findByIdAndDelete(groupId);
 
+    await Group.findByIdAndDelete(groupId);
 
-  res.status(200).json({message:"Group deleted SucessFully"})
-
-
+    res.status(200).json({ message: "Group deleted SucessFully" });
   } catch (error) {
     console.log("❌ Error in deleteGroup controller:", error);
     res.status(500).json({ message: "Internal server error" });
-    
   }
-}
+};
 
 export const leaveGroup = async (req, res) => {
   try {
@@ -261,12 +240,16 @@ export const leaveGroup = async (req, res) => {
 
     // If user is not a member
     if (!group.members.includes(userId)) {
-      return res.status(400).json({ message: "You are not a member of this group" });
+      return res
+        .status(400)
+        .json({ message: "You are not a member of this group" });
     }
 
     // Prevent admin from leaving their own group (optional, you can allow it if desired)
     if (group.admin.toString() === userId.toString()) {
-      return res.status(400).json({ message: "Admin cannot leave their own group" });
+      return res
+        .status(400)
+        .json({ message: "Admin cannot leave their own group" });
     }
 
     // Remove user from members
@@ -276,26 +259,11 @@ export const leaveGroup = async (req, res) => {
 
     await group.save();
 
-    return res.status(200).json({ message: "You have left the group successfully" });
+    return res
+      .status(200)
+      .json({ message: "You have left the group successfully" });
   } catch (error) {
     console.error("Error leaving group:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-      

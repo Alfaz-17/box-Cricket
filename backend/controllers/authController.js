@@ -2,54 +2,48 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { generateToken } from "../lib/generateToken.js";
 import dotenv from "dotenv";
-import {otpQueue} from '../queues/otpQueue.js'
+import { otpQueue } from "../queues/otpQueue.js";
 import redis from "../lib/redis.js";
 import { connection } from "../lib/redisClient.js";
 dotenv.config();
 
 export const sendOtp = async (req, res) => {
   try {
-
     // add action for diffrefnt aaspact
-    const { contactNumber, action } = req.body;
+    const { contactNumber } = req.body;
 
-    // const userExists = await User.findOne({ contactNumber });
+    const userExists = await User.findOne({ contactNumber });
 
-    // if (action === "signup") {
-    //   if (userExists) {
-    //     return res
-    //       .status(400)
-    //       .json({ message: "Contact number already registered" });
-    //   }
-    // } else if (action === "forgot-password") {
-    //   if (!userExists) {
-    //     return res
-    //       .status(404)
-    //       .json({ message: "Contact number not registered" });
-    //   }
-    // } else {
-    //   return res.status(400).json({ message: "Invalid action" });
-    // }
+    if (action === "signup") {
+      if (userExists) {
+        return res
+          .status(400)
+          .json({ message: "Contact number already registered" });
+      }
+    } else if (action === "forgot-password") {
+      if (!userExists) {
+        return res
+          .status(404)
+          .json({ message: "Contact number not registered" });
+      }
+    } else {
+      return res.status(400).json({ message: "Invalid action" });
+    }
 
     const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
     const ttl = 300; // 5 minutes
 
-
     //add otp queue
-await otpQueue.add("sendOtpJob", {
-  contactNumber,
-  otp,
-  ttl
-});
-
-
-
+    await otpQueue.add("sendOtpJob", {
+      contactNumber,
+      otp,
+      ttl,
+    });
 
     console.log(`OTP for ${contactNumber}: ${otp}`);
 
     res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
-
     console.error("Send OTP error:", error);
     res.status(500).json({ message: "Failed to send OTP" });
   }
@@ -80,19 +74,17 @@ export const completeSignup = async (req, res) => {
   try {
     const { name, contactNumber, ownerCode, password, role } = req.body;
 
-    const exists = await User.findOne({ contactNumber ,role: "user"});
+    const exists = await User.findOne({ contactNumber, role: "user" });
     if (exists)
       return res
         .status(400)
         .json({ message: "Contact number already registered" });
 
-
-       //  add ownerCode and check if it vlaid or not
+    //  add ownerCode and check if it vlaid or not
     if (ownerCode) {
       if (ownerCode !== process.env.OWNER_CODE) {
         return res.status(400).json({ message: "Owner code is not valid" });
-      } 
-      
+      }
     }
 
     const hashed = await bcrypt.hash(password, 10);
@@ -103,13 +95,13 @@ export const completeSignup = async (req, res) => {
       role,
       ownerCode,
     });
-await user.save();
+    await user.save();
     // ✅ Cleanup OTP from Redis after signup
     await connection.del(`otp:${contactNumber}`);
-const token=generateToken(user._id);
+    const token = generateToken(user._id);
     res.status(200).json({
       message: "Signup successful",
-      token ,
+      token,
       user: {
         id: user._id,
         name: user.name,
@@ -133,7 +125,7 @@ export const login = async (req, res) => {
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ message: "Invalid password" });
- // ▶️ NEW: token returned in JSON only
+    // ▶️ NEW: token returned in JSON only
     const token = generateToken(user._id);
 
     res.status(200).json({
@@ -240,18 +232,12 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-export const getAllUsers = async (req,res)=>{
+export const getAllUsers = async (req, res) => {
   try {
-
-
     const users = await User.find().select("-password ").select("-ownerCode");
     res.status(200).json(users);
-
-
-
   } catch (error) {
-    
     res.status(500).json("intenal server error ");
-    console.log("error in getAll user controller")
+    console.log("error in getAll user controller");
   }
-}
+};

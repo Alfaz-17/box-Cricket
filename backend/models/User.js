@@ -1,18 +1,21 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
-  contactNumber: { type: String, required: true, unique: true },
-  otp: { type: String },  // optional, for storing latest OTP
-  password: { type: String, required: true },
-  role: {
-    type: String,
-    enum: ["user", "owner"],
-    default: "user",
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, unique: true },
+    contactNumber: { type: String, required: true, unique: true },
+    otp: { type: String }, // optional, for storing latest OTP
+    password: { type: String, required: true },
+    role: {
+      type: String,
+      enum: ["user", "owner"],
+      default: "user",
+    },
+    ownerCode: { type: String, default: null },
+    profileImg: { type: String, default: "" }, // ✅ Only this image field
+    // For owners, to verify ownership
   },
-  ownerCode: { type: String, default:null }, 
-    profileImg: { type: String, default: "" },  // ✅ Only this image field
-// For owners, to verify ownership
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 export default mongoose.model("User", userSchema);

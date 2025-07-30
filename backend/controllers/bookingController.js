@@ -42,7 +42,6 @@ export const checkSlotAvailability = async (req, res) => {
       return res.status(400).json({ message: "Invalid quarter selected" });
     }
 
-
     // 🔒 Prevent owners from booking
     if (req.user.role === "owner") {
       return res.status(400).json({ message: "Owner can't book a box" });
@@ -92,35 +91,30 @@ export const checkSlotAvailability = async (req, res) => {
   }
 };
 
-
 export const getAvailableBoxes = async (req, res) => {
   try {
-
-
-    // valide input 
+    // valide input
     const { date, startTime, duration } = req.body;
     if (!date || !startTime || !duration) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-
-
-    // prvent past time booking 
+    // prvent past time booking
     const now = new Date();
     const start = parseDateTime(date, startTime);
     const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
 
     if (start < now) {
-      return res.status(400).json({ message: "Start time cannot be in the past" });
+      return res
+        .status(400)
+        .json({ message: "Start time cannot be in the past" });
     }
-
 
     // fetch boxes
     const allBoxes = await CricketBox.find();
     const availableBoxes = [];
 
-
-    // make loop to  chek each boxes and its quarters 
+    // make loop to  chek each boxes and its quarters
     for (const box of allBoxes) {
       const availableQuarters = [];
 
@@ -156,7 +150,6 @@ export const getAvailableBoxes = async (req, res) => {
 
         if (overlappingBookings.length > 0) continue;
 
-
         // If we get here, this quarter has a free slot
         availableQuarters.push({
           quarterId: quarter._id,
@@ -166,25 +159,22 @@ export const getAvailableBoxes = async (req, res) => {
 
       // Add box only if it has at least one available quarter
       if (availableQuarters.length > 0) {
-        availableBoxes.push(
-        box
-        );
+        availableBoxes.push(box);
       }
     }
 
-    return res.json(availableBoxes );
+    return res.json(availableBoxes);
   } catch (err) {
     console.error("❌ Error in general availability:", err);
     res.status(500).json({ message: err.message || "Server error" });
   }
 };
 
-
 export const createTemporaryBooking = async (req, res) => {
   try {
     const { boxId, quarterId, date, startTime, duration, contactNumber } =
       req.body;
-const isOffline = req.body.isOffline === true;
+    const isOffline = req.body.isOffline === true;
 
     const now = new Date();
     const start = parseDateTime(date, startTime);
@@ -202,7 +192,7 @@ const isOffline = req.body.isOffline === true;
     if (!box) return res.status(404).json({ message: "Box not found" });
 
     const quarter = box.quarters.find((q) => q._id.toString() === quarterId);
-    if (!quarter ) {
+    if (!quarter) {
       return res.status(400).json({ message: "Quarter not available" });
     }
 
@@ -219,40 +209,41 @@ const isOffline = req.body.isOffline === true;
         .json({ message: `Quarter ${quarter.name} already booked` });
     }
 
- const formattedDate = new Date(date).toLocaleDateString("en-IN", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-});
+    const formattedDate = new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
-const formattedStartTime = start.toLocaleTimeString([], {
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: true,
-});
+    const formattedStartTime = start.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
 
-const formattedEndTime = end.toLocaleTimeString([], {
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: true,
-});
+    const formattedEndTime = end.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
 
+    if (isOffline) {
+      if (req.user.role !== "owner") {
+        return res
+          .status(403)
+          .json({ message: "Only owners can create offline bookings" });
+      }
 
-if (isOffline) {
-  if (req.user.role !== "owner") {
-    return res.status(403).json({ message: "Only owners can create offline bookings" });
-  }
-
-  if (!req.body.user || !req.body.contactNumber) {
-    return res.status(400).json({ message: "Customer name and contact required" });
-  }
-}
-
-
+      if (!req.body.user || !req.body.contactNumber) {
+        return res
+          .status(400)
+          .json({ message: "Customer name and contact required" });
+      }
+    }
 
     const booking = await Booking.create({
-    user: isOffline ? req.body.user : req.user.name,
-  userId: isOffline ? (req.body.userId || null) : req.user._id,
+      user: isOffline ? req.body.user : req.user.name,
+      userId: isOffline ? req.body.userId || null : req.user._id,
       box: boxId,
       quarter: quarterId,
       quarterName: quarter.name,
@@ -265,19 +256,17 @@ if (isOffline) {
       endDateTime: end,
       amountPaid: 0,
       paymentIntentId: "TEMP",
-  paymentStatus: isOffline ? "paid" : "pending",
-        bookedBy: req.user._id,
-        isOffline,
-          method: isOffline ? "offline" : "online",
-
-
+      paymentStatus: isOffline ? "paid" : "pending",
+      bookedBy: req.user._id,
+      isOffline,
+      method: isOffline ? "offline" : "online",
     });
-const notification = await Notification.create({
-  fromUser: req.user._id,
-  toUser: box.owner._id,
-  type: "booking_created",
-  message: `New booking for Quarter "${quarter.name}" on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs).`,
-});
+    const notification = await Notification.create({
+      fromUser: req.user._id,
+      toUser: box.owner._id,
+      type: "booking_created",
+      message: `New booking for Quarter "${quarter.name}" on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs).`,
+    });
 
     //add real time notification using soket io
     const io = getIO();
@@ -289,8 +278,7 @@ const notification = await Notification.create({
       io.to(soketId).emit("new_notification", {
         toUser: req.user._id,
         message: notification.message,
-        type:notification.type,
-
+        type: notification.type,
       });
     }
 

@@ -1,31 +1,31 @@
-import mongoose from 'mongoose';
-
-
+import mongoose from "mongoose";
 
 const groupSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   admin: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: "User",
+    required: true,
   },
-  members: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
-  invites: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
+  members: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  invites: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-
-export default mongoose.model("Group",groupSchema)
-
+export default mongoose.model("Group", groupSchema);

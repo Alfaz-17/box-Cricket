@@ -1,23 +1,20 @@
-import mongoose from 'mongoose'
-
+import mongoose from "mongoose";
 
 const BlockedSlotSchema = new mongoose.Schema({
-
   boxId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Box',
-    required: true
+    ref: "Box",
+    required: true,
   },
-  quarterName:String,
+  quarterName: String,
   date: {
     type: String, // or Date
-    required: true
+    required: true,
   },
   startTime: String, // e.g., "2:00 AM"
   endTime: String,
   reason: String, // Optional (e.g., maintenance, holiday)
   quarterId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  
 });
 
 export default mongoose.model("BlockedSlot", BlockedSlotSchema);

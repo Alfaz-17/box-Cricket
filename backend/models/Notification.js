@@ -1,28 +1,28 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema({
   toUser: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   fromUser: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     // Not required for system notifications (e.g., "Your booking was approved by Admin")
   },
   type: {
     type: String,
     enum: [
-      'invite',          // Group feature
-      'join_request',    // Group feature
-      'added',           // Group feature
-      'booking_created', // Box booking
-      'booking_cancelled',
-      'booking_confirmed',
-      'review_submitted',
-      'box_blocked',
-      'system_message',  // General system updates
+      "invite", // Group feature
+      "join_request", // Group feature
+      "added", // Group feature
+      "booking_created", // Box booking
+      "booking_cancelled",
+      "booking_confirmed",
+      "review_submitted",
+      "box_blocked",
+      "system_message", // General system updates
     ],
     required: true,
   },
@@ -31,15 +31,15 @@ const notificationSchema = new mongoose.Schema({
   },
   groupId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Group',
+    ref: "Group",
   },
   bookingId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Booking',
+    ref: "Booking",
   },
   boxId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'CricketBox',
+    ref: "CricketBox",
   },
   isRead: {
     type: Boolean,
@@ -47,7 +47,7 @@ const notificationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'declined'],
+    enum: ["pending", "accepted", "declined"],
     // Only used for invite or join_request
   },
   metadata: {
@@ -57,7 +57,7 @@ const notificationSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  }
+  },
 });
 
-export default mongoose.model('Notification', notificationSchema);
+export default mongoose.model("Notification", notificationSchema);

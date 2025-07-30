@@ -53,7 +53,7 @@ export const createBox = async (req, res) => {
       images,
       facilities: facilities ? facilities.split(",").map((f) => f.trim()) : [],
       features: features ? features.split(",").map((f) => f.trim()) : [],
-        customPricing: Array.isArray(customPricing) ? customPricing : [], // ✅ ADD THIS
+      customPricing: Array.isArray(customPricing) ? customPricing : [], // ✅ ADD THIS
 
       owner,
       rating: 0,
@@ -99,10 +99,10 @@ export const updateBox = async (req, res) => {
     if (!box) {
       return res.status(404).json({ message: "Box not found" });
     }
-    
-if (customPricing) {
-  box.customPricing = customPricing;
-}
+
+    if (customPricing) {
+      box.customPricing = customPricing;
+    }
 
     // Update basic fields
     box.name = name || box.name;
@@ -138,8 +138,6 @@ if (customPricing) {
       } else if (newCount < currentCount) {
         // Check if extra quarters are all free
         const extraQuarters = box.quarters.slice(newCount);
-
-  
 
         // Remove extra quarters safely
         box.quarters = box.quarters.slice(0, newCount);
