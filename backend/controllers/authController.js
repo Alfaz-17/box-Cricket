@@ -2,15 +2,16 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { generateToken } from "../lib/generateToken.js";
 import dotenv from "dotenv";
-import { otpQueue } from "../queues/otpQueue.js";
 import redis from "../lib/redis.js";
 import { connection } from "../lib/redisClient.js";
+import { sendMessage } from "../lib/whatsappBot.js";
 dotenv.config();
 
 export const sendOtp = async (req, res) => {
   try {
+
     // add action for diffrefnt aaspact
-    const { contactNumber } = req.body;
+    const { contactNumber, action } = req.body;
 
     const userExists = await User.findOne({ contactNumber });
 
@@ -33,17 +34,18 @@ export const sendOtp = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
     const ttl = 300; // 5 minutes
 
-    //add otp queue
-    await otpQueue.add("sendOtpJob", {
-      contactNumber,
-      otp,
-      ttl,
-    });
+
+    //set otp in redis
+    await redis.set(`otp:${contactNumber}`, otp, "EX", ttl);
+
+    //send message in whatsapp using chatBot
+    sendMessage(`91${contactNumber}`, `Your OTP is: ${otp}`);
 
     console.log(`OTP for ${contactNumber}: ${otp}`);
 
     res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
+
     console.error("Send OTP error:", error);
     res.status(500).json({ message: "Failed to send OTP" });
   }
