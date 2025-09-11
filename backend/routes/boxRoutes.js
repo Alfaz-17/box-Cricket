@@ -26,6 +26,7 @@ router.post("/support",protectedRoute,feedBackAndSupport);
 router.get("/my-box", protectedRoute, isOwner, getOwnerBoxes);
 
 //public
+
 router.get("/public", getAllBoxes);           // List all cricket boxes
 router.get("/public/:id",getBoxDetails); 
 router.post("/availableBoxes",getAvailableBoxes)    // Box details by ID

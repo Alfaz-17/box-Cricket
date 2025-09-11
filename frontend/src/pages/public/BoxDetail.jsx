@@ -662,9 +662,9 @@ const handleBooking = async () => {
       <option className="bg-base-100"
         key={quarter._id}
         value={quarter._id}
-        disabled={!quarter.isAvailable}
+        
       >
-        {quarter.name}-Box {quarter.isAvailable ? "" : "(Unavailable)"}
+        {quarter.name}
       </option>
     ))}
   </select>
