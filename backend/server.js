@@ -16,14 +16,15 @@ import { startBot } from './lib/whatsappBot.js';
 import http from 'http';
 import cors from 'cors'
 import { initSocket } from "./lib/soket.js";
-import "./workers/otpWorker.js"
+import "./workers/otpWorker.js";
+import { generalLimiter } from "./middleware/rateLimiter.js";
 dotenv.config();
 const app = express();
 
 //create socket server
 const server=http.createServer(app);
 initSocket(server);
-
+app.use(generalLimiter);
 app.use(
   cors({
     origin:process.env.CLIENT_URL || "http://localhost:5173",
