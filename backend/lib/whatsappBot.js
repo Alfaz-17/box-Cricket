@@ -82,3 +82,4 @@ export async function sendMessage(number, text) {
     console.error('❌ Failed to send message:', err);
   }
 }
+

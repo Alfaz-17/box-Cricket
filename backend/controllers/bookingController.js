@@ -9,6 +9,7 @@ import { sendMessage } from "../lib/whatsappBot.js";
 import axios from "axios";
 import { getIO, getOnlineUsers } from "../lib/soket.js";
 import Notification from "../models/Notification.js";
+import redis from "../lib/redis.js";
 
 export const checkSlotAvailability = async (req, res) => {
   try {
@@ -282,10 +283,11 @@ export const createTemporaryBooking = async (req, res) => {
       });
     }
 
-    await sendMessage(
-      `91${contactNumber}`,
-      `Your temporary booking for ${box.name} on ${date} from ${startTime} for ${duration} hour(s) is confirmed.`
-    );
+   await redis.publish(
+  "whatsapp:send",
+  JSON.stringify({ number: `91${contactNumber}`, text:       `Your temporary booking for ${box.name} on ${date} from ${startTime} for ${duration} hour(s) is confirmed.` })
+);
+
 
     res.status(201).json({ message: "Temporary booking confirmed", booking });
   } catch (err) {
