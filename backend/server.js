@@ -50,11 +50,11 @@ app.use("/api/messages",messageRoutes);
 app.use("/api/notification",notificationRoutes)
 
 //start whatsApp chaybot
-// startBot().then(() => {
-//     console.log("WhatsApp bot started successfully");
-// }).catch(err => {
-//     console.error("Failed to start WhatsApp bot:", err);
-// });
+startBot().then(() => {
+    console.log("WhatsApp bot started successfully");
+}).catch(err => {
+    console.error("Failed to start WhatsApp bot:", err);
+});
 
 
 

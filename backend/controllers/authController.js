@@ -38,19 +38,20 @@ export const sendOtp = async (req, res) => {
     //set otp in redis
     await redis.set(`otp:${contactNumber}`, otp, "EX", ttl);
 
-    //send message in whatsapp using chatBot
-    try {
-await redis.publish(
-  "whatsapp:send",
-  JSON.stringify({
-    number: `91${contactNumber}`,   // India numbers with +91
-    text: `Your OTP is ${otp}`
-  })
-);
 
-    } catch (error) {
-      console.log(error,"error in redis publish")
-    }
+    sendMessage(`91${contactNumber}`, `Your OTP is ${otp}. It is valid for 5 minutes.`);
+
+
+
+// await redis.publish(
+//   "whatsapp:send",
+//   JSON.stringify({
+//     number: `91${contactNumber}`,   // India numbers with +91
+//     text: `Your OTP is ${otp}`
+//   })
+// );
+
+ 
 
 // inside backend auth or booking controller
     console.log(`OTP for ${contactNumber}: ${otp}`);

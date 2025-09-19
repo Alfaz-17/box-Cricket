@@ -283,10 +283,13 @@ export const createTemporaryBooking = async (req, res) => {
       });
     }
 
-   await redis.publish(
-  "whatsapp:send",
-  JSON.stringify({ number: `91${contactNumber}`, text:       `Your temporary booking for ${box.name} on ${date} from ${startTime} for ${duration} hour(s) is confirmed.` })
-);
+
+    sendMessage(`Your temporary booking for ${box.name} on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs) is confirmed.`);
+
+//    await redis.publish(
+//   "whatsapp:send",
+//   JSON.stringify({ number: `91${contactNumber}`, text:       `Your temporary booking for ${box.name} on ${date} from ${startTime} for ${duration} hour(s) is confirmed.` })
+// );
 
 
     res.status(201).json({ message: "Temporary booking confirmed", booking });
