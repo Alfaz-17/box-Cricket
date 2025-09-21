@@ -11,6 +11,11 @@ import { getIO, getOnlineUsers } from "../lib/soket.js";
 import Notification from "../models/Notification.js";
 import redis from "../lib/redis.js";
 
+
+const CF_CLIENT_ID = process.env.CF_CLIENT_ID;
+const CF_CLIENT_SECRET = process.env.CF_CLIENT_SECRET;
+
+
 export const checkSlotAvailability = async (req, res) => {
   try {
     const { boxId, quarterId, date, startTime, duration } = req.body;
@@ -171,6 +176,7 @@ export const getAvailableBoxes = async (req, res) => {
   }
 };
 
+
 export const createTemporaryBooking = async (req, res) => {
   try {
     const { boxId, quarterId, date, startTime, duration, contactNumber } =
@@ -184,7 +190,6 @@ export const createTemporaryBooking = async (req, res) => {
     if (!/^\d{10}$/.test(contactNumber)) {
       return res.status(400).json({ message: "Invalid contact number" });
     }
-
     if (start < now) {
       return res.status(400).json({ message: "Start time is in the past" });
     }
@@ -203,45 +208,45 @@ export const createTemporaryBooking = async (req, res) => {
       date,
       $or: [{ startDateTime: { $lt: end }, endDateTime: { $gt: start } }],
     });
-
     if (existing) {
       return res
         .status(400)
         .json({ message: `Quarter ${quarter.name} already booked` });
     }
 
+    // Format dates/times
     const formattedDate = new Date(date).toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
-
     const formattedStartTime = start.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     });
-
     const formattedEndTime = end.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     });
 
+    // Restrict offline bookings
     if (isOffline) {
       if (req.user.role !== "owner") {
         return res
           .status(403)
           .json({ message: "Only owners can create offline bookings" });
       }
-
       if (!req.body.user || !req.body.contactNumber) {
         return res
           .status(400)
           .json({ message: "Customer name and contact required" });
       }
     }
+    
 
+    // Create booking entry
     const booking = await Booking.create({
       user: isOffline ? req.body.user : req.user.name,
       userId: isOffline ? req.body.userId || null : req.user._id,
@@ -255,13 +260,61 @@ export const createTemporaryBooking = async (req, res) => {
       contactNumber,
       startDateTime: start,
       endDateTime: end,
-      amountPaid: 0,
+      amountPaid: 500,
       paymentIntentId: "TEMP",
       paymentStatus: isOffline ? "paid" : "pending",
       bookedBy: req.user._id,
       isOffline,
       method: isOffline ? "offline" : "online",
     });
+
+
+    // 🔗 If online booking → create Cashfree Payment Link
+    let paymentLink = null;
+    if (!isOffline) {
+      const resp = await axios.post(
+        "https://sandbox.cashfree.com/pg/links",
+        {
+          customer_details: {
+            customer_id: String(req.user._id),
+            customer_email: req.user.email || "guest@example.com",
+            customer_phone: contactNumber,
+          },
+          link_notify: { send_email: true, send_sms: true },
+          link_id: String(booking._id), // map booking to Cashfree
+          link_amount: booking.amountPaid,
+          link_currency: "INR",
+          link_purpose: `Booking for ${box.name}, ${quarter.name}`,
+          link_redirect_url: `https://book-my-box.vercel.app/my-bookings` // ✅ added
+
+        },
+        {
+          headers: {
+         "x-client-id": process.env.CF_CLIENT_ID,
+  "x-client-secret": process.env.CF_CLIENT_SECRET,
+            "x-api-version": "2022-09-01",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      paymentLink = resp.data.link_url;
+    }
+    console.log("Cashfree Payload:", {
+  link_amount: quarter.pricePerHour * duration,
+  link_currency: "INR",
+  link_id: `BOOKING_${booking._id}`,
+  link_purpose: `Booking for ${quarter.name}`,
+  customer_details: {
+    customer_id: String(req.user._id),
+    customer_name: req.user.name,
+    customer_email: req.user.email || "guest@example.com",
+    customer_phone: contactNumber,
+  },
+});
+
+
+    // Notify owner
     const notification = await Notification.create({
       fromUser: req.user._id,
       toUser: box.owner._id,
@@ -269,12 +322,9 @@ export const createTemporaryBooking = async (req, res) => {
       message: `New booking for Quarter "${quarter.name}" on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs).`,
     });
 
-    //add real time notification using soket io
     const io = getIO();
     const onlineUser = getOnlineUsers();
     const soketId = onlineUser.get(String(box.owner._id));
-
-    //send notifiaction if user is online
     if (soketId) {
       io.to(soketId).emit("new_notification", {
         toUser: req.user._id,
@@ -283,21 +333,45 @@ export const createTemporaryBooking = async (req, res) => {
       });
     }
 
+    sendMessage(
+      `Your temporary booking for ${box.name} on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs) is confirmed.`
+    );
 
-    sendMessage(`Your temporary booking for ${box.name} on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs) is confirmed.`);
-
-//    await redis.publish(
-//   "whatsapp:send",
-//   JSON.stringify({ number: `91${contactNumber}`, text:       `Your temporary booking for ${box.name} on ${date} from ${startTime} for ${duration} hour(s) is confirmed.` })
-// );
-
-
-    res.status(201).json({ message: "Temporary booking confirmed", booking });
+    res.status(201).json({
+      message: "Temporary booking created",
+      booking,
+      paymentLink,
+    });
   } catch (err) {
-    console.error("Temp Booking Error:", err.message);
-    res.status(500).json({ message: "Internal server error" });
+      console.error("Cashfree Error:", err.response?.data || err.message);
+
   }
 };
+
+
+export const cashfreeWebhook = async (req, res) => {
+  try {
+    const { link_id, link_status, order_amount, transaction_id } = req.body.data;
+
+    if (link_status === "PAID") {
+      const booking = await Booking.findOne({ paymentIntentId: link_id });
+      if (booking) {
+        booking.paymentStatus = "paid";
+        booking.amountPaid = order_amount;
+        booking.paymentIntentId = transaction_id;
+        await booking.save();
+      }
+    }
+
+    res.status(200).send("Webhook received");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Webhook error");
+  }
+};
+
+
+
 
 export const getPaymentStatus = async (req, res) => {
   try {

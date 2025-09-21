@@ -10,6 +10,7 @@ import {
   getRecenetBooking,
   
   createTemporaryBooking,
+  cashfreeWebhook,
   
 } from "../controllers/bookingController.js";
 import { protectedRoute } from "../middleware/auth.js";
@@ -22,6 +23,8 @@ router.post('/cancel/:id', protectedRoute, cancelBooking);
 router.get("/report/:id", protectedRoute,getMyBookingRecipt);
 router.get("/my-bookings", protectedRoute, getMyBookings);
 
+//payment routes
+router.post("/pay", cashfreeWebhook);
 
 //owner route
 router.get("/owner-bookings",protectedRoute,getOwnersBookings);

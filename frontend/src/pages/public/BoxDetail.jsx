@@ -176,7 +176,12 @@ const handleBooking = async () => {
       startTime: time,
       duration,
       contactNumber,
+      
+      
     });
+    if (res.data.paymentLink) {
+  window.location.href = res.data.paymentLink; // Cashfree checkout page
+}
 
     toast.success("🎉 Temporary booking confirmed!");
     setAvailableTimes(false);
