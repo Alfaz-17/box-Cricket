@@ -10,6 +10,7 @@ import axios from "axios";
 import { getIO, getOnlineUsers } from "../lib/soket.js";
 import Notification from "../models/Notification.js";
 import redis from "../lib/redis.js";
+import { nanoid } from "nanoid";
 
 
 const CF_CLIENT_ID = process.env.CF_CLIENT_ID;
@@ -176,11 +177,9 @@ export const getAvailableBoxes = async (req, res) => {
   }
 };
 
-
-export const createTemporaryBooking = async (req, res) => {
+export const createPaymentLink = async (req, res) => {
   try {
-    const { boxId, quarterId, date, startTime, duration, contactNumber } =
-      req.body;
+    const { boxId, quarterId, date, startTime, duration, contactNumber, amountPaid } = req.body;
     const isOffline = req.body.isOffline === true;
 
     const now = new Date();
@@ -202,96 +201,58 @@ export const createTemporaryBooking = async (req, res) => {
       return res.status(400).json({ message: "Quarter not available" });
     }
 
-    const existing = await Booking.findOne({
-      box: boxId,
-      quarter: quarterId,
-      date,
-      $or: [{ startDateTime: { $lt: end }, endDateTime: { $gt: start } }],
-    });
-    if (existing) {
-      return res
-        .status(400)
-        .json({ message: `Quarter ${quarter.name} already booked` });
-    }
-
-    // Format dates/times
-    const formattedDate = new Date(date).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-    const formattedStartTime = start.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-    const formattedEndTime = end.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    // Restrict offline bookings
-    if (isOffline) {
-      if (req.user.role !== "owner") {
-        return res
-          .status(403)
-          .json({ message: "Only owners can create offline bookings" });
-      }
-      if (!req.body.user || !req.body.contactNumber) {
-        return res
-          .status(400)
-          .json({ message: "Customer name and contact required" });
-      }
-    }
-    
-
-    // Create booking entry
-    const booking = await Booking.create({
-      user: isOffline ? req.body.user : req.user.name,
-      userId: isOffline ? req.body.userId || null : req.user._id,
-      box: boxId,
-      quarter: quarterId,
-      quarterName: quarter.name,
-      date,
-      startTime,
-      endTime: formattedEndTime,
-      duration,
-      contactNumber,
-      startDateTime: start,
-      endDateTime: end,
-      amountPaid: 500,
-      paymentIntentId: "TEMP",
-      paymentStatus: isOffline ? "paid" : "pending",
-      bookedBy: req.user._id,
-      isOffline,
-      method: isOffline ? "offline" : "online",
-    });
-
-
-    // 🔗 If online booking → create Cashfree Payment Link
+    const linkId = nanoid(20);
     let paymentLink = null;
+
+    // Create pending booking even before payment
     if (!isOffline) {
+      const pendingBooking = new Booking({
+        user: req.user.name,
+        userId: req.user._id,
+        box: boxId,
+        quarter: quarterId,
+        quarterName: quarter.name,
+        date,
+        startTime,
+        endTime: end,
+        duration,
+        amountPaid: 0,          // pending
+        contactNumber,
+        startDateTime: start,
+        endDateTime: end,
+        paymentIntentId: linkId, // linkId maps to payment
+        cashfreePaymentId: null,
+        paymentStatus: "pending",
+        bookedBy: req.user._id,
+        isOffline: false,
+        method: "online",
+      });
+
+      await pendingBooking.save();
+
+      // Create Cashfree Payment Link
       const resp = await axios.post(
         "https://sandbox.cashfree.com/pg/links",
         {
           customer_details: {
             customer_id: String(req.user._id),
-            customer_email: req.user.email || "guest@example.com",
+            customer_email: req.user.email || `guest_${linkId}@example.com`,
             customer_phone: contactNumber,
           },
           link_notify: { send_email: true, send_sms: true },
-          link_id: String(booking._id), // map booking to Cashfree
-          link_amount: booking.amountPaid,
+          link_id: linkId,
+          link_amount: amountPaid || 500,
           link_currency: "INR",
           link_purpose: `Booking for ${box.name}, ${quarter.name}`,
-          link_redirect_url: `https://book-my-box.vercel.app/my-bookings` // ✅ added
-
+          link_meta: {
+            redirect_url: `https://book-my-box.vercel.app/my-bookings`, // optional
+          },
+          link_redirect_url: `https://book-my-box.vercel.app/my-bookings`, // fallback
         },
         {
           headers: {
-         "x-client-id": process.env.CF_CLIENT_ID,
-  "x-client-secret": process.env.CF_CLIENT_SECRET,
+            "x-client-id": process.env.CF_CLIENT_ID,
+            "x-client-secret": process.env.CF_CLIENT_SECRET,
             "x-api-version": "2022-09-01",
             "Content-Type": "application/json",
           },
@@ -300,75 +261,89 @@ export const createTemporaryBooking = async (req, res) => {
 
       paymentLink = resp.data.link_url;
     }
-    console.log("Cashfree Payload:", {
-  link_amount: quarter.pricePerHour * duration,
-  link_currency: "INR",
-  link_id: `BOOKING_${booking._id}`,
-  link_purpose: `Booking for ${quarter.name}`,
-  customer_details: {
-    customer_id: String(req.user._id),
-    customer_name: req.user.name,
-    customer_email: req.user.email || "guest@example.com",
-    customer_phone: contactNumber,
-  },
-});
 
-
-    // Notify owner
-    const notification = await Notification.create({
-      fromUser: req.user._id,
-      toUser: box.owner._id,
-      type: "booking_created",
-      message: `New booking for Quarter "${quarter.name}" on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs).`,
-    });
-
-    const io = getIO();
-    const onlineUser = getOnlineUsers();
-    const soketId = onlineUser.get(String(box.owner._id));
-    if (soketId) {
-      io.to(soketId).emit("new_notification", {
-        toUser: req.user._id,
-        message: notification.message,
-        type: notification.type,
-      });
-    }
-
-    sendMessage(
-      `Your temporary booking for ${box.name} on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${duration} hrs) is confirmed.`
-    );
-
-    res.status(201).json({
-      message: "Temporary booking created",
-      booking,
+    res.status(200).json({
+      message: "Payment link created",
       paymentLink,
+      linkId,
     });
   } catch (err) {
-      console.error("Cashfree Error:", err.response?.data || err.message);
-
+    console.error("Cashfree Error:", err.response?.data || err.message);
+    res.status(500).json({ message: "Payment link creation failed" });
   }
 };
 
-
 export const cashfreeWebhook = async (req, res) => {
   try {
-    const { link_id, link_status, order_amount, transaction_id } = req.body.data;
+    console.log("🔔 Cashfree Webhook Received:", JSON.stringify(req.body, null, 2));
 
-    if (link_status === "PAID") {
-      const booking = await Booking.findOne({ paymentIntentId: link_id });
-      if (booking) {
-        booking.paymentStatus = "paid";
-        booking.amountPaid = order_amount;
-        booking.paymentIntentId = transaction_id;
-        await booking.save();
+    const data = req.body.data;
+    const linkId = data.order?.order_tags?.link_id;
+    const linkStatus = data.payment?.payment_status; // Cashfree uses "SUCCESS"
+    const linkAmount = data.payment?.payment_amount;
+    const cfPaymentId = data.payment?.cf_payment_id;
+
+    if (linkStatus === "SUCCESS") {
+      // Find pending booking by linkId
+      const booking = await Booking.findOne({ paymentIntentId: linkId, paymentStatus: "pending" });
+      if (!booking) {
+        console.warn("❌ Pending booking not found for linkId:", linkId);
+        return res.status(404).send("Pending booking not found");
       }
+
+      // Update booking to paid
+      booking.paymentStatus = "paid";
+      booking.amountPaid = linkAmount;
+      booking.cashfreePaymentId = cfPaymentId;
+
+      await booking.save();
+
+      // Notify owner
+      const box = await CricketBox.findById(booking.box);
+const quarter = box.quarters.find(q => q._id.toString() === booking.quarter.toString());
+
+if (!quarter) {
+  console.warn(`⚠️ Quarter not found for booking ${booking._id}`);
+  // You can either skip notification or use a fallback name
+  return res.status(404).send("Quarter not found");
+}
+
+      const formattedDate = new Date(booking.date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+      const formattedStartTime = booking.startDateTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true });
+      const formattedEndTime = booking.endDateTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true });
+
+      const notification = await Notification.create({
+        fromUser: booking.userId,
+        toUser: box.owner._id,
+        type: "booking_created",
+        message: `New booking for Quarter "${quarter.name}" on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${booking.duration} hrs).`,
+      });
+
+      const io = getIO();
+      const onlineUser = getOnlineUsers();
+      const socketId = onlineUser.get(String(box.owner._id));
+      if (socketId) {
+        io.to(socketId).emit("new_notification", {
+          toUser: booking.userId,
+          message: notification.message,
+          type: notification.type,
+        });
+      }
+
+      console.log(`✅ Booking ${booking._id} updated to paid`);
     }
 
     res.status(200).send("Webhook received");
   } catch (err) {
-    console.error(err);
+    console.error("Webhook Error:", err);
     res.status(500).send("Webhook error");
   }
 };
+
 
 
 

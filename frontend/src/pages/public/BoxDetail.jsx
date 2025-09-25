@@ -174,6 +174,7 @@ const handleBooking = async () => {
       quarterId: selectedQuarter,
       date: formattedDate,
       startTime: time,
+      amountPaid:"500",
       duration,
       contactNumber,
       
