@@ -1,16 +1,8 @@
-import { Link } from "react-router-dom";
-import {
-  Trophy,
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Instagram,
-  Twitter,
-} from "lucide-react";
-import BookMyBoxLogo from '../../assets/cri.png';
+import { Link } from 'react-router-dom'
+import { Trophy, Mail, Phone, MapPin, Facebook, Instagram, Twitter } from 'lucide-react'
+import BookMyBoxLogo from '../../assets/cri.png'
 
-const currentYear = new Date().getFullYear();
+const currentYear = new Date().getFullYear()
 
 export default function Footer() {
   return (
@@ -20,22 +12,26 @@ export default function Footer() {
           {/* Branding */}
           <div>
             <Link to="/" className="flex items-center mb-4 btn btn-ghost">
-            
-                          <h1 style={{ fontFamily: "Bebas Neue" }}  className="flex items-center   font-bold text-3xl" >
-                                        <img className="h-15 w-15 m-[-13px]" src={BookMyBoxLogo} alt="BookMyBox Logo" />Book My Box
-            
-                             </h1>
+              <h1
+                style={{ fontFamily: 'Bebas Neue' }}
+                className="flex items-center   font-bold text-3xl"
+              >
+                <img className="h-15 w-15 m-[-13px]" src={BookMyBoxLogo} alt="BookMyBox Logo" />
+                Book My Box
+              </h1>
             </Link>
             <p className="max-w-sm text-sm text-primary">
-              Discover and book top-notch cricket boxes for your matches and
-              practice sessions in just a few clicks.
+              Discover and book top-notch cricket boxes for your matches and practice sessions in
+              just a few clicks.
             </p>
           </div>
 
           {/* Links */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             <div>
-              <h3 style={{ fontFamily: "Bebas Neue" }}  className="font-semibold text-lg mb-4">Support</h3>
+              <h3 style={{ fontFamily: 'Bebas Neue' }} className="font-semibold text-lg mb-4">
+                Support
+              </h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a href="#" className="hover:text-primary  transition-colors">
@@ -56,7 +52,9 @@ export default function Footer() {
             </div>
 
             <div>
-              <h3 style={{ fontFamily: "Bebas Neue" }}  className="font-semibold text-lg mb-4">Quick Links</h3>
+              <h3 style={{ fontFamily: 'Bebas Neue' }} className="font-semibold text-lg mb-4">
+                Quick Links
+              </h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link to="/" className="hover:text-primary transition-colors">
@@ -64,18 +62,12 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/login"
-                    className="hover:text-primary transition-colors"
-                  >
+                  <Link to="/login" className="hover:text-primary transition-colors">
                     Login
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/signup"
-                    className="hover:text-primary  transition-colors"
-                  >
+                  <Link to="/signup" className="hover:text-primary  transition-colors">
                     Signup
                   </Link>
                 </li>
@@ -83,7 +75,9 @@ export default function Footer() {
             </div>
 
             <div>
-              <h3 style={{ fontFamily: "Bebas Neue" }}  className="font-semibold text-lg mb-4">Contact Us</h3>
+              <h3 style={{ fontFamily: 'Bebas Neue' }} className="font-semibold text-lg mb-4">
+                Contact Us
+              </h3>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center">
                   <Mail size={16} className="mr-2 text-primary " />
@@ -95,10 +89,7 @@ export default function Footer() {
                   </a>
                 </li>
                 <li className="flex items-center">
-                  <Phone
-                    size={16}
-                    className="mr-2 text-primary  dark:text-primary "
-                  />
+                  <Phone size={16} className="mr-2 text-primary  dark:text-primary " />
                   <a
                     href="tel:+916353783332"
                     className="hover:text-primary  dark:hover:text-primary "
@@ -107,10 +98,7 @@ export default function Footer() {
                   </a>
                 </li>
                 <li className="flex items-start">
-                  <MapPin
-                    size={16}
-                    className="mr-2 mt-1 text-primary dark:text-primary"
-                  />
+                  <MapPin size={16} className="mr-2 mt-1 text-primary dark:text-primary" />
                   <span>No Locatoin provided</span>
                 </li>
               </ul>
@@ -149,5 +137,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

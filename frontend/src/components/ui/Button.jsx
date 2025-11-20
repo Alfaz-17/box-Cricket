@@ -1,29 +1,29 @@
-import React from "react";
-import clsx from "clsx"; // Optional: for cleaner conditional classes
+import React from 'react'
+import clsx from 'clsx' // Optional: for cleaner conditional classes
 
 const daisyVariants = {
-  primary: "btn-primary",
-  secondary: "btn-secondary",
-  danger: "btn-error",
-  success: "btn-success",
-  link: "btn-link text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300",
-};
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  danger: 'btn-error',
+  success: 'btn-success',
+  link: 'btn-link text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300',
+}
 
 const daisySizes = {
-  sm: "btn-sm",
-  md: "", // DaisyUI default is medium
-  lg: "btn-lg",
-};
+  sm: 'btn-sm',
+  md: '', // DaisyUI default is medium
+  lg: 'btn-lg',
+}
 
 const Button = ({
   children,
-  type = "button",
-  variant = "primary",
-  size = "md",
+  type = 'button',
+  variant = 'primary',
+  size = 'md',
   fullWidth = false,
   isLoading = false,
   disabled = false,
-  className = "",
+  className = '',
   ...props
 }) => {
   return (
@@ -31,11 +31,11 @@ const Button = ({
       type={type}
       disabled={disabled || isLoading}
       className={clsx(
-        "btn transition-all duration-300 font-medium",
+        'btn transition-all duration-300 font-medium',
         daisyVariants[variant],
         daisySizes[size],
-        fullWidth && "w-full",
-        (disabled || isLoading) && "btn-disabled opacity-60 cursor-not-allowed",
+        fullWidth && 'w-full',
+        (disabled || isLoading) && 'btn-disabled opacity-60 cursor-not-allowed',
         className
       )}
       {...props}
@@ -68,7 +68,7 @@ const Button = ({
         children
       )}
     </button>
-  );
-};
+  )
+}
 
-export default Button;
+export default Button

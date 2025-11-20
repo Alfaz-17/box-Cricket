@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Users,
   Clock,
@@ -9,99 +9,92 @@ import {
   ArrowRight,
   ArrowUp,
   ArrowDown,
-} from "lucide-react";
+} from 'lucide-react'
 
-import { useEffect } from "react";
-import api from "../../utils/api";
-import toast from "react-hot-toast";
+import { useEffect } from 'react'
+import api from '../../utils/api'
+import toast from 'react-hot-toast'
 
 const Dashboard = () => {
-  const [loading, setLoading] = useState(false);
-  const [bookings, setBookings] = useState([]);
-  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const [bookings, setBookings] = useState([])
+  const [analytics, setAnalytics] = useState(null)
 
-  
   // Mock data for demonstration
   const stats = analytics
     ? [
         {
-          title: "Total Bookings",
+          title: 'Total Bookings',
           value: analytics.totalBookings,
-          change: `${analytics.bookingChange > 0 ? "+" : ""}${
-            analytics.bookingChange
-          }%`,
+          change: `${analytics.bookingChange > 0 ? '+' : ''}${analytics.bookingChange}%`,
           isIncrease: analytics.bookingChange >= 0,
           icon: <Calendar className="text-blue-500" />,
-          color: "bg-blue-100 dark:bg-blue-900/30",
-          link: "/admin/bookings",
+          color: 'bg-blue-100 dark:bg-blue-900/30',
+          link: '/admin/bookings',
         },
         {
-          title: "Revenue",
+          title: 'Revenue',
           value: `${analytics.totalRevenue} Rs`,
-          change: `${analytics.revenueChange > 0 ? "+" : ""}${
-            analytics.revenueChange
-          }%`,
+          change: `${analytics.revenueChange > 0 ? '+' : ''}${analytics.revenueChange}%`,
           isIncrease: analytics.revenueChange >= 0,
           icon: <DollarSign className="text-green-500" />,
-          color: "bg-green-100 dark:bg-green-900/30",
-          link: "/admin/bookings",
+          color: 'bg-green-100 dark:bg-green-900/30',
+          link: '/admin/bookings',
         },
         {
-          title: "Cricket Boxes",
+          title: 'Cricket Boxes',
           value: analytics.totalBoxes,
-          change: `${analytics.boxChange > 0 ? "+" : ""}${analytics.boxChange}`,
+          change: `${analytics.boxChange > 0 ? '+' : ''}${analytics.boxChange}`,
           isIncrease: analytics.boxChange >= 0,
           icon: <Box className="text-yellow-500" />,
-          color: "bg-yellow-100 dark:bg-yellow-900/30",
-          link: "/admin/boxes",
+          color: 'bg-yellow-100 dark:bg-yellow-900/30',
+          link: '/admin/boxes',
         },
         {
-          title: "Users",
+          title: 'Users',
           value: analytics.totalUsers,
-          change: `${analytics.userChange > 0 ? "+" : ""}${
-            analytics.userChange
-          }%`,
+          change: `${analytics.userChange > 0 ? '+' : ''}${analytics.userChange}%`,
           isIncrease: analytics.userChange >= 0,
           icon: <Users className="text-purple-500" />,
-          color: "bg-purple-100 dark:bg-purple-900/30",
-          link: "/admin/users",
+          color: 'bg-purple-100 dark:bg-purple-900/30',
+          link: '/admin/users',
         },
       ]
-    : [];
+    : []
 
   useEffect(() => {
-    recentBooking();
-    fetchAnalytics();
-  }, []);
+    recentBooking()
+    fetchAnalytics()
+  }, [])
 
   const fetchAnalytics = async () => {
     try {
-      const response = await api.get("/analytics/owner");
-      setAnalytics(response.data);
+      const response = await api.get('/analytics/owner')
+      setAnalytics(response.data)
     } catch (error) {
-      console.error("Error fetching analytics:", error);
+      console.error('Error fetching analytics:', error)
     }
-  };
+  }
 
   const recentBooking = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await api.get("/booking/owner-recent-bookings");
-      setBookings(response.data);
+      const response = await api.get('/booking/owner-recent-bookings')
+      setBookings(response.data)
     } catch (error) {
-      toast.error("Failed to fetch bookings");
-      console.error(error);
+      toast.error('Failed to fetch bookings')
+      console.error(error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <span className="loading loading-spinner text-primary w-12 h-12"></span>
       </div>
-    );
+    )
   }
 
   return (
@@ -110,11 +103,14 @@ const Dashboard = () => {
         <div className="flex-1 min-w-0  ">
           {/* Top Bar */}
           <div className=" bg-base-300 border-b border-base-100 px-4 py-3 sm:px-6 flex justify-between items-center">
-            <h1 style={{ fontFamily: "Bebas Neue" }}  className="text-xl font-bold text-base-content">Dashboard</h1>
+            <h1
+              style={{ fontFamily: 'Bebas Neue' }}
+              className="text-xl font-bold text-base-content"
+            >
+              Dashboard
+            </h1>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-base-content opacity-70">
-                Welcome, Admin
-              </span>
+              <span className="text-sm text-base-content opacity-70">Welcome, Admin</span>
             </div>
           </div>
 
@@ -133,18 +129,14 @@ const Dashboard = () => {
                         <p className="text-sm text-primary font-medium opacity-70 mb-1">
                           {stat.title}
                         </p>
-                        <p className="text-2xl text-primary font-bold">
-                          {stat.value}
-                        </p>
+                        <p className="text-2xl text-primary font-bold">{stat.value}</p>
                       </div>
-                      <div className="p-2 rounded-full bg-base-100 shadow">
-                        {stat.icon}
-                      </div>
+                      <div className="p-2 rounded-full bg-base-100 shadow">{stat.icon}</div>
                     </div>
                     <div className="flex items-center mt-4">
                       <span
                         className={`flex items-center text-sm ${
-                          stat.isIncrease ? "text-success" : "text-error"
+                          stat.isIncrease ? 'text-success' : 'text-error'
                         }`}
                       >
                         {stat.isIncrease ? (
@@ -171,7 +163,10 @@ const Dashboard = () => {
               <div className="lg:col-span-2">
                 <div className="card bg-base-100 p-4 shadow">
                   <div className="flex justify-between items-center mb-4">
-                    <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-semibold text-primary">
+                    <h2
+                      style={{ fontFamily: 'Bebas Neue' }}
+                      className="text-lg font-semibold text-primary"
+                    >
                       Recent Bookings
                     </h2>
                     <Link to="/admin/bookings">
@@ -195,7 +190,7 @@ const Dashboard = () => {
                       </thead>
                       <tbody>
                         {bookings
-                          ? bookings.map((booking) => (
+                          ? bookings.map(booking => (
                               <tr key={booking._id}>
                                 <td>{booking.user}</td>
                                 <td>{booking.box.name}</td>
@@ -210,11 +205,11 @@ const Dashboard = () => {
                                 <td>
                                   <span
                                     className={`badge badge-sm font-medium ${
-                                      booking.status === "confirmed"
-                                        ? "badge-success"
-                                        : booking.status === "complete"
-                                        ? "badge-warning"
-                                        : "badge-error"
+                                      booking.status === 'confirmed'
+                                        ? 'badge-success'
+                                        : booking.status === 'complete'
+                                          ? 'badge-warning'
+                                          : 'badge-error'
                                     }`}
                                   >
                                     {booking.status.charAt(0).toUpperCase() +
@@ -233,7 +228,10 @@ const Dashboard = () => {
               {/* Sidebar Actions */}
               <div className="lg:col-span-1">
                 <div className="card bg-base-100 p-4 shadow mt-6">
-                  <h2 style={{ fontFamily: "Bebas Neue" }}  className="text-lg font-semibold text-primary mb-4">
+                  <h2
+                    style={{ fontFamily: 'Bebas Neue' }}
+                    className="text-lg font-semibold text-primary mb-4"
+                  >
                     Quick Actions
                   </h2>
                   <div className="space-y-3">
@@ -263,7 +261,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

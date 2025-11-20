@@ -1,17 +1,17 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const bookingSchema = new mongoose.Schema(
   {
     user: { type: String, required: true },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
     quarterName: { type: String, required: true },
 
     box: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "CricketBox",
+      ref: 'CricketBox',
       required: true,
     },
     quarter: { type: mongoose.Schema.Types.ObjectId, required: true },
@@ -22,28 +22,27 @@ const bookingSchema = new mongoose.Schema(
     amountPaid: { type: Number, required: true, default: 500 },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed"],
-
+      enum: ['pending', 'paid', 'failed'],
     },
-    paymentIntentId: { type: String ,required:true},
+    paymentIntentId: { type: String, required: true },
     cashfreePaymentId: { type: String },
     contactNumber: { type: String },
     confirmedAt: { type: Date },
     cancelledAt: { type: Date },
     status: {
       type: String,
-      enum: ["completed", "confirmed", "cancelled"],
-      default: "confirmed",
+      enum: ['completed', 'confirmed', 'cancelled'],
+      default: 'confirmed',
     },
     completedAt: { type: Date },
     notes: { type: String },
     startDateTime: { type: Date }, // ✅ Needed for accurate slot checking
     endDateTime: { type: Date },
-    bookedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // owner/admin who created the booking
+    bookedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // owner/admin who created the booking
     isOffline: { type: Boolean, default: false },
     method: String,
   },
   { timestamps: true }
-);
+)
 
-export default mongoose.model("Booking", bookingSchema);
+export default mongoose.model('Booking', bookingSchema)

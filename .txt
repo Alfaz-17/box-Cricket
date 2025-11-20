@@ -1,11 +1,5 @@
-problems :
-1.problem in update quarters
+// not create booking unitil payment is done
 
+//redirect website after payment 
 
-
-
-
-
-work:
-
-1.display quater in my booking in user panel
+//whats app can send messages

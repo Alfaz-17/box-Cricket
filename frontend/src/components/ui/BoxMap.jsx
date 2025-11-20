@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 
 const BoxMap = ({ lat, lng, name }) => {
   return (
@@ -18,6 +18,6 @@ const BoxMap = ({ lat, lng, name }) => {
         </Marker>
       </MapContainer>
     </div>
-  );
-};
-export default BoxMap;
+  )
+}
+export default BoxMap

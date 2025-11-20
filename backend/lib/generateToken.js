@@ -1,11 +1,11 @@
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
 
-export const generateToken = (userId) => {
+export const generateToken = userId => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
+    expiresIn: '7d',
+  })
 
-  return token; // Don't set cookie
-};
+  return token // Don't set cookie
+}

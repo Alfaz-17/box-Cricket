@@ -1,16 +1,16 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 // 📌 Review Schema
 const ReviewsSchema = new mongoose.Schema(
   {
     boxId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Box",
+      ref: 'Box',
       required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     comment: {
@@ -24,7 +24,7 @@ const ReviewsSchema = new mongoose.Schema(
     // If you're tracking average rating and total count, you should store that in the Box model.
   },
   { timestamps: true }
-);
+)
 
 // 📌 Help & Support Schema
 const HelpAndSupportSchema = new mongoose.Schema(
@@ -43,11 +43,8 @@ const HelpAndSupportSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
-);
+)
 
 // 📦 Export models
-export const Review = mongoose.model("Review", ReviewsSchema);
-export const HelpAndSupport = mongoose.model(
-  "HelpAndSupport",
-  HelpAndSupportSchema
-);
+export const Review = mongoose.model('Review', ReviewsSchema)
+export const HelpAndSupport = mongoose.model('HelpAndSupport', HelpAndSupportSchema)

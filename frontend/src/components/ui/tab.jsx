@@ -1,5 +1,5 @@
 // components/ui/Tabs.jsx
-import React from "react";
+import React from 'react'
 
 const Tabs = ({ tabs, activeTab, onTabChange }) => {
   return (
@@ -9,11 +9,7 @@ const Tabs = ({ tabs, activeTab, onTabChange }) => {
           key={index}
           onClick={() => onTabChange(tab.value)}
           className={`relative px-3 py-3  font-semibold transition-colors duration-300
-            ${
-              activeTab === tab.value
-                ? " border-b-4 border-base-200"
-                : " hover:text-primary"
-            }
+            ${activeTab === tab.value ? ' border-b-4 border-base-200' : ' hover:text-primary'}
             focus:outline-none
           `}
           aria-selected={activeTab === tab.value}
@@ -24,13 +20,13 @@ const Tabs = ({ tabs, activeTab, onTabChange }) => {
           {/* Optional: a subtle underline animation */}
           <span
             className={`absolute bottom-0 left-0 w-full h-1 transition-all duration-300 ${
-              activeTab === tab.value ? "bg-primary" : "bg-transparent"
+              activeTab === tab.value ? 'bg-primary' : 'bg-transparent'
             }`}
           />
         </button>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default Tabs;
+export default Tabs

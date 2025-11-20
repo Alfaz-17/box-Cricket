@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const groupSchema = new mongoose.Schema({
   name: {
@@ -7,25 +7,25 @@ const groupSchema = new mongoose.Schema({
   },
   admin: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   members: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   ],
   invites: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   ],
   createdAt: {
     type: Date,
     default: Date.now,
   },
-});
+})
 
-export default mongoose.model("Group", groupSchema);
+export default mongoose.model('Group', groupSchema)

@@ -1,13 +1,3 @@
-import { create } from "zustand";
+import { create } from 'zustand'
 
-
-const useBookingStore = create((set)=>({
-
-
-
-
-
-
-
-
-}))
+const useBookingStore = create(set => ({}))

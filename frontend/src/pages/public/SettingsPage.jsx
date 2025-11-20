@@ -1,57 +1,53 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 const themes = [
   // Light & Clean
-  "light",
-  "pastel",
-  "lofi",
-  "winter",
-  "cupcake",
-  "cmyk",
-  
+  'light',
+  'pastel',
+  'lofi',
+  'winter',
+  'cupcake',
+  'cmyk',
 
   // Dark & Bold
-  "dark",
-  "dracula",
-  "synthwave",
-  "black",
-  "night",
-  "luxury",
+  'dark',
+  'dracula',
+  'synthwave',
+  'black',
+  'night',
+  'luxury',
 
   // Fun & Playful
-  "bumblebee",
-  "valentine",
-  "halloween",
-  "fantasy",
-  "aqua",
+  'bumblebee',
+  'valentine',
+  'halloween',
+  'fantasy',
+  'aqua',
 
   // Nature Inspired
-  "garden",
-  "forest",
-  "autumn",
-  "emerald",
+  'garden',
+  'forest',
+  'autumn',
+  'emerald',
 
   // Futuristic & High Contrast
-  "cyberpunk",
-  "business",
-  "acid",
-  "dim",
-  "coffee",
-  "retro",
-];
+  'cyberpunk',
+  'business',
+  'acid',
+  'dim',
+  'coffee',
+  'retro',
+]
 
 function SettingsPage() {
-  const defaultTheme =
-    document.documentElement.getAttribute("data-theme") || "forest";
-  const [currentTheme, setCurrentTheme] = useState(
-    localStorage.getItem("theme") || defaultTheme
-  );
+  const defaultTheme = document.documentElement.getAttribute('data-theme') || 'forest'
+  const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || defaultTheme)
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", currentTheme);
-    localStorage.setItem("theme", currentTheme);
-  }, [currentTheme]);
+    document.documentElement.setAttribute('data-theme', currentTheme)
+    localStorage.setItem('theme', currentTheme)
+  }, [currentTheme])
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -77,11 +73,11 @@ function SettingsPage() {
           },
         }}
       >
-        {themes.map((theme) => (
+        {themes.map(theme => (
           <motion.div
             key={theme}
             className={`p-4 rounded-xl border border-base-300 cursor-pointer relative hover:scale-105 transition-transform duration-200 ${
-              currentTheme === theme ? "ring-4 ring-primary" : ""
+              currentTheme === theme ? 'ring-4 ring-primary' : ''
             }`}
             data-theme={theme}
             onClick={() => setCurrentTheme(theme)}
@@ -93,9 +89,7 @@ function SettingsPage() {
           >
             <div className="flex justify-between items-center">
               <span className="font-semibold capitalize">{theme}</span>
-              {currentTheme === theme && (
-                <div className="badge badge-primary">Selected</div>
-              )}
+              {currentTheme === theme && <div className="badge badge-primary">Selected</div>}
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
@@ -109,7 +103,7 @@ function SettingsPage() {
         ))}
       </motion.div>
     </div>
-  );
+  )
 }
 
-export default SettingsPage;
+export default SettingsPage

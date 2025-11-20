@@ -1,76 +1,73 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
-import { Upload } from "lucide-react";
-import Card from "../../components/ui/Card";
-import Input from "../../components/ui/Input";
-import Button from "../../components/ui/Button";
-import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
-import api from "../../utils/api";
-import MapPicker from "../../components/ui/MapPicker";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+import { Upload } from 'lucide-react'
+import Card from '../../components/ui/Card'
+import Input from '../../components/ui/Input'
+import Button from '../../components/ui/Button'
+import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
+import api from '../../utils/api'
+import MapPicker from '../../components/ui/MapPicker'
 
 const CreateBox = () => {
-
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    location: "",
-    address: "",
-    hourlyRate: "",
-    mobileNumber: "",
-    features: "",
-    quarters: "", // ← ADD THIS
+    name: '',
+    description: '',
+    location: '',
+    address: '',
+    hourlyRate: '',
+    mobileNumber: '',
+    features: '',
+    quarters: '', // ← ADD THIS
     image: null,
     images: [],
     imagePreview: null,
     imagesPreview: [],
     latitude: null,
     longitude: null,
-      customPricing: [], // ← NEW
+    customPricing: [], // ← NEW
+  })
+  const [newPricing, setNewPricing] = useState({ duration: '', price: '' })
 
-  });
-  const [newPricing, setNewPricing] = useState({ duration: "", price: "" });
-
-
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "image") {
-      const file = files[0];
-      setFormData((prev) => ({
+  const handleChange = e => {
+    const { name, value, files } = e.target
+    if (name === 'image') {
+      const file = files[0]
+      setFormData(prev => ({
         ...prev,
         image: file,
         imagePreview: URL.createObjectURL(file),
-      }));
-    } else if (name === "images") {
-      const filesArray = Array.from(files);
-      const previews = filesArray.map((file) => URL.createObjectURL(file));
+      }))
+    } else if (name === 'images') {
+      const filesArray = Array.from(files)
+      const previews = filesArray.map(file => URL.createObjectURL(file))
 
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         images: filesArray,
         imagesPreview: previews,
-      }));
+      }))
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData(prev => ({ ...prev, [name]: value }))
     }
-  };
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setLoading(true)
 
     try {
-      let uploadedImageURL = "";
+      let uploadedImageURL = ''
       if (formData.image) {
-        uploadedImageURL = await uploadToCloudinary(formData.image);
+        uploadedImageURL = await uploadToCloudinary(formData.image)
       }
 
-      const uploadedImagesURLs = [];
+      const uploadedImagesURLs = []
       for (const imgFile of formData.images) {
-        const imgUrl = await uploadToCloudinary(imgFile);
-        uploadedImagesURLs.push(imgUrl);
+        const imgUrl = await uploadToCloudinary(imgFile)
+        uploadedImagesURLs.push(imgUrl)
       }
 
       const payload = {
@@ -86,22 +83,21 @@ const CreateBox = () => {
         images: uploadedImagesURLs,
         latitude: formData.latitude,
         longitude: formData.longitude,
-          customPricing: formData.customPricing, // ← ADD THIS
+        customPricing: formData.customPricing, // ← ADD THIS
+      }
 
-      };
+      console.log(payload)
+      const response = await api.post('/boxes/create', payload)
 
-      console.log(payload);
-      const response = await api.post("/boxes/create", payload);
-
-      toast.success(response.data.message || "Box created successfully!");
-      navigate("/admin/boxes");
+      toast.success(response.data.message || 'Box created successfully!')
+      navigate('/admin/boxes')
     } catch (err) {
-      console.error("Unexpected error:", err);
-      toast.error(err.response?.data?.message || "Unexpected error occurred");
+      console.error('Unexpected error:', err)
+      toast.error(err.response?.data?.message || 'Unexpected error occurred')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -116,9 +112,7 @@ const CreateBox = () => {
           />
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-primary  mb-1">
-              Description
-            </label>
+            <label className="block text-sm font-medium text-primary  mb-1">Description</label>
             <textarea
               name="description"
               value={formData.description}
@@ -138,7 +132,7 @@ const CreateBox = () => {
                 latitude={formData.latitude}
                 longitude={formData.longitude}
                 onLocationChange={(lat, lng) =>
-                  setFormData((prev) => ({
+                  setFormData(prev => ({
                     ...prev,
                     latitude: lat,
                     longitude: lng,
@@ -149,7 +143,7 @@ const CreateBox = () => {
 
             {formData.latitude && formData.longitude && (
               <p className="mt-2 text-sm text-primary">
-                Selected Coordinates: {formData.latitude.toFixed(5)},{" "}
+                Selected Coordinates: {formData.latitude.toFixed(5)},{' '}
                 {formData.longitude.toFixed(5)}
               </p>
             )}
@@ -181,91 +175,84 @@ const CreateBox = () => {
             required
           />
           <div className="mb-6">
-  <label className="block text-sm font-medium text-primary mb-2">
-    Custom Pricing (Optional)
-  </label>
-  <div className="flex gap-4 mb-2">
-    <Input
-      label="Duration (hrs)"
-      type="number"
-      name="duration"
-      value={newPricing.duration}
-      onChange={(e) =>
-        setNewPricing({ ...newPricing, duration: e.target.value })
-      }
-      min="1"
-      step="1"
-    />
-    <Input
-      label="Price (₹)"
-      type="number"
-      name="price"
-      value={newPricing.price}
-      onChange={(e) =>
-        setNewPricing({ ...newPricing, price: e.target.value })
-      }
-      min="1"
-    />
-    <Button
-      type="button"
-      onClick={() => {
-        if (
-          newPricing.duration &&
-          newPricing.price &&
-          !formData.customPricing.find(
-            (item) => item.duration === Number(newPricing.duration)
-          )
-        ) {
-          setFormData((prev) => ({
-            ...prev,
-            customPricing: [
-              ...prev.customPricing,
-              {
-                duration: Number(newPricing.duration),
-                price: Number(newPricing.price),
-              },
-            ],
-          }));
-          setNewPricing({ duration: "", price: "" });
-        } else {
-          toast.error("Invalid or duplicate entry");
-        }
-      }}
-    >
-      Add
-    </Button>
-  </div>
+            <label className="block text-sm font-medium text-primary mb-2">
+              Custom Pricing (Optional)
+            </label>
+            <div className="flex gap-4 mb-2">
+              <Input
+                label="Duration (hrs)"
+                type="number"
+                name="duration"
+                value={newPricing.duration}
+                onChange={e => setNewPricing({ ...newPricing, duration: e.target.value })}
+                min="1"
+                step="1"
+              />
+              <Input
+                label="Price (₹)"
+                type="number"
+                name="price"
+                value={newPricing.price}
+                onChange={e => setNewPricing({ ...newPricing, price: e.target.value })}
+                min="1"
+              />
+              <Button
+                type="button"
+                onClick={() => {
+                  if (
+                    newPricing.duration &&
+                    newPricing.price &&
+                    !formData.customPricing.find(
+                      item => item.duration === Number(newPricing.duration)
+                    )
+                  ) {
+                    setFormData(prev => ({
+                      ...prev,
+                      customPricing: [
+                        ...prev.customPricing,
+                        {
+                          duration: Number(newPricing.duration),
+                          price: Number(newPricing.price),
+                        },
+                      ],
+                    }))
+                    setNewPricing({ duration: '', price: '' })
+                  } else {
+                    toast.error('Invalid or duplicate entry')
+                  }
+                }}
+              >
+                Add
+              </Button>
+            </div>
 
-  {formData.customPricing.length > 0 && (
-    <div className="space-y-2">
-      {formData.customPricing.map((item, idx) => (
-        <div
-          key={idx}
-          className="flex items-center justify-between bg-gray-100 p-2 rounded-md"
-        >
-          <span>
-            {item.duration} hrs - ₹{item.price}
-          </span>
-          <button
-            type="button"
-            className="text-red-500 text-sm"
-            onClick={() =>
-              setFormData((prev) => ({
-                ...prev,
-                customPricing: prev.customPricing.filter(
-                  (_, i) => i !== idx
-                ),
-              }))
-            }
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
-
+            {formData.customPricing.length > 0 && (
+              <div className="space-y-2">
+                {formData.customPricing.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between bg-gray-100 p-2 rounded-md"
+                  >
+                    <span>
+                      {item.duration} hrs - ₹{item.price}
+                    </span>
+                    <button
+                      type="button"
+                      className="text-red-500 text-sm"
+                      onClick={() =>
+                        setFormData(prev => ({
+                          ...prev,
+                          customPricing: prev.customPricing.filter((_, i) => i !== idx),
+                        }))
+                      }
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <Input
             label="Mobile Number"
@@ -292,7 +279,6 @@ const CreateBox = () => {
             />
           </div>
 
-          
           <div className="mb-4">
             <label className="block text-sm font-medium text-primary  mb-1">
               Number of Quarters
@@ -315,9 +301,7 @@ const CreateBox = () => {
 
           {/* Image upload fields (same as before) */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-primary  mb-1">
-              Box Image
-            </label>
+            <label className="block text-sm font-medium text-primary  mb-1">Box Image</label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md">
               <div className="space-y-1 text-center">
                 <Upload className="mx-auto h-12 w-12 text-primary" />
@@ -383,11 +367,7 @@ const CreateBox = () => {
           </div>
 
           <div className="flex justify-end space-x-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => navigate("/admin/boxes")}
-            >
+            <Button type="button" variant="secondary" onClick={() => navigate('/admin/boxes')}>
               Cancel
             </Button>
             <Button type="submit" isLoading={loading}>
@@ -397,7 +377,7 @@ const CreateBox = () => {
         </form>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default CreateBox;
+export default CreateBox

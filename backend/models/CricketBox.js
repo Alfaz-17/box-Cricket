@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const reviewSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   name: {
@@ -21,12 +21,12 @@ const reviewSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+})
 
 const cricketBoxSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   name: { type: String, required: true },
@@ -59,8 +59,8 @@ const cricketBoxSchema = new mongoose.Schema({
   facilities: [{ type: String }], // Optional: From mock data if you want this separately
 
   openingHours: {
-    weekdays: { type: String, default: "6:00 AM - 12:00 PM" },
-    weekends: { type: String, default: "12:00 AM - 12:00 AM(24 houres)" },
+    weekdays: { type: String, default: '6:00 AM - 12:00 PM' },
+    weekends: { type: String, default: '12:00 AM - 12:00 AM(24 houres)' },
   },
   quarters: [
     {
@@ -82,6 +82,6 @@ const cricketBoxSchema = new mongoose.Schema({
 
   rating: { type: Number, default: 0 }, // Optional: Computed later
   reviewCount: { type: Number, default: 0 }, // Optional: Computed later
-});
+})
 
-export default mongoose.model("CricketBox", cricketBoxSchema);
+export default mongoose.model('CricketBox', cricketBoxSchema)

@@ -1,47 +1,38 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Menu, Bell,  LogOut, Trophy } from "lucide-react";
-import AuthContext from "../../context/AuthContext";
-import Sidebar from "../admin/Sidebar";
-import BookMyBoxLogo from '../../assets/cri.png';
+import React, { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Menu, Bell, LogOut, Trophy } from 'lucide-react'
+import AuthContext from '../../context/AuthContext'
+import Sidebar from '../admin/Sidebar'
+import BookMyBoxLogo from '../../assets/cri.png'
 import api from '../../utils/api'
-import useNotificationStore from "../../store/useNotificationStore";
+import useNotificationStore from '../../store/useNotificationStore'
 const Navbar = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const { user, isAuthenticated, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const { user, isAuthenticated, logout } = useContext(AuthContext)
+  const navigate = useNavigate()
 
-  const unreadCount = useNotificationStore((state) => state.unreadCount);
-  const { fetchUnreadCount } = useNotificationStore.getState();
-
+  const unreadCount = useNotificationStore(state => state.unreadCount)
+  const { fetchUnreadCount } = useNotificationStore.getState()
 
   // Update `isMobile` on window resize
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-    
-  }, []);
+      setIsMobile(window.innerWidth < 768)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
-  useEffect(()=>{
-fetchUnreadCount()
-  },[fetchUnreadCount])
+  useEffect(() => {
+    fetchUnreadCount()
+  }, [fetchUnreadCount])
 
-  
-
-
-  
   const handleLogout = () => {
-    logout();
-    navigate("/");
-    setSidebarOpen(false);
-  };
-
-
-
+    logout()
+    navigate('/')
+    setSidebarOpen(false)
+  }
 
   return (
     <>
@@ -53,14 +44,14 @@ fetchUnreadCount()
               to="/"
               className="flex items-center space-x-2   font-bold text-xl transition-colors duration-300"
             >
-
-              <h1 style={{ fontFamily: "Bebas Neue" }}  className="flex items-center   font-bold text-2xl " >
-                            <img className="h-15 w-15 m-[-13px]" src={BookMyBoxLogo} alt="BookMyBox Logo" />Book My Box
-
-                 </h1>
-
+              <h1
+                style={{ fontFamily: 'Bebas Neue' }}
+                className="flex items-center   font-bold text-2xl "
+              >
+                <img className="h-15 w-15 m-[-13px]" src={BookMyBoxLogo} alt="BookMyBox Logo" />
+                Book My Box
+              </h1>
             </Link>
-            
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-6">
@@ -68,56 +59,35 @@ fetchUnreadCount()
                 Home
               </Link>
 
-              {isAuthenticated && user?.role === "user" && (
-                <Link
-                  to="/my-bookings"
-                  className="btn btn-ghost text-base-content"
-                >
+              {isAuthenticated && user?.role === 'user' && (
+                <Link to="/my-bookings" className="btn btn-ghost text-base-content">
                   My Bookings
                 </Link>
               )}
 
-              {isAuthenticated && user?.role === "owner" && (
+              {isAuthenticated && user?.role === 'owner' && (
                 <>
-                  <Link
-                    to="/admin/bookings"
-                    className="btn btn-ghost text-base-content"
-                  >
+                  <Link to="/admin/bookings" className="btn btn-ghost text-base-content">
                     Admin Booking
                   </Link>
                   <Link to="/admin" className="btn btn-ghost text-base-content">
                     Admin Panel
                   </Link>
-                  <Link
-                    to="/admin/boxes"
-                    className="btn btn-ghost text-base-content"
-                  >
+                  <Link to="/admin/boxes" className="btn btn-ghost text-base-content">
                     Box Management
                   </Link>
-                  <Link
-                    to="/admin/block-slot"
-                    className="btn btn-ghost text-base-content"
-                  >
+                  <Link to="/admin/block-slot" className="btn btn-ghost text-base-content">
                     Block Slot
                   </Link>
-                  <Link
-                    to="/my-profile"
-                    className="btn btn-ghost text-base-content"
-                  >
+                  <Link to="/my-profile" className="btn btn-ghost text-base-content">
                     My Profile
                   </Link>
                 </>
               )}
 
               {isAuthenticated ? (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-centerbtn btn btn-primary"
-                >
-                  <LogOut
-                    size={18}
-                    className="mr-1  btn-primary text-base-content"
-                  />
+                <button onClick={handleLogout} className="flex items-centerbtn btn btn-primary">
+                  <LogOut size={18} className="mr-1  btn-primary text-base-content" />
                   <span>Logout</span>
                 </button>
               ) : (
@@ -125,16 +95,10 @@ fetchUnreadCount()
                   <Link to="/login" className="btn btn-ghost text-base-content">
                     Login
                   </Link>
-                  <Link
-                    to="/signup"
-                    className="btn btn-ghost text-base-content"
-                  >
+                  <Link to="/signup" className="btn btn-ghost text-base-content">
                     Sign Up
                   </Link>
-                  <Link
-                    to="/settings"
-                    className="btn btn-ghost text-base-content"
-                  >
+                  <Link to="/settings" className="btn btn-ghost text-base-content">
                     Settings
                   </Link>
                 </>
@@ -143,22 +107,17 @@ fetchUnreadCount()
 
             {/* Mobile Menu Button */}
             <div className="flex md:hidden items-center space-x-3">
-   <Link to="/notifications" className="relative">
-  <Bell className="w-6 h-6 text-primary" />
-  {unreadCount > 0 && (
-    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-bounce ">
-      {unreadCount}
-    </span>
-  )}
-</Link>
+              <Link to="/notifications" className="relative">
+                <Bell className="w-6 h-6 text-primary" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-bounce ">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
 
-
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="btn btn-primary"
-              >
+              <button onClick={() => setSidebarOpen(true)} className="btn btn-primary">
                 <Menu size={24} />
-
               </button>
             </div>
           </div>
@@ -166,13 +125,9 @@ fetchUnreadCount()
       </nav>
 
       {/* Render Sidebar only on mobile */}
-      {isMobile && (
-        
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      )}
+      {isMobile && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
     </>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
