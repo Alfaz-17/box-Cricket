@@ -14,8 +14,8 @@ import {
 } from 'lucide-react'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false)

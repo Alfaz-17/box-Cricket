@@ -4,10 +4,10 @@ import { toast } from 'react-hot-toast'
 import { Plus, Edit, Trash2, Box as BoxIcon, MapPin, IndianRupee } from 'lucide-react'
 import api from '../../utils/api'
 import useBoxStore from '../../store/boxStore'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardFooter } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Badge } from '@/components/ui/Badge'
 
 const BoxManagement = () => {
   const [showDeleteInput, setShowDeleteInput] = useState(false)

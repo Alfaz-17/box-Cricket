@@ -4,10 +4,10 @@ import api from '../../utils/api'
 import { Upload, User, Phone, LogOut } from 'lucide-react'
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import AuthContext from '../../context/AuthContext'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Label } from '@/components/ui/Label'
+import { Card, CardContent } from '@/components/ui/Card'
 
 const Profile = () => {
   const [user, setUser] = useState()

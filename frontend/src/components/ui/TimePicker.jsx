@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/Select"
 
 const TimePicker = ({ value, onChange }) => {
   // Generate options for every 30 mins in 12-hour format AM/PM

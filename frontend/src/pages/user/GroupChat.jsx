@@ -4,8 +4,8 @@ import { ArrowLeft, Send, Info } from 'lucide-react'
 import AuthContext from '../../context/AuthContext'
 import socket from '../../utils/soket'
 import { Link, useParams } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 const GroupChat = () => {
   const { user } = useContext(AuthContext)

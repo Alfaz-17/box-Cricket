@@ -3,9 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, UserPlus, Search, Users } from 'lucide-react'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 const InviteUsers = () => {
   const [allUsers, setAllUsers] = useState([])

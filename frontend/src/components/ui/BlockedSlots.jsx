@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Calendar, Clock, Ban, Square, Filter, CalendarX2 } from 'lucide-react'
 import api from '../../utils/api'
 import { formatDate } from '../../utils/formatDate'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 
 export default function BlockedSlots({ boxId }) {
   const [blockedSlots, setBlockedSlots] = useState([])

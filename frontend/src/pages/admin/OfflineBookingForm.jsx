@@ -4,11 +4,11 @@ import api from '../../utils/api'
 import useBoxStore from '../../store/boxStore'
 import TimePicker from '../../components/ui/TimePicker'
 import { Clock, Calendar, User, Phone, Timer } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
+import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
+import { Label } from '@/components/ui/Label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 
 export default function OfflineBookingForm() {
   const { boxes, fetchBoxes } = useBoxStore()

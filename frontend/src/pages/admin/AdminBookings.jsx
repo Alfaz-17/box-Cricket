@@ -3,11 +3,11 @@ import { toast } from 'react-hot-toast'
 import { Calendar, Clock, MapPin, User, Search, Phone, Filter, ChevronDown } from 'lucide-react'
 import api from '../../utils/api'
 import { formatDate } from '../../utils/formatDate'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { Badge } from '@/components/ui/Badge'
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([])

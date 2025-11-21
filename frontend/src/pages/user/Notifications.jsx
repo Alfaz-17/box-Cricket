@@ -5,8 +5,8 @@ import api from '../../utils/api'
 import AuthContext from '../../context/AuthContext'
 import { Link } from 'react-router-dom'
 import useNotificationStore from '../../store/useNotificationStore'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
 
 const Notifications = () => {
   const { user } = useContext(AuthContext)

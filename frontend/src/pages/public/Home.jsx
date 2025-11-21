@@ -7,10 +7,10 @@ import api from '../../utils/api'
 import BookMyBoxLogo from '../../assets/cri.png'
 import TimePicker from '../../components/ui/TimePicker'
 import toast from 'react-hot-toast'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Label } from '@/components/ui/Label'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
 
 const Home = () => {
   const [filteredBoxes, setFilteredBoxes] = useState([])

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Switch } from '@/components/ui/Switch'
+import { Label } from '@/components/ui/Label'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Settings, Moon, Sun } from 'lucide-react'
 
 function SettingsPage() {

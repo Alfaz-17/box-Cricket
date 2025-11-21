@@ -4,8 +4,8 @@ import api from '../../utils/api'
 import AuthContext from '../../context/AuthContext'
 import { ArrowLeft, Trash2, LogOut, Shield, User } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 
 const GroupInfo = () => {
   const { user } = useContext(AuthContext)
