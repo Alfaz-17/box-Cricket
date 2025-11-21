@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import Sidebar from '../admin/Sidebar';
 import useNotificationStore from '../../store/useNotificationStore';
-import { Button } from '../ui/button';
+import { Button } from '../ui/Button';
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
