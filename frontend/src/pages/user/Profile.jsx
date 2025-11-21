@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import api from '../../utils/api' // your axios config instance
-import { Upload } from 'lucide-react'
+import api from '../../utils/api'
+import { Upload, User, Phone, LogOut } from 'lucide-react'
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import AuthContext from '../../context/AuthContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
 
 const Profile = () => {
   const [user, setUser] = useState()
@@ -18,7 +22,6 @@ const Profile = () => {
   const { logout } = useContext(AuthContext)
   const navigate = useNavigate()
 
-  // Fetch user data on mount
   useEffect(() => {
     fetchUser()
   }, [])
@@ -47,19 +50,17 @@ const Profile = () => {
     navigate('/')
   }
 
-  // Handle input change
   const handleChange = e => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  // Update profile submit handler
   const handleSubmit = async e => {
     e.preventDefault()
     setLoading(true)
     setMessage('')
     try {
       let uploadedImageURL = ''
-      if (form.profileImg) {
+      if (form.profileImg && typeof form.profileImg !== 'string') {
         uploadedImageURL = await uploadToCloudinary(form.profileImg)
       }
       const payload = {
@@ -79,13 +80,14 @@ const Profile = () => {
 
   const handleChangeImg = e => {
     const { files } = e.target
-
-    const file = files[0]
-    setForm(prev => ({
-      ...prev,
-      profileImg: file,
-      imagePreview: URL.createObjectURL(file),
-    }))
+    if (files && files[0]) {
+        const file = files[0]
+        setForm(prev => ({
+          ...prev,
+          profileImg: file,
+          imagePreview: URL.createObjectURL(file),
+        }))
+    }
   }
 
   if (!user)
@@ -96,102 +98,111 @@ const Profile = () => {
     )
 
   return (
-    <div className="max-w-md mx-auto bg-base-200 rounded-box shadow-xl relative pt-24 px-6 pb-8">
-      {/* Profile Image at the top, centered and rounded */}
-      <div className="absolute  left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <div className="relative w-32 h-32">
-          {form.imagePreview ? (
-            <img
-              src={form.imagePreview}
-              alt=""
-              className="w-32 h-32 rounded-full object-cover border-4 border-primary shadow-lg"
-            />
-          ) : (
-            <div className="w-32 h-32 rounded-full  flex items-center justify-center text-primary  text-3xl font-bold border-4 border-primary shadow-lg">
-              {form.name ? form.name.charAt(0).toUpperCase() : 'U'}
+    <div className="max-w-2xl mx-auto p-6">
+      <Card className="overflow-visible mt-16 border-primary/20">
+        <div className="relative">
+            {/* Header Background */}
+            <div className="h-32 bg-gradient-to-r from-primary to-secondary rounded-t-xl opacity-90" />
+            
+            {/* Profile Image */}
+            <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
+                <div className="relative group">
+                    <div className="w-32 h-32 rounded-full border-4 border-card shadow-xl overflow-hidden bg-card">
+                        {form.imagePreview ? (
+                            <img
+                            src={form.imagePreview}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-muted text-primary text-4xl font-bold">
+                            {form.name ? form.name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                        )}
+                    </div>
+                    
+                    <label
+                        htmlFor="profileImgInput"
+                        className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-2 rounded-full shadow-lg cursor-pointer hover:bg-primary/90 transition-colors"
+                    >
+                        <Upload size={16} />
+                        <input
+                        type="file"
+                        id="profileImgInput"
+                        name="profileImg"
+                        className="hidden"
+                        onChange={handleChangeImg}
+                        accept="image/*"
+                        />
+                    </label>
+                </div>
             </div>
-          )}
-
-          {/* Change button */}
-          <label
-            htmlFor="profileImgInput"
-            className="absolute bottom-0 right-0 bg-primary hover:bg-primary-focus  p-2 rounded-full shadow cursor-pointer transition-all"
-            title="Change Profile Picture"
-          >
-            <Upload size={16} />
-            <input
-              type="file"
-              id="profileImgInput"
-              name="profileImg"
-              className="sr-only "
-              onChange={handleChangeImg}
-              accept="image/*"
-            />
-          </label>
         </div>
 
-        <h2
-          style={{ fontFamily: 'Bebas Neue' }}
-          className="text-xl font-bold mt-3 text-primary text-center"
-        >
-          {user.name}
-        </h2>
-      </div>
+        <CardContent className="pt-20 pb-8 px-6 md:px-12">
+            <div className="text-center mb-8">
+                <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl font-bold text-foreground">
+                    {user.name}
+                </h2>
+                <p className="text-muted-foreground">{user.role || 'Player'}</p>
+            </div>
 
-      {/* Form */}
-      <div className="mt-20">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name Field */}
-          <div className="form-control">
-            <label htmlFor="name" className="label">
-              <span className="label-text text-primary">Name</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              className="input input-bordered text-[16px] w-full"
-            />
-          </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                    <Label htmlFor="name" className="flex items-center gap-2">
+                        <User size={16} className="text-primary" /> Name
+                    </Label>
+                    <Input
+                        id="name"
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
 
-          {/* Contact Number Field */}
-          <div className="form-control">
-            <label htmlFor="contactNumber" className="label">
-              <span className="label-text text-primary">Contact Number</span>
-            </label>
-            <input
-              type="text"
-              id="contactNumber"
-              name="contactNumber"
-              value={form.contactNumber}
-              readOnly
-              className="input input-bordered text-[16px] w-full"
-            />
-          </div>
+                <div className="space-y-2">
+                    <Label htmlFor="contactNumber" className="flex items-center gap-2">
+                        <Phone size={16} className="text-primary" /> Contact Number
+                    </Label>
+                    <Input
+                        id="contactNumber"
+                        name="contactNumber"
+                        value={form.contactNumber}
+                        readOnly
+                        className="bg-muted/50 cursor-not-allowed"
+                    />
+                </div>
 
-          {/* Submit Button */}
-          <button type="submit" disabled={loading} className="btn btn-primary w-full">
-            {loading ? 'Updating...' : 'Update Profile'}
-          </button>
-        </form>
-      </div>
+                <Button type="submit" disabled={loading} className="w-full">
+                    {loading ? 'Updating...' : 'Update Profile'}
+                </Button>
+            </form>
 
-      {/* Message */}
-      {message && <p className="mt-4 text-center ">{message}</p>}
-      <div className="flex items-center mt-5  gap-2">
-        <span className="text-base">Forgot your password?</span>
-        <Link to="/forgot-password" className="text-primary font-medium hover:underline">
-          Reset here
-        </Link>
-      </div>
+            {message && (
+                <div className={`mt-4 p-3 rounded-lg text-center text-sm font-medium ${message.includes('success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {message}
+                </div>
+            )}
 
-      {/* Logout Button */}
-      <button onClick={handleLogout} className="btn btn-outline btn-error w-full mt-4">
-        Logout
-      </button>
+            <div className="mt-8 pt-8 border-t border-primary/10 flex flex-col items-center gap-4">
+                <div className="flex items-center gap-2 text-sm">
+                    <span className="text-muted-foreground">Forgot your password?</span>
+                    <Link to="/forgot-password" className="text-primary font-bold hover:underline">
+                        Reset here
+                    </Link>
+                </div>
+
+                <Button 
+                    variant="destructive" 
+                    onClick={handleLogout} 
+                    className="w-full md:w-auto min-w-[200px]"
+                >
+                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                </Button>
+            </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

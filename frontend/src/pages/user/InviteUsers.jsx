@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-
-import { ArrowLeft, UserPlus } from 'lucide-react'
+import { ArrowLeft, UserPlus, Search, Users } from 'lucide-react'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 const InviteUsers = () => {
   const [allUsers, setAllUsers] = useState([])
@@ -85,48 +87,73 @@ const InviteUsers = () => {
   })
 
   return (
-    <div className="p-4 bg-base-100 shadow rounded-xl">
-      <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-lg font-semibold mb-2">
+    <div className="max-w-2xl mx-auto p-6 min-h-screen">
+      <div className="flex items-center gap-4 mb-6">
         <Link to={`/groups`}>
-          <button className="btn btn-sm btn-ghost">
-            <ArrowLeft />
-          </button>
+            <Button variant="ghost" size="icon" className="rounded-full">
+                <ArrowLeft className="w-6 h-6" />
+            </Button>
         </Link>
-        Invite Users
-      </h3>
-      <input
-        type="text"
-        placeholder="Search users..."
-        className="input input-bordered w-full mb-4"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
-      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-      <div className="flex flex-col gap-3 max-h-60 overflow-y-auto">
-        {filteredUsers.length === 0 && <p className="text-gray-400 text-sm">No users found</p>}
-        {filteredUsers.map(user => (
-          <div
-            key={user._id}
-            className="flex justify-between items-center p-2 rounded hover:bg-base-200 transition"
-          >
-            <div className="flex items-center gap-3">
-              <div className="avatar">
-                <div className="w-8 rounded-full">
-                  <img src={user.profileImg || null} alt={user.name} />
-                </div>
-              </div>
-              <p className="text-sm font-medium">{user.name}</p>
-            </div>
-            <button
-              className="btn btn-sm btn-outline btn-primary"
-              disabled={inviting[user._id]}
-              onClick={() => handleInvite(user._id)}
-            >
-              {inviting[user._id] ? 'Inviting...' : <UserPlus size={16} />}
-            </button>
-          </div>
-        ))}
+        <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-4xl font-bold text-primary">
+            Invite Users
+        </h1>
       </div>
+
+      <Card className="border-primary/20 shadow-lg">
+        <CardHeader className="pb-4">
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <Input
+                    type="text"
+                    placeholder="Search users by name..."
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                />
+            </div>
+        </CardHeader>
+        <CardContent className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            {filteredUsers.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                    <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No users found to invite.</p>
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {filteredUsers.map(user => (
+                    <div
+                        key={user._id}
+                        className="flex justify-between items-center p-3 rounded-xl bg-muted/30 border border-transparent hover:border-primary/20 transition-all"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+                                <img 
+                                    src={user.profileImg || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} 
+                                    alt={user.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <p className="font-semibold text-foreground">{user.name}</p>
+                        </div>
+                        <Button
+                            size="sm"
+                            variant={inviting[user._id] ? "secondary" : "default"}
+                            disabled={inviting[user._id]}
+                            onClick={() => handleInvite(user._id)}
+                            className="min-w-[100px]"
+                        >
+                            {inviting[user._id] ? 'Inviting...' : (
+                                <>
+                                    <UserPlus className="w-4 h-4 mr-2" /> Invite
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                    ))}
+                </div>
+            )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Calendar, Clock, MapPin, CheckCircle, AlertCircle, XCircle } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
+import { Calendar, Clock, MapPin, CheckCircle, AlertCircle, XCircle, Download, Eye } from 'lucide-react'
+import { Card, CardContent } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
 import api from '../../utils/api'
 import { jsPDF } from 'jspdf'
 import { formatDate } from '../../utils/formatDate'
+import { motion } from 'framer-motion'
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([])
@@ -39,7 +40,6 @@ const MyBookings = () => {
         throw new Error(response.data.message || 'Failed to cancel booking')
       }
 
-      // Axios treats non-2xx as errors, so if we’re here, it’s OK
       setBookings(prev =>
         prev.map(booking => (booking._id === id ? { ...booking, status: 'cancelled' } : booking))
       )
@@ -51,7 +51,6 @@ const MyBookings = () => {
     }
   }
 
-  // this funtion is used to conver time this "01:00 PM" to this "13" means 24 houre because
   function convertTo24Hour(timeStr) {
     const [time, modifier] = timeStr.trim().split(' ')
     let [hours, minutes] = time.split(':')
@@ -69,11 +68,9 @@ const MyBookings = () => {
     return `${hours.toString().padStart(2, '0')}:${minutes}`
   }
 
-  // Filter bookings based on active tab
   const filteredBookings = bookings.filter(booking => {
-    const fixedTime = convertTo24Hour(booking.startTime) // "03:30"
-    const bookingDate = new Date(`${booking.date}T${fixedTime}`) // ✅ valid Date
-
+    const fixedTime = convertTo24Hour(booking.startTime)
+    const bookingDate = new Date(`${booking.date}T${fixedTime}`)
     const now = new Date()
 
     if (activeTab === 'upcoming') {
@@ -86,43 +83,26 @@ const MyBookings = () => {
   })
 
   return (
-    <div>
-      <h1 className="text-2xl md:text-3xl font-bold text-  mb-6">My Bookings</h1>
-
-      <div className="mb-6">
-        <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="flex -mb-px">
+    <div className="max-w-6xl mx-auto p-6 min-h-screen">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-4xl md:text-5xl font-bold text-primary">
+          My Bookings
+        </h1>
+        
+        <div className="bg-muted/30 p-1 rounded-xl flex gap-1">
+          {['upcoming', 'past', 'cancelled'].map((tab) => (
             <button
-              onClick={() => setActiveTab('upcoming')}
-              className={`py-4 px-6 text-sm font-medium ${
-                activeTab === 'upcoming'
-                  ? 'text-primary  border-b-2 border-'
-                  : ' dark:text-gray-400 hover:text-primary'
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-wide transition-all ${
+                activeTab === tab
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-primary hover:bg-primary/10'
               }`}
             >
-              Upcoming
+              {tab}
             </button>
-            <button
-              onClick={() => setActiveTab('past')}
-              className={`py-4 px-6 text-sm font-medium ${
-                activeTab === 'past'
-                  ? 'text-primary  border-b-2 border-'
-                  : ' dark:text-gray-400 hover:text-primary'
-              }`}
-            >
-              Past
-            </button>
-            <button
-              onClick={() => setActiveTab('cancelled')}
-              className={`py-4 px-6 text-sm font-medium ${
-                activeTab === 'cancelled'
-                  ? 'text-primary  border-b-2 border-'
-                  : ' dark:text-gray-400 hover:text-primary'
-              }`}
-            >
-              Cancelled
-            </button>
-          </nav>
+          ))}
         </div>
       </div>
 
@@ -131,15 +111,15 @@ const MyBookings = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       ) : filteredBookings.length === 0 ? (
-        <Card>
-          <div className="py-6 text-center">
-            <div className="mx-auto w-16 h-16 bg-base-100 rounded-full flex items-center justify-center mb-4">
-              <Calendar size={24} className="" />
+        <Card className="border-dashed border-2 border-primary/20 bg-muted/10">
+          <div className="py-12 text-center">
+            <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <Calendar size={32} className="text-primary" />
             </div>
-            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-lg font-medium   mb-1">
+            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-medium mb-2">
               No {activeTab} bookings found
             </h3>
-            <p className=" mb-6">
+            <p className="text-muted-foreground mb-8">
               {activeTab === 'upcoming'
                 ? "You don't have any upcoming bookings."
                 : activeTab === 'past'
@@ -148,20 +128,26 @@ const MyBookings = () => {
             </p>
             {activeTab === 'upcoming' && (
               <Link to="/">
-                <Button variant="primary">Browse Cricket Boxes</Button>
+                <Button size="lg" className="shadow-lg">Browse Cricket Boxes</Button>
               </Link>
             )}
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredBookings.map(booking => (
-            <BookingCard
+        <div className="grid grid-cols-1 gap-6">
+          {filteredBookings.map((booking, index) => (
+            <motion.div
               key={booking._id}
-              booking={booking}
-              onCancel={() => cancelBooking(booking._id)}
-              showCancelButton={activeTab === 'upcoming'}
-            />
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <BookingCard
+                booking={booking}
+                onCancel={() => cancelBooking(booking._id)}
+                showCancelButton={activeTab === 'upcoming'}
+              />
+            </motion.div>
           ))}
         </div>
       )}
@@ -173,48 +159,42 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
   const getStatusBadge = status => {
     if (status === 'confirmed') {
       return (
-        <div className="flex items-center text-green-600 dark:text-green-400">
-          <CheckCircle size={16} className="mr-1" />
-          <span className="text-sm font-medium">Confirmed</span>
+        <div className="flex items-center text-green-600 bg-green-100 px-3 py-1 rounded-full border border-green-200">
+          <CheckCircle size={14} className="mr-1.5" />
+          <span className="text-xs font-bold uppercase tracking-wider">Confirmed</span>
         </div>
       )
     } else if (status === 'completed') {
       return (
-        <div className="flex items-center ">
-          <CheckCircle size={16} className="mr-1" />
-          <span className="text-sm font-medium">Completed</span>
+        <div className="flex items-center text-blue-600 bg-blue-100 px-3 py-1 rounded-full border border-blue-200">
+          <CheckCircle size={14} className="mr-1.5" />
+          <span className="text-xs font-bold uppercase tracking-wider">Completed</span>
         </div>
       )
     } else if (status === 'pending') {
       return (
-        <div className="flex items-center ">
-          <AlertCircle size={16} className="mr-1" />
-          <span className="text-sm font-medium">Pending</span>
+        <div className="flex items-center text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200">
+          <AlertCircle size={14} className="mr-1.5" />
+          <span className="text-xs font-bold uppercase tracking-wider">Pending</span>
         </div>
       )
     } else {
       return (
-        <div className="flex items-center text-red-600 dark:text-red-400">
-          <XCircle size={16} className="mr-1" />
-          <span className="text-sm font-medium">Cancelled</span>
+        <div className="flex items-center text-red-600 bg-red-100 px-3 py-1 rounded-full border border-red-200">
+          <XCircle size={14} className="mr-1.5" />
+          <span className="text-xs font-bold uppercase tracking-wider">Cancelled</span>
         </div>
       )
     }
   }
 
-  // funtion for download recipt
   const handleDownloadReceipt = async bookingId => {
     try {
       const response = await api.get(`/booking/report/${bookingId}`)
       const data = response.data
-
       const doc = new jsPDF()
-
-      // Set title
       doc.setFontSize(18)
       doc.text('Booking Receipt', 20, 20)
-
-      // Add details
       doc.setFontSize(12)
       const details = [
         `Booking ID: ${data.bookingId}`,
@@ -228,81 +208,96 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
         `Contact Number: ${data.contactNumber}`,
         `Quarter Name: ${data.quarterName}`,
       ]
-
       let y = 40
       details.forEach(line => {
         doc.text(line, 20, y)
         y += 10
       })
-
-      // Save PDF
       doc.save(`booking_receipt_${data.bookingId}.pdf`)
     } catch (error) {
       console.error('Download failed', error)
-      console.log('booking', error)
     }
   }
 
   return (
-    <Card>
-      <div className="flex flex-col sm:flex-row">
-        <div className="sm:w-1/3 w-full h-32 sm:h-auto">
+    <Card className="overflow-hidden hover:border-primary/40 transition-all duration-300 group">
+      <div className="flex flex-col md:flex-row">
+        <div className="md:w-1/3 lg:w-1/4 h-48 md:h-auto relative overflow-hidden">
           <img
             src={booking.box.image}
             alt={booking.box.name}
-            className="w-full h-full object-cover rounded-t-lg sm:rounded-l-lg sm:rounded-t-none"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:bg-gradient-to-r" />
+          <div className="absolute bottom-4 left-4 md:hidden">
+             {getStatusBadge(booking.status)}
+          </div>
         </div>
-        <div className="sm:w-2/3 p-4">
-          <div className="flex justify-between items-start">
-            <h3
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-lg font-semibold text-primary "
-            >
-              {booking.box.name}
-            </h3>
-            {getStatusBadge(booking.status)}
+        
+        <div className="md:w-2/3 lg:w-3/4 p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3
+                  style={{ fontFamily: 'Bebas Neue' }}
+                  className="text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors"
+                >
+                  {booking.box.name}
+                </h3>
+                <div className="flex items-center text-muted-foreground mt-1">
+                  <MapPin size={14} className="mr-1" />
+                  <span className="text-sm">{booking.box.location}</span>
+                </div>
+              </div>
+              <div className="hidden md:block">
+                {getStatusBadge(booking.status)}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="flex items-center p-3 bg-muted/30 rounded-lg border border-primary/5">
+                <Calendar size={18} className="mr-3 text-primary" />
+                <div>
+                    <p className="text-xs text-muted-foreground font-semibold uppercase">Date</p>
+                    <p className="font-medium">{formatDate(booking.date)}</p>
+                </div>
+              </div>
+              <div className="flex items-center p-3 bg-muted/30 rounded-lg border border-primary/5">
+                <Clock size={18} className="mr-3 text-primary" />
+                <div>
+                    <p className="text-xs text-muted-foreground font-semibold uppercase">Time</p>
+                    <p className="font-medium">
+                        {booking.startTime} - {booking.endTime}
+                    </p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-3 space-y-2  ">
-            <div className="flex items-center">
-              <Calendar size={16} className="mr-2 text-primary" />
-              <span>{formatDate(booking.date)}</span>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-primary/10">
+            <div className="font-bold text-lg">
+              <span className="text-muted-foreground text-sm font-normal mr-2">Total Paid:</span>
+              <span className="text-primary">₹{booking.amountPaid}</span>
             </div>
-            <div className="flex items-center">
-              <Clock size={16} className="mr-2 text-primary " />
-              <span>
-                {booking.startTime} - {booking.endTime} ({booking.duration} hour
-                {booking.duration > 1 ? 's' : ''})
-              </span>
-            </div>
-            <div className="flex items-center">
-              <MapPin size={16} className="mr-2 text-primary" />
-              <span>{booking.box.location}</span>
-            </div>
-          </div>
-
-          <div className="mt-4 flex justify-between items-center">
-            <div className="font-semibold text-red-500 dark:text-gray-200">
-              Paid: ₹{booking.amountPaid}
-            </div>
-            <div className="flex space-x-2">
+            
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
               <Link to={`/box/${booking.box._id}`}>
-                <Button variant="secondary" size="sm">
-                  View Box
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                  <Eye className="w-4 h-4 mr-2" /> View Box
                 </Button>
               </Link>
-              {/* Download Receipt Button */}
+              
               <Button
-                variant="primary"
+                variant="secondary"
                 size="sm"
                 onClick={() => handleDownloadReceipt(booking._id)}
+                className="w-full sm:w-auto"
               >
-                Download Receipt
+                <Download className="w-4 h-4 mr-2" /> Receipt
               </Button>
 
               {showCancelButton && booking.status === 'confirmed' && (
-                <Button variant="danger" size="sm" onClick={onCancel}>
+                <Button variant="destructive" size="sm" onClick={onCancel} className="w-full sm:w-auto">
                   Cancel
                 </Button>
               )}

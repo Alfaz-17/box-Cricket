@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef, useContext } from 'react'
 import api from '../../utils/api'
-import { ArrowLeft, Send } from 'lucide-react'
+import { ArrowLeft, Send, Info } from 'lucide-react'
 import AuthContext from '../../context/AuthContext'
 import socket from '../../utils/soket'
 import { Link, useParams } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 const GroupChat = () => {
   const { user } = useContext(AuthContext)
@@ -12,10 +14,6 @@ const GroupChat = () => {
   const bottomRef = useRef(null)
   const { groupId, groupName } = useParams()
 
-  // ✅ Connect socket once per user login
-  // GroupChat.jsx
-
-  // ✅ Fetch messages and add listener per group
   useEffect(() => {
     if (!groupId) return
 
@@ -39,7 +37,7 @@ const GroupChat = () => {
     socket.on('new-group-message', handleNewGroupMessage)
 
     return () => {
-      socket.off('new-group-message', handleNewGroupMessage) // Cleanup listener
+      socket.off('new-group-message', handleNewGroupMessage)
     }
   }, [groupId])
 
@@ -64,32 +62,38 @@ const GroupChat = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-base-100">
+    <div className="flex flex-col h-[calc(100vh-64px)] w-full bg-background">
       {/* Header */}
-      {/* Header */}
-      <Link to={`/groupInfo/${groupName}/${groupId}`}>
-        <div className="flex items-center gap-4 p-4 border-b bg-base-200 cursor-pointer">
-          <Link to={`/groups`}>
-            <button className="btn btn-sm btn-ghost">
-              <ArrowLeft />
-            </button>
-          </Link>
-          <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-xl font-bold">
-            {groupName}
-          </h2>
+      <div className="flex items-center justify-between p-4 border-b border-primary/10 bg-card/50 backdrop-blur-sm shadow-sm z-10">
+        <div className="flex items-center gap-4">
+            <Link to={`/groups`}>
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10">
+                    <ArrowLeft className="w-6 h-6 text-primary" />
+                </Button>
+            </Link>
+            <div>
+                <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold tracking-wide">
+                    {groupName}
+                </h2>
+                <p className="text-xs text-muted-foreground">Online</p>
+            </div>
         </div>
-      </Link>
+        <Link to={`/groupInfo/${groupName}/${groupId}`}>
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10">
+                <Info className="w-6 h-6 text-primary" />
+            </Button>
+        </Link>
+      </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 bg-muted/5">
         {messages.map((msg, i) => {
           const isOwn = msg.sender?._id === user?._id
 
           return (
-            <div key={i} className={`chat ${isOwn ? 'chat-end' : 'chat-start'} items-end`}>
+            <div key={i} className={`flex ${isOwn ? 'justify-end' : 'justify-start'} items-end gap-2`}>
               {!isOwn && (
-                <div className="chat-image avatar">
-                  <div className="w-10 rounded-full">
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-primary/20 flex-shrink-0">
                     <img
                       src={
                         msg.sender?.profileImg ||
@@ -98,20 +102,24 @@ const GroupChat = () => {
                         )}&background=random`
                       }
                       alt={msg.sender?.name}
-                      className="w-10 h-10 rounded-full"
+                      className="w-full h-full object-cover"
                     />
-                  </div>
                 </div>
               )}
-              <div className="chat-header text-sm text-gray-500 mb-1">
-                {isOwn ? 'You' : msg.sender?.name}
-              </div>
-              <div
-                className={`chat-bubble ${
-                  isOwn ? 'bg-primary text-primary-content' : 'bg-base-200'
-                }`}
-              >
-                {msg.content}
+              
+              <div className={`max-w-[75%] md:max-w-[60%] flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
+                <div className="text-xs text-muted-foreground mb-1 px-1">
+                    {isOwn ? 'You' : msg.sender?.name}
+                </div>
+                <div
+                    className={`px-4 py-2 rounded-2xl text-sm shadow-sm ${
+                    isOwn 
+                        ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground rounded-tr-none' 
+                        : 'bg-card border border-primary/10 text-foreground rounded-tl-none'
+                    }`}
+                >
+                    {msg.content}
+                </div>
               </div>
             </div>
           )
@@ -120,18 +128,24 @@ const GroupChat = () => {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t flex items-center gap-2 bg-base-100">
-        <input
-          type="text"
-          className="input input-bordered w-full text-[16px]"
-          placeholder="Type a message"
-          value={newMsg}
-          onChange={e => setNewMsg(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSend()}
-        />
-        <button className="btn btn-primary btn-square" onClick={handleSend}>
-          <Send size={18} />
-        </button>
+      <div className="p-4 border-t border-primary/10 bg-card/50 backdrop-blur-sm">
+        <div className="flex items-center gap-2 max-w-4xl mx-auto">
+            <Input
+                type="text"
+                className="flex-1 rounded-full border-primary/20 focus-visible:ring-primary/50"
+                placeholder="Type a message..."
+                value={newMsg}
+                onChange={e => setNewMsg(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSend()}
+            />
+            <Button 
+                onClick={handleSend} 
+                size="icon" 
+                className="rounded-full w-10 h-10 shadow-md hover:scale-105 transition-transform"
+            >
+                <Send size={18} />
+            </Button>
+        </div>
       </div>
     </div>
   )

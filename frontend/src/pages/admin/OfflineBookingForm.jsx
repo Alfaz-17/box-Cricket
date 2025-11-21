@@ -3,7 +3,12 @@ import { toast } from 'react-hot-toast'
 import api from '../../utils/api'
 import useBoxStore from '../../store/boxStore'
 import TimePicker from '../../components/ui/TimePicker'
-import { Clock } from 'lucide-react'
+import { Clock, Calendar, User, Phone, Timer } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function OfflineBookingForm() {
   const { boxes, fetchBoxes } = useBoxStore()
@@ -85,135 +90,152 @@ export default function OfflineBookingForm() {
   }
 
   return (
-    <div className="border-t mt-10 pt-6">
-      <h2 className="text-2xl font-bold  mb-4" style={{ fontFamily: 'Bebas Neue' }}>
-        Create Offline Booking
-      </h2>
-
-      <form
-        onSubmit={handleOfflineBooking}
-        className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-      >
-        {/* Box Selector */}
-        <div>
-          <label className="label text-primary font-semibold">Select Box</label>
-          <select
-            name="selectedBox"
-            className="select select-bordered  w-full"
-            required
-            value={selectedBoxId}
-            onChange={e => setSelectedBoxId(e.target.value)}
+    <div className="mt-10 pt-6">
+      <Card className="border-primary/20 shadow-xl bg-card/50 backdrop-blur-sm">
+        <CardHeader className="border-b border-primary/10 pb-6">
+          <CardTitle style={{ fontFamily: 'Bebas Neue' }} className="text-3xl text-primary tracking-wide">
+            Create Offline Booking
+          </CardTitle>
+          <CardDescription>
+            Manually add a booking for walk-in customers or phone reservations.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <form
+            onSubmit={handleOfflineBooking}
+            className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
           >
-            <option value="">Choose box</option>
-            {boxes.map(box => (
-              <option key={box._id} value={box._id}>
-                {box.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            {/* Box Selector */}
+            <div className="space-y-2">
+              <Label>Select Box</Label>
+              <Select value={selectedBoxId} onValueChange={setSelectedBoxId}>
+                <SelectTrigger className="bg-muted/30 border-primary/20">
+                  <SelectValue placeholder="Choose box" />
+                </SelectTrigger>
+                <SelectContent>
+                  {boxes.map(box => (
+                    <SelectItem key={box._id} value={box._id}>
+                      {box.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Quarter Selector */}
-        <div>
-          <label className="label text-primary font-semibold">Select Quarter</label>
-          <select
-            name="quarterId"
-            className="select select-bordered text-[16px] w-full"
-            required
-            value={form.quarterId}
-            onChange={handleChange}
-            disabled={!selectedBoxId}
-          >
-            <option value="">Choose quarter</option>
-            {availableQuarters.map(q => (
-              <option key={q._id} value={q._id}>
-                {q.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            {/* Quarter Selector */}
+            <div className="space-y-2">
+              <Label>Select Quarter</Label>
+              <Select 
+                value={form.quarterId} 
+                onValueChange={(val) => setForm(prev => ({ ...prev, quarterId: val }))}
+                disabled={!selectedBoxId}
+              >
+                <SelectTrigger className="bg-muted/30 border-primary/20">
+                  <SelectValue placeholder="Choose quarter" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableQuarters.map(q => (
+                    <SelectItem key={q._id} value={q._id}>
+                      {q.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Date */}
-        <div>
-          <label className="label  text-primary font-semibold">Date</label>
-          <input
-            type="date"
-            name="date"
-            className="input input-bordered  text-[16px] w-full"
-            required
-            value={form.date}
-            onChange={handleChange}
-          />
-        </div>
+            {/* Date */}
+            <div className="space-y-2">
+              <Label>Date</Label>
+              <div className="relative">
+                <Input
+                  type="date"
+                  name="date"
+                  value={form.date}
+                  onChange={handleChange}
+                  required
+                  className="bg-muted/30 border-primary/20 pl-10"
+                />
+                <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
 
-        {/* Start Time */}
-        {/* Time Pickers */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text text-[16px] text-primary">Start Time</span>
-          </label>
-          <div className="relative">
-            <TimePicker
-              value={form.startTime}
-              onChange={val => setForm(prev => ({ ...prev, startTime: val }))}
-            />
+            {/* Start Time */}
+            <div className="space-y-2">
+              <Label>Start Time</Label>
+              <div className="relative">
+                <TimePicker
+                  value={form.startTime}
+                  onChange={val => setForm(prev => ({ ...prev, startTime: val }))}
+                />
+                <Clock className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+              </div>
+            </div>
 
-            <Clock className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
-          </div>
-        </div>
+            {/* Duration */}
+            <div className="space-y-2">
+              <Label>Duration (hours)</Label>
+              <div className="relative">
+                <Input
+                  type="number"
+                  name="duration"
+                  min={1}
+                  value={form.duration}
+                  onChange={handleChange}
+                  required
+                  className="bg-muted/30 border-primary/20 pl-10"
+                />
+                <Timer className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
 
-        {/* Duration */}
-        <div>
-          <label className="label font-semibold text-primary">Duration (hours)</label>
-          <input
-            type="number"
-            name="duration"
-            min={1}
-            className="input input-bordered text-[16px] w-full"
-            required
-            value={form.duration}
-            onChange={handleChange}
-          />
-        </div>
+            {/* Contact Number */}
+            <div className="space-y-2">
+              <Label>Contact Number</Label>
+              <div className="relative">
+                <Input
+                  type="tel"
+                  name="contactNumber"
+                  pattern="\d{10}"
+                  value={form.contactNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="10-digit number"
+                  className="bg-muted/30 border-primary/20 pl-10"
+                />
+                <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
 
-        {/* Contact Number */}
-        <div>
-          <label className="label text-primary font-semibold">Contact Number</label>
-          <input
-            type="tel"
-            name="contactNumber"
-            pattern="\d{10}"
-            className="input input-bordered text-[16px] w-full"
-            required
-            value={form.contactNumber}
-            onChange={handleChange}
-          />
-        </div>
+            {/* Customer Name */}
+            <div className="space-y-2">
+              <Label>Booking Name</Label>
+              <div className="relative">
+                <Input
+                  type="text"
+                  name="user"
+                  value={form.user}
+                  onChange={handleChange}
+                  required
+                  placeholder="Customer Name"
+                  className="bg-muted/30 border-primary/20 pl-10"
+                />
+                <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
 
-        {/* Customer Name */}
-        <div>
-          <label className="label text-primary font-semibold">Booking Name</label>
-          <input
-            type="text"
-            name="user"
-            className="input input-bordered text-[16px] w-full"
-            required
-            value={form.user}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Submit */}
-        <div className="md:col-span-2 lg:col-span-3">
-          <button
-            type="submit"
-            className="btn btn-primary w-full"
-            disabled={loading || !selectedBoxId}
-          >
-            {loading ? 'Booking...' : 'Add Offline Booking'}
-          </button>
-        </div>
-      </form>
+            {/* Submit */}
+            <div className="md:col-span-2 lg:col-span-3 pt-4">
+              <Button
+                type="submit"
+                className="w-full md:w-auto min-w-[200px]"
+                disabled={loading || !selectedBoxId}
+              >
+                {loading ? <span className="loading loading-spinner loading-sm"></span> : 'Add Offline Booking'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,10 +1,11 @@
-// GroupInfo.jsx
 import { useEffect, useState, useContext } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import api from '../../utils/api'
 import AuthContext from '../../context/AuthContext'
-import { ArrowLeft, Trash2, LogOut } from 'lucide-react'
+import { ArrowLeft, Trash2, LogOut, Shield, User } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const GroupInfo = () => {
   const { user } = useContext(AuthContext)
@@ -32,7 +33,7 @@ const GroupInfo = () => {
       const res = await api.post(`/group/leave/${groupId}`)
       if (!res.data.ok) {
         toast.error(res.data.message || 'Failed to leave the group.')
-        navigate('/groups') // Safe redirect to group list
+        navigate('/groups') 
       }
     } catch (err) {
       console.error('Error:', err)
@@ -46,7 +47,7 @@ const GroupInfo = () => {
       const res = await api.post(`/group/delete/${groupId}`)
       if (res.status === 200) {
         toast.success('Group deleted successfully.')
-        navigate('/groups') // Safe redirect to group list
+        navigate('/groups') 
       }
     } catch (err) {
       console.error('Failed to delete group:', err)
@@ -55,58 +56,83 @@ const GroupInfo = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-base-100">
+    <div className="flex flex-col min-h-screen bg-background p-6 max-w-2xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-4 p-4 border-b bg-base-200">
+      <div className="flex items-center gap-4 mb-8">
         <Link to={`/groupChat/${groupName}/${groupId}`}>
-          <button className="btn btn-sm btn-ghost">
-            <ArrowLeft />
-          </button>
+            <Button variant="ghost" size="icon" className="rounded-full">
+                <ArrowLeft className="w-6 h-6" />
+            </Button>
         </Link>
-        <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-xl font-bold">
+        <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-4xl font-bold text-primary">
           {groupName} Info
         </h2>
       </div>
 
-      {/* Admin */}
-      <div className="p-4 border-b">
-        <h3 className="text-lg font-semibold">Admin</h3>
-        <div className="flex items-center gap-3 mt-2">
-          <img src={admin?.profileImg} alt={admin?.name} className="w-12 h-12 rounded-full" />
-          <div>
-            <div className="font-medium">{admin?.name}</div>
-            <div className="text-sm text-gray-500">{admin?.contactNumber}</div>
-          </div>
+      <div className="space-y-6">
+        {/* Admin Card */}
+        <Card className="border-primary/20">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                    <Shield className="w-5 h-5 text-primary" /> Group Admin
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center gap-4 p-2 rounded-xl bg-muted/30">
+                    <img src={admin?.profileImg} alt={admin?.name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
+                    <div>
+                        <div className="font-bold text-lg">{admin?.name}</div>
+                        <div className="text-sm text-muted-foreground">{admin?.contactNumber}</div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        {/* Members Card */}
+        <Card className="border-primary/20">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                    <User className="w-5 h-5 text-primary" /> Members ({members.length})
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                <div className="space-y-3">
+                    {members.map(member => (
+                    <div key={member._id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                        <img src={member?.profileImg} alt={member?.name} className="w-10 h-10 rounded-full object-cover" />
+                        <div>
+                        <div className="font-medium">{member.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                            {member.contactNumber}
+                            {admin._id === member._id && <span className="ml-2 text-primary font-bold">(Admin)</span>}
+                        </div>
+                        </div>
+                    </div>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+
+        {/* Actions */}
+        <div className="flex flex-col gap-3 pt-4">
+            <Button 
+                onClick={handleLeaveGroup} 
+                variant="outline" 
+                className="w-full border-destructive/50 text-destructive hover:bg-destructive/10"
+            >
+                <LogOut className="w-4 h-4 mr-2" /> Leave Group
+            </Button>
+            
+            {user?._id === admin?._id && (
+            <Button 
+                onClick={handleDeleteGroup} 
+                variant="destructive" 
+                className="w-full"
+            >
+                <Trash2 className="w-4 h-4 mr-2" /> Delete Group
+            </Button>
+            )}
         </div>
-      </div>
-
-      {/* Members */}
-      <div className="p-4 overflow-auto">
-        <h3 className="text-lg font-semibold mb-2">Members ({members.length})</h3>
-        {members.map(member => (
-          <div key={member._id} className="flex items-center gap-3 mb-3">
-            <img src={member?.profileImg} alt={member?.name} className="w-10 h-10 rounded-full" />
-            <div>
-              <div className="font-medium">{member.name}</div>
-              <div className="text-sm text-gray-500">
-                {member.contactNumber}
-                {admin._id === member._id && ' (Admin)'}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Actions */}
-      <div className="p-4 mt-auto flex flex-col gap-2 border-t">
-        <button onClick={handleLeaveGroup} className="btn btn-outline btn-error">
-          <LogOut size={18} /> Leave Group
-        </button>
-        {user?._id === admin?._id && (
-          <button onClick={handleDeleteGroup} className="btn btn-error">
-            <Trash2 size={18} /> Delete Group
-          </button>
-        )}
       </div>
     </div>
   )

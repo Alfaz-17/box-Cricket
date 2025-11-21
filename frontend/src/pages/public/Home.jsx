@@ -89,187 +89,132 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Gradient */}
-      <section className="relative mb-16 overflow-hidden">
-        {/* Animated Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 animate-gradient" />
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 rounded-2xl overflow-hidden backdrop-blur-sm bg-muted/80 border border-primary/20 shadow-2xl"
-        >
-          <div className="p-8 md:p-12 lg:p-16">
-            {/* Logo and Title */}
+      {/* Immersive Hero Section */}
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden mb-16">
+        {/* Dynamic Background */}
+        <div className="absolute inset-0 bg-primary">
+            <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-primary/90 to-black/80 z-10" />
+            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] z-0 mix-blend-overlay" />
+            
+            {/* Animated Abstract Shapes */}
+            <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full border-[100px] border-white/5 blur-3xl z-0"
+            />
+            <motion.div 
+                animate={{ rotate: -360 }}
+                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full border-[80px] border-secondary/20 blur-3xl z-0"
+            />
+        </div>
+
+        <div className="relative z-20 container mx-auto px-4 text-center">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex items-center gap-4 mb-6"
-            >
-              <img
-                className="h-20 w-20 md:h-24 md:w-24 drop-shadow-lg"
-                src={BookMyBoxLogo}
-                alt="BookMyBox Logo"
-              />
-              <div>
-                <h1
-                  style={{ fontFamily: 'Bebas Neue' }}
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
-                >
-                  Book. Play. Win.
-                </h1>
-                <p className="text-lg md:text-xl text-muted-foreground mt-1">
-                  Your Gateway to Premium Cricket Facilities
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.h2
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground"
-            >
-              Find and Book Cricket Boxes
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-lg md:text-xl opacity-90 mb-8 max-w-3xl leading-relaxed"
-            >
-              Reserve top-quality cricket boxes for both practice sessions and matches. Experience
-              the best facilities to elevate your game with real-time booking and instant confirmation.
-            </motion.p>
-
-            {/* Enhanced Search & Filter Container with Glassmorphism */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="backdrop-blur-md bg-card/90 p-6 rounded-xl shadow-xl max-w-4xl border border-primary/30"
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="max-w-5xl mx-auto"
             >
-              <div className="flex flex-col md:flex-row gap-3">
-                <div className="flex-grow relative group">
-                  <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                  <Input
-                    id="search"
-                    type="text"
-                    placeholder="Search by name, location, or description..."
-                    className="pl-10 h-12 text-base border-primary/20 focus:border-primary transition-all"
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                  />
+                {/* Hero Content */}
+                <div className="mb-12 space-y-6">
+                    <motion.div 
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                        className="inline-block mb-4"
+                    >
+                        <span className="px-6 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-bold tracking-widest uppercase shadow-lg">
+                            The Ultimate Cricket Experience
+                        </span>
+                    </motion.div>
+
+                    <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-7xl md:text-8xl lg:text-9xl font-bold text-white tracking-tight leading-none drop-shadow-2xl">
+                        BOOK. <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-accent">PLAY.</span> WIN.
+                    </h1>
+                    
+                    <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto font-light leading-relaxed">
+                        Discover and book premium cricket turfs in seconds. Elevate your game with world-class facilities.
+                    </p>
                 </div>
 
-                <Button
-                  onClick={() => setShowFilters(!showFilters)}
-                  variant="outline"
-                  className="h-12 px-6 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all"
-                >
-                  <Filter size={18} className="mr-2" />
-                  Check Availability
-                </Button>
-
-                <Button className="h-12 px-8 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all shadow-lg">
-                  <Search size={18} className="mr-2" />
-                  Search
-                </Button>
-              </div>
-
-              {/* Enhanced Filter Section */}
-              {showFilters && (
+                {/* Floating Search Bar */}
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-primary/20"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.6 }}
+                    className="max-w-4xl mx-auto"
                 >
-                  <div>
-                    <Label htmlFor="date" className="mb-2 block text-base font-semibold">
-                      <Calendar className="inline mr-2 h-4 w-4" />
-                      Date
-                    </Label>
-                    <Input
-                      type="date"
-                      id="date"
-                      name="date"
-                      className="h-11 border-primary/20"
-                      value={filters.date}
-                      onChange={handleFilterChange}
-                    />
-                  </div>
+                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl">
+                        <div className="flex flex-col md:flex-row gap-4">
+                            <div className="flex-grow relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 group-hover:text-white transition-colors" />
+                                <Input
+                                    type="text"
+                                    placeholder="Search turfs, locations..."
+                                    className="pl-12 h-14 bg-black/20 border-white/10 text-white placeholder:text-white/50 focus:bg-black/40 focus:border-secondary/50 rounded-xl text-lg transition-all"
+                                    value={searchQuery}
+                                    onChange={e => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            
+                            <Button 
+                                onClick={() => setShowFilters(!showFilters)}
+                                className="h-14 px-8 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-xl transition-all"
+                            >
+                                <Filter className="mr-2 h-5 w-5" /> Filters
+                            </Button>
 
-                  <div>
-                    <Label className="mb-2 block text-base font-semibold">
-                      <Clock className="inline mr-2 h-4 w-4" />
-                      Time
-                    </Label>
-                    <TimePicker
-                      value={filters.startTime}
-                      onChange={value =>
-                        setFilters(prev => ({
-                          ...prev,
-                          startTime: value,
-                        }))
-                      }
-                    />
-                    {filters.startTime && (
-                      <p className="text-sm text-primary mt-2 font-medium">
-                        Selected: {filters.startTime}
-                      </p>
-                    )}
-                  </div>
+                            <Button className="h-14 px-10 bg-gradient-to-r from-secondary to-primary hover:from-secondary/90 hover:to-primary/90 text-white font-bold text-lg tracking-wide uppercase rounded-xl shadow-lg shadow-primary/20 transition-all transform hover:scale-105">
+                                Search
+                            </Button>
+                        </div>
 
-                  <div>
-                    <Label className="mb-2 block text-base font-semibold">
-                      <Zap className="inline mr-2 h-4 w-4" />
-                      Duration
-                    </Label>
-                    <select
-                      value={filters.duration}
-                      onChange={e =>
-                        setFilters(prev => ({
-                          ...prev,
-                          duration: e.target.value,
-                        }))
-                      }
-                      className="flex h-11 w-full rounded-md border border-primary/20 bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                    >
-                      <option value="">Select duration</option>
-                      {[1, 2, 3, 4].map(hours => (
-                        <option key={hours} value={hours}>
-                          {hours} hour{hours > 1 ? 's' : ''}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-3 flex justify-end gap-3 pt-2">
-                    <Button variant="outline" onClick={clearFilters} className="px-6">
-                      Clear Filters
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setShowFilters(false)
-                        fetchFilteredBoxes()
-                      }}
-                      className="px-6 bg-gradient-to-r from-primary to-secondary"
-                    >
-                      Apply Filters
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
+                        {/* Expanded Filters */}
+                        {showFilters && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="mt-4 pt-4 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-4 text-left"
+                            >
+                                <div>
+                                    <Label className="text-white/80 mb-2 block">Date</Label>
+                                    <Input 
+                                        type="date" 
+                                        value={filters.date}
+                                        onChange={handleFilterChange}
+                                        name="date"
+                                        className="bg-black/20 border-white/10 text-white h-11" 
+                                    />
+                                </div>
+                                <div>
+                                    <Label className="text-white/80 mb-2 block">Time</Label>
+                                    <TimePicker 
+                                        value={filters.startTime}
+                                        onChange={value => setFilters(prev => ({ ...prev, startTime: value }))}
+                                        className="bg-black/20 border-white/10 text-white h-11"
+                                    />
+                                </div>
+                                <div>
+                                    <Label className="text-white/80 mb-2 block">Duration</Label>
+                                    <select
+                                        value={filters.duration}
+                                        onChange={e => setFilters(prev => ({ ...prev, duration: e.target.value }))}
+                                        className="w-full h-11 bg-black/20 border border-white/10 rounded-md text-white px-3 focus:outline-none focus:border-secondary/50"
+                                    >
+                                        <option value="" className="bg-gray-900">Select Duration</option>
+                                        {[1, 2, 3, 4].map(h => (
+                                            <option key={h} value={h} className="bg-gray-900">{h} Hour{h > 1 ? 's' : ''}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </motion.div>
+                        )}
+                    </div>
                 </motion.div>
-              )}
             </motion.div>
-          </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* Statistics Section */}
