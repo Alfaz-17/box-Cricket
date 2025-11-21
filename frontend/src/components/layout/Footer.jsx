@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, Send, Heart, Trophy, Award, Target } from 'lucide-react'
 import { motion } from 'framer-motion'
 import BookMyBoxLogo from '../../assets/cri.png'
-import { Button } from '../ui/button'
+import { Button } from '../ui/Button'
 import { Input } from '../ui/input'
 
 const currentYear = new Date().getFullYear()
