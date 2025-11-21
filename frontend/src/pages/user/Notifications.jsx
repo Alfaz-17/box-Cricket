@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { Bell, DeleteIcon } from 'lucide-react'
 import api from '../../utils/api'
@@ -21,12 +21,12 @@ const Notifications = () => {
 
   const handleJoinGroup = async groupId => {
     try {
-      const res = await api.post('/group/join', {
+      await api.post('/group/join', {
         userIdToInvite: user._id,
         groupId,
       })
       toast.success('Joined group successfully')
-      fetchGroups()
+      fetchNotifications()
     } catch (error) {
       console.error('Error joining group', error)
     }

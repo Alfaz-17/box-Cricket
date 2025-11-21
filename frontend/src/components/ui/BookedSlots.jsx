@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Calendar, Clock, UserRound, CalendarX2, Square, Filter } from 'lucide-react'
 import api from '../../utils/api'
 import { formatDate } from '../../utils/formatDate'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function BookedSlots({ boxId }) {
   const [bookedSlots, setBookedSlots] = useState([])
@@ -30,8 +34,8 @@ export default function BookedSlots({ boxId }) {
   const uniqueQuarters = [...new Set(bookedSlots.map(q => q.quarterName))]
 
   // add filter
-  const handleQuarterChange = e => {
-    const quarter = e.target.value
+  const handleQuarterChange = (value) => {
+    const quarter = value === "all" ? "" : value
     setSelectedQuarter(quarter)
 
     const filtered = bookedSlots
@@ -70,111 +74,116 @@ export default function BookedSlots({ boxId }) {
 
   if (bookedSlots.length === 0)
     return (
-      <div className="text-center  bg-base-300 p-6 rounded-lg shadow-inner">
-        <div className="flex justify-center mb-2">
-          <CalendarX2 className="w-8 h-8 text-primary" />
-        </div>
-        <p className="text-lg font-medium">No upcoming booked slots</p>
-        <p className="text-sm">There are currently no bookings scheduled for this box.</p>
-      </div>
+      <Card className="bg-muted/50 border-dashed">
+        <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+          <div className="flex justify-center mb-2">
+            <CalendarX2 className="w-8 h-8 text-primary" />
+          </div>
+          <p className="text-lg font-medium">No upcoming booked slots</p>
+          <p className="text-sm text-muted-foreground">There are currently no bookings scheduled for this box.</p>
+        </CardContent>
+      </Card>
     )
 
   return (
-    <div className="bg-base-300 rounded-xl shadow-md p-6">
-      <h2
-        style={{ fontFamily: 'Bebas Neue' }}
-        className="text-2xl font-bold  mb-4 flex items-center gap-2"
-      >
-        📅 Booked Slots by Boxes
-      </h2>
+    <Card className="bg-card shadow-md">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-2xl font-bold flex items-center gap-2" style={{ fontFamily: 'Bebas Neue' }}>
+          📅 Booked Slots by Boxes
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-6 flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Filter className="w-5 h-5 text-primary" />
+            <Input
+              type="date"
+              value={selectedDate}
+              onChange={handleDateChange}
+              className="w-auto"
+            />
+          </div>
 
-      <div className="mb-4 flex items-center gap-2 flex-wrap">
-        <Filter className="w-5 h-5 text-primary" />
+          <Select value={selectedQuarter || "all"} onValueChange={handleQuarterChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Boxes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Boxes</SelectItem>
+              {uniqueQuarters.map(qtr => (
+                <SelectItem key={qtr} value={qtr}>
+                  {qtr}-box
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={handleDateChange}
-          className="border rounded-lg px-3 py-1 text-sm text-[16px] focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
-
-        <select
-          value={selectedQuarter}
-          onChange={handleQuarterChange}
-          className="border rounded-lg px-3 py-1 text-sm  bg-base-100 focus:outline-none focus:ring-2 focus:ring-primary"
-        >
-          <option value="">All Boxes</option>
-          {uniqueQuarters.map(qtr => (
-            <option key={qtr} value={qtr}>
-              {qtr}-box
-            </option>
-          ))}
-        </select>
-
-        <button
-          onClick={() => {
-            setSelectedDate('')
-            setSelectedQuarter('')
-            setFilteredSlots(bookedSlots)
-          }}
-          className="ml-auto text-sm text-green-600 hover:underline"
-        >
-          Clear Filter
-        </button>
-      </div>
-
-      <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
-        {filteredSlots.map(quarter =>
-          quarter.slots.length === 0 ? null : (
-            <div
-              key={quarter.quarterName}
-              className="border border-base-100  rounded-lg p-4 bg-base-100 "
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <Square className="w-5 h-5  text-primary" />
-                <h3
-                  style={{ fontFamily: 'Bebas Neue' }}
-                  className="text-lg font-semibold text-primary"
-                >
-                  Boxes:{quarter.quarterName}-(box)
-                </h3>
-              </div>
-
-              <div className="space-y-3">
-                {quarter.slots.map(slot => (
-                  <div
-                    key={slot._id}
-                    className="border border-base-100 dark:border-gray-600 rounded-lg p-3 bg-base-300 hover:bg-base-100  shadow-sm transition-all"
-                  >
-                    <div className="flex items-center gap-2 mb-1 ">
-                      <UserRound className="w-4 h-4 text-primary" />
-                      <span className="font-medium">User:</span>
-                      <span>{slot.user}</span>
-                    </div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      <span className="font-medium">Date:</span>
-                      <span>{formatDate(slot.date)}</span>
-                    </div>
-                    <div className="flex items-center gap-2 ">
-                      <Clock className="w-4 h-4 text-primary" />
-                      <span className="font-medium">Time:</span>
-                      <span>
-                        {slot.startTime} - {slot.endTime}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )
-        )}
-      </div>
-      {noFilteredResults && (
-        <div className="text-center text-primary bg-base-100 p-4 rounded-md shadow">
-          <p className="font-medium">No booked slots found for selected filter(s).</p>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSelectedDate('')
+              setSelectedQuarter('')
+              setFilteredSlots(bookedSlots)
+            }}
+            className="ml-auto text-primary hover:text-primary/80 hover:bg-primary/10"
+          >
+            Clear Filter
+          </Button>
         </div>
-      )}
-    </div>
+
+        <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
+          {filteredSlots.map(quarter =>
+            quarter.slots.length === 0 ? null : (
+              <div
+                key={quarter.quarterName}
+                className="border border-border rounded-lg p-4 bg-background/50"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <Square className="w-5 h-5 text-primary" />
+                  <h3
+                    style={{ fontFamily: 'Bebas Neue' }}
+                    className="text-lg font-semibold text-primary"
+                  >
+                    Boxes:{quarter.quarterName}-(box)
+                  </h3>
+                </div>
+
+                <div className="space-y-3">
+                  {quarter.slots.map(slot => (
+                    <div
+                      key={slot._id}
+                      className="border border-border rounded-lg p-3 bg-card hover:bg-muted/50 shadow-sm transition-all"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <UserRound className="w-4 h-4 text-primary" />
+                        <span className="font-medium">User:</span>
+                        <span>{slot.user}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="w-4 h-4 text-primary" />
+                        <span className="font-medium">Date:</span>
+                        <span>{formatDate(slot.date)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-primary" />
+                        <span className="font-medium">Time:</span>
+                        <span>
+                          {slot.startTime} - {slot.endTime}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+        {noFilteredResults && (
+          <div className="text-center text-primary bg-muted/30 p-4 rounded-md shadow mt-4">
+            <p className="font-medium">No booked slots found for selected filter(s).</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

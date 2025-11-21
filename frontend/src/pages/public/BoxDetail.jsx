@@ -6,15 +6,18 @@ import { MapPin, Clock, Calendar, ChevronRight, ChevronLeft, Star, Info, Phone }
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import AuthContext from '../../context/AuthContext'
-import Card from '../../components/ui/Card'
-import Button from '../../components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import TimePicker from '../../components/ui/TimePicker'
 import ReviewsSection from '../../components/ui/ReviewsSection'
 import api from '../../utils/api.js'
-import Tabs from '../../components/ui/tab.jsx'
 import BookedSlots from '../../components/ui/BookedSlots.jsx'
 import BlockedSlots from '../../components/ui/BlockedSlots.jsx'
 import BoxMap from '../../components/ui/BoxMap.jsx'
+
 const BoxDetail = () => {
   const { id } = useParams()
   const [box, setBox] = useState('')
@@ -31,7 +34,7 @@ const BoxDetail = () => {
   const [averageRating, setAverageRating] = useState('')
   const [totalReviews, setTotalReviews] = useState('')
 
-  const { isAuthenticated, user } = useContext(AuthContext)
+  const { isAuthenticated } = useContext(AuthContext)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -44,7 +47,6 @@ const BoxDetail = () => {
         toast.error('Failed to load cricket box details')
       } finally {
         setLoading(false)
-        F
       }
     }
 
@@ -234,17 +236,17 @@ const BoxDetail = () => {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const nextImage = () => {
+  const nextImage = React.useCallback(() => {
     setCurrentImageIndex(prevIndex =>
       prevIndex === displayBox.images.length - 1 ? 0 : prevIndex + 1
     )
-  }
+  }, [displayBox.images.length])
 
-  const prevImage = () => {
+  const prevImage = React.useCallback(() => {
     setCurrentImageIndex(prevIndex =>
       prevIndex === 0 ? displayBox.images.length - 1 : prevIndex - 1
     )
-  }
+  }, [displayBox.images.length])
 
   // Auto-slide every 4 seconds
   useEffect(() => {
@@ -253,7 +255,7 @@ const BoxDetail = () => {
     }, 3500) // 4000ms = 4 seconds
 
     return () => clearInterval(interval) // cleanup on unmount
-  }, [currentImageIndex, displayBox.images.length])
+  }, [nextImage])
 
   if (loading) {
     return (
@@ -264,7 +266,7 @@ const BoxDetail = () => {
   }
 
   return (
-    <div className="bg-base-100 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="bg-background grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2 ">
         {/* Image Gallery */}
         <div className="relative mb-6 rounded-lg overflow-hidden shadow-md">
@@ -312,169 +314,181 @@ const BoxDetail = () => {
         </div>
 
         {/* Box Details */}
-        <Card className="mb-8 bg-base-300">
-          <h1
-            style={{ fontFamily: 'Bebas Neue' }}
-            className="text-2xl md:text-3xl font-bold text-primary mb-2"
-          >
-            {displayBox.name}
-          </h1>
-
-          <div className="flex items-center mb-4">
-            <div className="flex items-center mr-3">
-              <Star className="w-5 h-5 text-yellow-500 fill-current" />
-              <span className=" font-medium ml-1">{averageRating}</span>
-              <span className=" ml-1">({totalReviews} reviews)</span>
-            </div>
-            <div className="flex items-center ">
-              <MapPin size={16} className="mr-1" />
-              <span>{displayBox.location}</span>
-            </div>
-          </div>
-
-          <p className=" mb-6">{displayBox.description}</p>
-
-          <div className="border-t  pt-6 mb-6">
-            <h2
+        <Card className="mb-8 bg-muted/30">
+          <CardContent className="pt-6">
+            <h1
               style={{ fontFamily: 'Bebas Neue' }}
-              className="text-xl font-semibold text-primary mb-4"
+              className="text-2xl md:text-3xl font-bold text-primary mb-2"
             >
-              Facilities & Amenities
-            </h2>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {displayBox?.features.map((features, index) => (
-                <li key={index} className="flex items-center ">
-                  <svg
-                    className="w-4 h-4 text-green-500 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  {features}
-                </li>
-              ))}
-            </ul>
-          </div>
+              {displayBox.name}
+            </h1>
 
-          {/* quaters */}
-          <div className="border-t  pt-6 mb-6">
-            <h2
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-xl font-semibold text-primary mb-4"
-            >
-              Available Boxes
-            </h2>
-            <div className="flex flex-wrap gap-2 ">
-              {Array.isArray(displayBox.quarters) && displayBox.quarters.length > 0 ? (
-                displayBox.quarters?.map((quarter, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-2 bg-primary text-primary-content   rounded-full "
-                  >
-                    {quarter.name}
-                  </span>
-                ))
-              ) : (
-                <p>No quarters available</p>
-              )}
+            <div className="flex items-center mb-4">
+              <div className="flex items-center mr-3">
+                <Star className="w-5 h-5 text-yellow-500 fill-current" />
+                <span className=" font-medium ml-1">{averageRating}</span>
+                <span className=" ml-1">({totalReviews} reviews)</span>
+              </div>
+              <div className="flex items-center ">
+                <MapPin size={16} className="mr-1" />
+                <span>{displayBox.location}</span>
+              </div>
             </div>
-          </div>
 
-          {Array.isArray(displayBox.customPricing) && displayBox.customPricing.length > 0 && (
-            <div className="border-t pt-6 mb-6">
+            <p className=" mb-6 text-muted-foreground">{displayBox.description}</p>
+
+            <div className="border-t border-border pt-6 mb-6">
               <h2
                 style={{ fontFamily: 'Bebas Neue' }}
                 className="text-xl font-semibold text-primary mb-4"
               >
-                Custom Pricing
+                Facilities & Amenities
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {displayBox.customPricing.map((item, index) => (
-                  <div
-                    key={index}
-                    className="p-4 bg-base-200 rounded-lg flex justify-between items-center shadow"
-                  >
-                    <span className="text-primary font-medium">
-                      {item.duration} hour{item.duration > 1 ? 's' : ''}
-                    </span>
-                    <span className="text-success font-semibold text-lg">₹{item.price}</span>
-                  </div>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {displayBox?.features.map((features, index) => (
+                  <li key={index} className="flex items-center ">
+                    <svg
+                      className="w-4 h-4 text-green-500 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {features}
+                  </li>
                 ))}
+              </ul>
+            </div>
+
+            {/* quaters */}
+            <div className="border-t border-border pt-6 mb-6">
+              <h2
+                style={{ fontFamily: 'Bebas Neue' }}
+                className="text-xl font-semibold text-primary mb-4"
+              >
+                Available Boxes
+              </h2>
+              <div className="flex flex-wrap gap-2 ">
+                {Array.isArray(displayBox.quarters) && displayBox.quarters.length > 0 ? (
+                  displayBox.quarters?.map((quarter, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium"
+                    >
+                      {quarter.name}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground">No quarters available</p>
+                )}
               </div>
             </div>
-          )}
 
-          <div className="border-t border-base  pt-6 mb-6">
-            <h2
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-xl font-semibold text-primary mb-4"
-            >
-              Opening Hours
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-              <div className="flex items-center">
-                <Clock size={18} className="mr-2 text-primary" />
-                <div>
-                  <p className="font-medium">Weekdays</p>
-                  <p>{displayBox.openingHours.weekdays}</p>
+            {Array.isArray(displayBox.customPricing) && displayBox.customPricing.length > 0 && (
+              <div className="border-t border-border pt-6 mb-6">
+                <h2
+                  style={{ fontFamily: 'Bebas Neue' }}
+                  className="text-xl font-semibold text-primary mb-4"
+                >
+                  Custom Pricing
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {displayBox.customPricing.map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-4 bg-muted rounded-lg flex justify-between items-center shadow-sm"
+                    >
+                      <span className="text-primary font-medium">
+                        {item.duration} hour{item.duration > 1 ? 's' : ''}
+                      </span>
+                      <span className="text-green-600 font-semibold text-lg">₹{item.price}</span>
+                    </div>
+                  ))}
                 </div>
-              </div>
-              <div className="flex items-center">
-                <Calendar size={18} className="mr-2 text-primary" />
-                <div>
-                  <p className="font-medium">Weekends</p>
-                  <p>{displayBox.openingHours.weekends}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-base  pt-6">
-            <h2
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-xl font-semibold text-primary mb-4"
-            >
-              Location
-            </h2>
-
-            {displayBox?.coordinates?.lat ? (
-              <BoxMap
-                lat={displayBox.coordinates?.lat}
-                lng={displayBox.coordinates?.lng}
-                name={displayBox.name}
-              />
-            ) : (
-              <div className="w-full h-64 bg-base-200 text-center text-primary flex items-center justify-center rounded-lg">
-                <p className="text-primary">No map available for this box</p>
               </div>
             )}
 
-            <p className="text-primary ">
-              <span className="font-medium">Address:</span>{' '}
-              {displayBox?.address || 'No address provided'}
-            </p>
-          </div>
+            <div className="border-t border-border pt-6 mb-6">
+              <h2
+                style={{ fontFamily: 'Bebas Neue' }}
+                className="text-xl font-semibold text-primary mb-4"
+              >
+                Opening Hours
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+                <div className="flex items-center">
+                  <Clock size={18} className="mr-2 text-primary" />
+                  <div>
+                    <p className="font-medium">Weekdays</p>
+                    <p className="text-muted-foreground">{displayBox.openingHours.weekdays}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Calendar size={18} className="mr-2 text-primary" />
+                  <div>
+                    <p className="font-medium">Weekends</p>
+                    <p className="text-muted-foreground">{displayBox.openingHours.weekends}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-6">
+              <h2
+                style={{ fontFamily: 'Bebas Neue' }}
+                className="text-xl font-semibold text-primary mb-4"
+              >
+                Location
+              </h2>
+
+              {displayBox?.coordinates?.lat ? (
+                <BoxMap
+                  lat={displayBox.coordinates?.lat}
+                  lng={displayBox.coordinates?.lng}
+                  name={displayBox.name}
+                />
+              ) : (
+                <div className="w-full h-64 bg-muted text-center text-primary flex items-center justify-center rounded-lg">
+                  <p className="text-primary">No map available for this box</p>
+                </div>
+              )}
+
+              <p className="text-primary mt-4">
+                <span className="font-medium">Address:</span>{' '}
+                {displayBox?.address || 'No address provided'}
+              </p>
+            </div>
+          </CardContent>
         </Card>
 
         {isAuthenticated && (
           <div className="mb-6">
-            <Tabs
-              tabs={[
-                { label: 'Details', value: 'details' },
-                { label: 'Booked', value: 'booked' },
-                { label: 'Blocked', value: 'blocked' },
-                { label: 'Review', value: 'reviews' },
-              ]}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="w-full justify-start">
+                <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="booked">Booked</TabsTrigger>
+                <TabsTrigger value="blocked">Blocked</TabsTrigger>
+                <TabsTrigger value="reviews">Review</TabsTrigger>
+              </TabsList>
+              <TabsContent value="details">
+                {/* Content handled below to keep layout structure */}
+              </TabsContent>
+              <TabsContent value="booked">
+                <BookedSlots boxId={box._id} />
+              </TabsContent>
+              <TabsContent value="blocked">
+                <BlockedSlots boxId={box._id} />
+              </TabsContent>
+              <TabsContent value="reviews">
+                <ReviewsSection boxId={box._id} />
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </div>
@@ -484,30 +498,34 @@ const BoxDetail = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
               {/* ⛔️ Online booking disabled – show call card */}
-              <Card className="bg-base-300">
-                <h2
-                  style={{ fontFamily: 'Bebas Neue' }}
-                  className="text-xl font-semibold text-primary mb-3"
-                >
-                  ⛔️ Book Offline
-                </h2>
-                <p className="mb-4 text-xl">
-                  Online booking is currently <strong>unavailable (In development)</strong>. Please
-                  call the number below to reserve this box.
-                </p>
-                <a
-                  href={`tel:${displayBox.mobileNumber}`}
-                  className="btn btn-primary w-full flex items-center justify-center gap-2"
-                >
-                  <Phone size={18} />
-                  +91 - {displayBox.mobileNumber || 'N/A'}
-                </a>
+              <Card className="bg-muted/30 border-destructive/50">
+                <CardContent className="pt-6">
+                  <h2
+                    style={{ fontFamily: 'Bebas Neue' }}
+                    className="text-xl font-semibold text-primary mb-3"
+                  >
+                    ⛔️ Book Offline
+                  </h2>
+                  <p className="mb-4 text-xl">
+                    Online booking is currently <strong>unavailable (In development)</strong>. Please
+                    call the number below to reserve this box.
+                  </p>
+                  <Button
+                    asChild
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <a href={`tel:${displayBox.mobileNumber}`}>
+                      <Phone size={18} />
+                      +91 - {displayBox.mobileNumber || 'N/A'}
+                    </a>
+                  </Button>
+                </CardContent>
               </Card>
             </div>
           </div>
-          <div className="overflow-hidden border border-error rounded-md mb-4 h-10 relative">
+          <div className="overflow-hidden border border-destructive rounded-md mb-4 h-10 relative bg-destructive/10">
             <div
-              className="absolute  whitespace-nowrap text-error font-semibold text-xl"
+              className="absolute top-2 whitespace-nowrap text-destructive font-semibold text-xl"
               style={{
                 animation: 'marquee 10s linear infinite',
               }}
@@ -529,174 +547,138 @@ const BoxDetail = () => {
           {/* Booking Widget */}
           <div className="lg:col-span-1">
             <div className="sticky top-6">
-              <Card className="mb-6 bg-base-300">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="text-2xl font-bold text-primary">
-                    ₹{displayBox.hourlyRate}
-                    <span className="text-sm font-normal">/hour</span>
+              <Card className="mb-6 bg-muted/30">
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="text-2xl font-bold text-primary">
+                      ₹{displayBox.hourlyRate}
+                      <span className="text-sm font-normal">/hour</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Star className="w-5 h-5 text-yellow-500 fill-current" />
+                      <span className="  font-medium ml-1">{averageRating}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                    <span className="  font-medium ml-1">{averageRating}</span>
-                  </div>
-                </div>
 
-                <div className="form-control  mb-4">
-                  <label className="text-primary">Date</label>
-                  <div className="relative">
-                    <DatePicker
-                      selected={selectedDate}
-                      onChange={date => {
-                        setSelectedDate(date)
-                        setAvailableTimes(false)
-                      }}
-                      minDate={new Date()}
-                      className="input input-bordered  w-full bg-base-100 text-[16px] dark:text-white"
-                      dateFormat="MMMM d, yyyy"
+                  <div className="form-control  mb-4">
+                    <label className="text-primary mb-1 block text-sm font-medium">Date</label>
+                    <div className="relative">
+                      <DatePicker
+                        selected={selectedDate}
+                        onChange={date => {
+                          setSelectedDate(date)
+                          setAvailableTimes(false)
+                        }}
+                        minDate={new Date()}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        dateFormat="MMMM d, yyyy"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Contact Number */}
+                  <div className="form-control mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      <span className="text-primary">Contact Number</span>
+                    </label>
+                    <Input
+                      type="tel"
+                      value={contactNumber}
+                      onChange={e => setContactNumber(e.target.value)}
+                      placeholder="Enter contact number"
+                      required
                     />
                   </div>
-                </div>
 
-                {/* Contact Number */}
-                <div className="form-control mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    <span className="text-primary">Contact Number</span>
-                  </label>
-                  <input
-                    type="tel"
-                    value={contactNumber}
-                    onChange={e => setContactNumber(e.target.value)}
-                    placeholder="Enter contact number"
-                    className="input input-bordered  w-full text-[16px] bg-base-100 "
-                    required
-                  />
-                </div>
-
-                {/* Time Picker */}
-                <div className=" mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    <span className="text-primary">Time</span>
-                  </label>
-                  <div className="grid grid-cols-1 gap-2  ">
-                    <TimePicker value={selectedTime} onChange={handleTimeChange} />
-                    <p className="text-sm text-primary ">Selected Time: {selectedTime || 'None'}</p>
+                  {/* Time Picker */}
+                  <div className=" mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      <span className="text-primary">Time</span>
+                    </label>
+                    <div className="grid grid-cols-1 gap-2  ">
+                      <TimePicker value={selectedTime} onChange={handleTimeChange} />
+                      <p className="text-sm text-primary ">Selected Time: {selectedTime || 'None'}</p>
+                    </div>
                   </div>
-                </div>
 
-                <div className="mb-6">
-                  <label className="block text-sm- text-primary font-medium  mb-1">
-                    Duration (hours)
-                  </label>
-                  <select
-                    value={duration}
-                    onChange={e => setDuration(Number(e.target.value))}
-                    className="input input-bordered text-[16px]  w-full bg-base-100 "
+                  <div className="mb-6">
+                    <label className="block text-sm text-primary font-medium mb-1">
+                      Duration (hours)
+                    </label>
+                    <Select
+                      value={duration.toString()}
+                      onValueChange={(val) => setDuration(Number(val))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select duration" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4].map(hours => (
+                          <SelectItem key={hours} value={hours.toString()}>
+                            {hours} hour{hours > 1 ? 's' : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1 text-primary">
+                      Select your Box:
+                    </label>
+                    <Select
+                      value={selectedQuarter}
+                      onValueChange={setSelectedQuarter}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="-- Select a Box --" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {displayBox.quarters?.map(quarter => (
+                          <SelectItem key={quarter._id} value={quarter._id}>
+                            {quarter.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button
+                    onClick={handleCheckAvailability}
+                    variant="secondary"
+                    className="w-full mb-4"
+                    disabled={isCheckingAvailability}
                   >
-                    {[1, 2, 3, 4].map(hours => (
-                      <option key={hours} value={hours}>
-                        {hours} hour{hours > 1 ? 's' : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1 text-primary">
-                    Select your Box:
-                  </label>
-                  <select
-                    value={selectedQuarter}
-                    onChange={e => setSelectedQuarter(e.target.value)}
-                    className="input input-bordered text-[16px] w-full bg-base-100 "
-                  >
-                    <option className="bg-base-100" value="">
-                      -- Select a Boxes --
-                    </option>
-                    {displayBox.quarters?.map(quarter => (
-                      <option className="bg-base-100" key={quarter._id} value={quarter._id}>
-                        {quarter.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <Button
-                  onClick={handleCheckAvailability}
-                  variant="secondary"
-                  fullWidth
-                  isLoading={isCheckingAvailability}
-                  className="mb-4"
-                >
-                  Check Availability
-                </Button>
-
-                {/* currently in commented out  */}
-                {/* {selectedTime && (
-              <div className="bg-base-100 p-4 rounded-md mb-6">
-                <h3 className="font-semibold text-primary  mb-2">
-                  Booking Summary
-                </h3>
-                <div className="text-sm   space-y-1">
-                  <div className="flex justify-between ">
-                    <span className="">  Date:</span>
-                    <span className="font-medium ">
-                      {selectedDate.toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Time:</span>
-                    <span className="font-medium  ">
-                      {selectedTime}
-                    </span>
-                  </div>
-                  <div className="flex justify-between ">
-                    <span className="">Duration:</span>
-                    <span className="font-medium  ">
-                      {duration} hour{duration > 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <div className="border-t  my-2 pt-2 flex justify-between">
-                    <span>Total:</span>
-                    <span disabled className="font-semibold text-red-600">
-                      Rs.{displayBox.hourlyRate * duration}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )} */}
-
-                {contactNumber && availableTimes && duration && selectedDate && selectedTime && (
-                  <Button onClick={handleBooking} fullWidth isLoading={isProcessingBooking}>
-                    Book Now
+                    {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
                   </Button>
-                )}
+
+                  {contactNumber && availableTimes && duration && selectedDate && selectedTime && (
+                    <Button onClick={handleBooking} className="w-full" disabled={isProcessingBooking}>
+                      {isProcessingBooking ? 'Booking...' : 'Book Now'}
+                    </Button>
+                  )}
+                </CardContent>
               </Card>
 
-              <div className="bg-base-300  p-4 rounded-lg shadow-sm">
-                <div className="flex items-start">
-                  <Info size={20} className="mr-2 mt-0.5 text-primary flex-shrink-0" />
-                  <div className="text-sm ">
-                    <p className="font-medium mb-1 text-primary">Booking Policy</p>
-                    <ul className="space-y-1 list-disc list-inside ">
-                      <li>Cancellation allowed up to 24 hours before booking time</li>
-                      <li>Payment is processed upon booking confirmation</li>
-                      <li>Please arrive 15 minutes before your slot</li>
-                    </ul>
+              <Card className="bg-muted/30">
+                <CardContent className="pt-6">
+                  <div className="flex items-start">
+                    <Info size={20} className="mr-2 mt-0.5 text-primary flex-shrink-0" />
+                    <div className="text-sm ">
+                      <p className="font-medium mb-1 text-primary">Booking Policy</p>
+                      <ul className="space-y-1 list-disc list-inside text-muted-foreground">
+                        <li>Cancellation allowed up to 24 hours before booking time</li>
+                        <li>Payment is processed upon booking confirmation</li>
+                        <li>Please arrive 15 minutes before your slot</li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </>
       )}
-      {activeTab === 'reviews' && <ReviewsSection boxId={box._id} />}
-      {activeTab === 'booked' && <BookedSlots boxId={box._id} />}
-
-      {activeTab === 'blocked' && <BlockedSlots boxId={box._id} />}
     </div>
   )
 }

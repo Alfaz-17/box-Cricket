@@ -86,14 +86,14 @@ const Sidebar = ({ isOpen, onClose }) => {
       )}
 
       <div
-        className={`h-screen w-64 bg-base-100 shadow-lg transition-transform duration-300 ease-in-out z-50
+        className={`h-screen w-64 bg-background shadow-lg transition-transform duration-300 ease-in-out z-50
         fixed inset-y-0 right-0 lg:sticky lg:top-0
         ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
       `}
       >
-        <div className="flex flex-col h-full bg-base-300">
+        <div className="flex flex-col h-full bg-muted/10">
           {/* Header */}
-          <div className="p-4 border-b bg-base-100 flex items-center justify-between">
+          <div className="p-4 border-b bg-background flex items-center justify-between">
             {/* Left Logo + Branding */}
             <div className="flex items-center space-x-2">
               <img className="h-10 w-10 object-contain" src={BookMyBoxLogo} alt="BookMyBox Logo" />
@@ -120,13 +120,13 @@ const Sidebar = ({ isOpen, onClose }) => {
                       flex items-center px-4 py-3 rounded-md transition-colors duration-200
                       ${
                         isActive(item.path)
-                          ? 'bg-primary  text-primary-content'
-                          : ' hover:bg-primary   '
+                          ? 'bg-primary text-primary-foreground'
+                          : 'hover:bg-primary/10 text-foreground'
                       }
                     `}
                     onClick={() => window.innerWidth < 1024 && onClose()}
                   >
-                    <span className="mr-3   ">{item.icon}</span>
+                    <span className="mr-3">{item.icon}</span>
                     <span>{item.name}</span>
                   </Link>
                 </li>
@@ -136,16 +136,16 @@ const Sidebar = ({ isOpen, onClose }) => {
           {isAuthenticated && (
             <button
               onClick={handleLogout}
-              className="flex items-center w-full btn px-4 py-2 rounded-md hover:bg-base-100 "
+              className="flex items-center w-full px-4 py-2 rounded-md hover:bg-muted text-foreground transition-colors"
             >
-              <LogOut size={20} className="mr-3 " />
+              <LogOut size={20} className="mr-3" />
               <span>Logout</span>
             </button>
           )}
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-t border-border">
             <div className="space-y-3">
-              <a href="#" className="flex items-center  rounded-md hover:bg-base-100">
+              <a href="#" className="flex items-center rounded-md hover:bg-muted text-foreground transition-colors">
                 <HelpCircle size={20} className="mr-3 text-primary" />
                 <span>Help & Support</span>
               </a>

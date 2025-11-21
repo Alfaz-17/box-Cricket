@@ -3,8 +3,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { UserPlus } from 'lucide-react'
 import AuthContext from '../../context/AuthContext'
-import Input from '../../components/ui/Input'
-import Button from '../../components/ui/Button'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import api from '../../utils/api'
 import BookMyBoxLogo from '../../assets/cri.png'
 
@@ -29,6 +38,10 @@ const Signup = () => {
   const handleChange = e => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
+  }
+
+  const handleSelectChange = (value) => {
+    setFormData({ ...formData, role: value })
   }
 
   const sendOtp = async () => {
@@ -109,7 +122,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left side for desktop branding */}
-      <div className="hidden md:flex w-1/2 bg-primary text-white items-center justify-center flex-col p-10">
+      <div className="hidden md:flex w-1/2 bg-primary text-primary-foreground items-center justify-center flex-col p-10">
         <img src={BookMyBoxLogo} alt="BookMyBox Logo" className="h-40 w-40 mb-4" />
         <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-5xl font-bold mb-2">
           Book My Box
@@ -120,15 +133,15 @@ const Signup = () => {
       </div>
 
       {/* Right side signup form */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-20">
+      <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-20 bg-background">
         <div className="max-w-md w-full mx-auto">
           <h1
             style={{ fontFamily: 'Bebas Neue' }}
-            className="text-3xl font-bold mb-2 text-center md:text-left"
+            className="text-3xl font-bold mb-2 text-center md:text-left text-foreground"
           >
             Sign Up
           </h1>
-          <p className="text-sm text-gray-600 mb-6 text-center md:text-left">
+          <p className="text-sm text-muted-foreground mb-6 text-center md:text-left">
             Fill up the details below to create an account.
           </p>
 
@@ -136,146 +149,159 @@ const Signup = () => {
             {/* Phase 1: OTP Verification */}
             {!isOtpVerified && (
               <>
-                <Input
-                  label="Contact Number"
-                  id="contactNumber"
-                  name="contactNumber"
-                  type="tel"
-                  value={formData.contactNumber}
-                  onChange={handleChange}
-                  placeholder="Enter your contact number"
-                  error={errors.contactNumber}
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="contactNumber">Contact Number</Label>
+                  <Input
+                    id="contactNumber"
+                    name="contactNumber"
+                    type="tel"
+                    value={formData.contactNumber}
+                    onChange={handleChange}
+                    placeholder="Enter your contact number"
+                    className={errors.contactNumber ? "border-destructive" : ""}
+                  />
+                  {errors.contactNumber && <p className="text-xs text-destructive">{errors.contactNumber}</p>}
+                </div>
 
                 <div className="flex space-x-2 mb-3">
-                  <button
+                  <Button
                     type="button"
                     onClick={sendOtp}
                     disabled={isOtpSending}
-                    className="btn btn-sm btn-warning"
+                    variant="secondary"
+                    size="sm"
                   >
                     {isOtpSending ? 'Sending...' : 'Send OTP'}
-                  </button>
+                  </Button>
                 </div>
 
-                <Input
-                  label="OTP"
-                  id="otp"
-                  name="otp"
-                  type="text"
-                  value={formData.otp}
-                  onChange={handleChange}
-                  placeholder="Enter OTP"
-                  error={errors.otp}
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="otp">OTP</Label>
+                  <Input
+                    id="otp"
+                    name="otp"
+                    type="text"
+                    value={formData.otp}
+                    onChange={handleChange}
+                    placeholder="Enter OTP"
+                    className={errors.otp ? "border-destructive" : ""}
+                  />
+                  {errors.otp && <p className="text-xs text-destructive">{errors.otp}</p>}
+                </div>
 
-                <button type="button" onClick={verifyOtp} className="btn btn-success mt-2">
+                <Button type="button" onClick={verifyOtp} className="mt-2 w-full">
                   Verify OTP
-                </button>
+                </Button>
               </>
             )}
 
             {/* Phase 2: Account Details */}
             {isOtpVerified && (
               <>
-                <Input
-                  label="Name"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your full name"
-                  error={errors.name}
-                />
-
-                <Input
-                  label="Password"
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create a password"
-                  error={errors.password}
-                />
-
-                <Input
-                  label="Confirm Password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
-                  error={errors.confirmPassword}
-                />
-
-                <div className="form-control mb-4">
-                  <label htmlFor="role" className="label">
-                    <span className="label-text">Role</span>
-                  </label>
-                  <select
-                    id="role"
-                    name="role"
-                    value={formData.role}
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
-                    className="select select-bordered w-full"
-                  >
-                    <option value="user">User</option>
-                    <option value="owner">Owner</option>
-                  </select>
+                    placeholder="Enter your full name"
+                    className={errors.name ? "border-destructive" : ""}
+                  />
+                  {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Create a password"
+                    className={errors.password ? "border-destructive" : ""}
+                  />
+                  {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Confirm your password"
+                    className={errors.confirmPassword ? "border-destructive" : ""}
+                  />
+                  {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="role">Role</Label>
+                  <Select value={formData.role} onValueChange={handleSelectChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="owner">Owner</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {formData.role === 'owner' && (
-                  <Input
-                    label="Owner Code"
-                    id="ownerCode"
-                    name="ownerCode"
-                    type="password"
-                    value={formData.ownerCode}
-                    onChange={handleChange}
-                    placeholder="Enter owner code"
-                    error={errors.ownerCode}
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="ownerCode">Owner Code</Label>
+                    <Input
+                      id="ownerCode"
+                      name="ownerCode"
+                      type="password"
+                      value={formData.ownerCode}
+                      onChange={handleChange}
+                      placeholder="Enter owner code"
+                      className={errors.ownerCode ? "border-destructive" : ""}
+                    />
+                    {errors.ownerCode && <p className="text-xs text-destructive">{errors.ownerCode}</p>}
+                  </div>
                 )}
 
-                <div className="form-control mb-6">
-                  <label className="label cursor-pointer">
-                    <input
-                      id="terms"
-                      type="checkbox"
-                      className="checkbox text-[16px] checkbox-primary"
-                      required
-                    />
-                    <span className="label-text ml-2">
-                      I agree to the{' '}
-                      <a href="#" className="text-primary link">
-                        Terms of Service
-                      </a>{' '}
-                      and{' '}
-                      <a href="#" className="text-yellow-600 hover:text-yellow-500">
-                        Privacy Policy
-                      </a>
-                    </span>
-                  </label>
+                <div className="flex items-center space-x-2 mb-6">
+                  <Checkbox id="terms" required />
+                  <Label htmlFor="terms" className="text-sm font-normal">
+                    I agree to the{' '}
+                    <a href="#" className="text-primary hover:underline">
+                      Terms of Service
+                    </a>{' '}
+                    and{' '}
+                    <a href="#" className="text-primary hover:underline">
+                      Privacy Policy
+                    </a>
+                  </Label>
                 </div>
 
                 <Button
                   type="submit"
-                  variant="primary"
-                  fullWidth
-                  isLoading={isLoading}
-                  className="flex justify-center items-center"
+                  className="w-full"
+                  disabled={isLoading}
                 >
-                  <UserPlus size={18} className="mr-2" />
-                  Sign up
+                  {isLoading ? (
+                    <span className="flex items-center">Loading...</span>
+                  ) : (
+                    <span className="flex items-center">
+                      <UserPlus size={18} className="mr-2" />
+                      Sign up
+                    </span>
+                  )}
                 </Button>
               </>
             )}
           </form>
 
           <div className="mt-6 text-center text-sm">
-            <span className="text-gray-600">Already have an account? </span>
+            <span className="text-muted-foreground">Already have an account? </span>
             <Link to="/login" className="text-primary font-medium hover:underline">
               Log in
             </Link>

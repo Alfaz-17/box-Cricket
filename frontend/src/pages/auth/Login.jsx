@@ -3,8 +3,10 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { LogIn } from 'lucide-react'
 import AuthContext from '../../context/AuthContext'
-import Input from '../../components/ui/Input'
-import Button from '../../components/ui/Button'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import api from '../../utils/api'
 import BookMyBoxLogo from '../../assets/cri.png'
 
@@ -55,7 +57,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left side for desktop branding */}
-      <div className="hidden md:flex w-1/2 bg-primary text-white items-center justify-center flex-col p-10">
+      <div className="hidden md:flex w-1/2 bg-primary text-primary-foreground items-center justify-center flex-col p-10">
         <img src={BookMyBoxLogo} alt="BookMyBox Logo" className="h-40 w-40 mb-4" />
         <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-5xl font-bold mb-2">
           Book My Box
@@ -66,49 +68,51 @@ const Login = () => {
       </div>
 
       {/* Right side login form */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-20">
+      <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-20 bg-background">
         <div className="max-w-md w-full mx-auto">
           <h1
             style={{ fontFamily: 'Bebas Neue' }}
-            className="text-3xl font-bold mb-2 text-center md:text-left"
+            className="text-3xl font-bold mb-2 text-center md:text-left text-foreground"
           >
             Login
           </h1>
-          <p className="text-sm text-gray-600 mb-6 text-center md:text-left">
+          <p className="text-sm text-muted-foreground mb-6 text-center md:text-left">
             Fill up the details below to login to your account.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Contact Number"
-              id="contactNumber"
-              type="tel"
-              value={contactNumber}
-              onChange={e => setContactNumber(e.target.value)}
-              placeholder="Enter your contact number"
-              error={errors.contactNumber}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="contactNumber">Contact Number</Label>
+              <Input
+                id="contactNumber"
+                type="tel"
+                value={contactNumber}
+                onChange={e => setContactNumber(e.target.value)}
+                placeholder="Enter your contact number"
+                className={errors.contactNumber ? "border-destructive" : ""}
+              />
+              {errors.contactNumber && <p className="text-xs text-destructive">{errors.contactNumber}</p>}
+            </div>
 
-            <Input
-              label="Password"
-              id="password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              error={errors.password}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className={errors.password ? "border-destructive" : ""}
+              />
+              {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+            </div>
 
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <input
-                  id="remember"
-                  type="checkbox"
-                  className="h-4 w-4 text-primary border-gray-300 rounded"
-                />
-                <label htmlFor="remember" className="ml-2 text-sm">
+              <div className="flex items-center space-x-2">
+                <Checkbox id="remember" />
+                <Label htmlFor="remember" className="text-sm font-normal">
                   Remember me
-                </label>
+                </Label>
               </div>
 
               <Link to="/forgot-password" className="text-sm text-primary hover:underline">
@@ -118,18 +122,22 @@ const Login = () => {
 
             <Button
               type="submit"
-              variant="primary"
-              fullWidth
-              isLoading={isLoading}
-              className="flex justify-center items-center"
+              className="w-full"
+              disabled={isLoading}
             >
-              <LogIn size={18} className="mr-2" />
-              Log in
+              {isLoading ? (
+                <span className="flex items-center">Loading...</span>
+              ) : (
+                <span className="flex items-center">
+                  <LogIn size={18} className="mr-2" />
+                  Log in
+                </span>
+              )}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm">
-            <span className="text-gray-600">Don't have an account? </span>
+            <span className="text-muted-foreground">Don't have an account? </span>
             <Link to="/signup" className="text-primary font-medium hover:underline">
               Sign up
             </Link>

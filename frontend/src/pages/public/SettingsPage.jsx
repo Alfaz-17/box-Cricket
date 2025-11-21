@@ -1,107 +1,53 @@
 import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-
-const themes = [
-  // Light & Clean
-  'light',
-  'pastel',
-  'lofi',
-  'winter',
-  'cupcake',
-  'cmyk',
-
-  // Dark & Bold
-  'dark',
-  'dracula',
-  'synthwave',
-  'black',
-  'night',
-  'luxury',
-
-  // Fun & Playful
-  'bumblebee',
-  'valentine',
-  'halloween',
-  'fantasy',
-  'aqua',
-
-  // Nature Inspired
-  'garden',
-  'forest',
-  'autumn',
-  'emerald',
-
-  // Futuristic & High Contrast
-  'cyberpunk',
-  'business',
-  'acid',
-  'dim',
-  'coffee',
-  'retro',
-]
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 
 function SettingsPage() {
-  const defaultTheme = document.documentElement.getAttribute('data-theme') || 'forest'
-  const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || defaultTheme)
+  const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', currentTheme)
-    localStorage.setItem('theme', currentTheme)
-  }, [currentTheme])
+    // Check initial preference
+    const isDarkMode = document.documentElement.classList.contains('dark')
+    setIsDark(isDarkMode)
+  }, [])
+
+  const toggleTheme = (checked) => {
+    setIsDark(checked)
+    if (checked) {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+    }
+  }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <motion.h1
+    <div className="max-w-2xl mx-auto p-6">
+      <h1
         className="text-3xl font-bold mb-6 text-center"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
       >
-        🎨 Choose Your Theme
-      </motion.h1>
+        ⚙️ Settings
+      </h1>
 
-      <motion.div
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: {},
-          show: {
-            transition: {
-              staggerChildren: 0.05,
-            },
-          },
-        }}
-      >
-        {themes.map(theme => (
-          <motion.div
-            key={theme}
-            className={`p-4 rounded-xl border border-base-300 cursor-pointer relative hover:scale-105 transition-transform duration-200 ${
-              currentTheme === theme ? 'ring-4 ring-primary' : ''
-            }`}
-            data-theme={theme}
-            onClick={() => setCurrentTheme(theme)}
-            whileHover={{ scale: 1.05 }}
-            variants={{
-              hidden: { opacity: 0, scale: 0.9 },
-              show: { opacity: 1, scale: 1 },
-            }}
-          >
-            <div className="flex justify-between items-center">
-              <span className="font-semibold capitalize">{theme}</span>
-              {currentTheme === theme && <div className="badge badge-primary">Selected</div>}
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
-              <div className="bg-primary h-4 rounded"></div>
-              <div className="bg-secondary h-4 rounded"></div>
-              <div className="bg-accent h-4 rounded"></div>
-              <div className="bg-neutral h-4 rounded"></div>
-              <div className="bg-base-200 h-4 rounded"></div>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Appearance</CardTitle>
+          <CardDescription>Customize how the application looks.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="dark-mode" className="flex flex-col space-y-1">
+              <span>Dark Mode</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Switch between light and dark themes.
+              </span>
+            </Label>
+            <Switch id="dark-mode" checked={isDark} onCheckedChange={toggleTheme} />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

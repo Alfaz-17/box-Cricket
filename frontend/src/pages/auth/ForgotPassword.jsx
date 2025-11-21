@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
-import Input from '../../components/ui/Input'
-import Button from '../../components/ui/Button'
+import { Input } from '../../components/ui/input'
+import { Button } from '../../components/ui/button'
 import api from '../../utils/api'
 import BookMyBoxLogo from '../../assets/cri.png'
 

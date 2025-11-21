@@ -10,7 +10,6 @@ const InviteUsers = () => {
   const [currentUser, setCurrentUser] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [inviting, setInviting] = useState({})
-  const [error, setError] = useState('')
   const [groups, setGroups] = useState([])
   const { id } = useParams() // id = groupId
 

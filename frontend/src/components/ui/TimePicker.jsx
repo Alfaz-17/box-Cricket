@@ -1,4 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const TimePicker = ({ value, onChange }) => {
   // Generate options for every 30 mins in 12-hour format AM/PM
@@ -17,21 +24,18 @@ const TimePicker = ({ value, onChange }) => {
   const timeOptions = generateTimeOptions()
 
   return (
-    <select
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      className="input input-bordered w-full text-[16px] bg-base-100 "
-      aria-label="Select time"
-    >
-      <option className="bg-base-100" value="">
-        Select time
-      </option>
-      {timeOptions.map((time, idx) => (
-        <option className="bg-base-100" key={idx} value={time}>
-          {time}
-        </option>
-      ))}
-    </select>
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder="Select time" />
+      </SelectTrigger>
+      <SelectContent>
+        {timeOptions.map((time, idx) => (
+          <SelectItem key={idx} value={time}>
+            {time}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 

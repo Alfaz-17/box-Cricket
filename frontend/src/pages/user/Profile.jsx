@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../../utils/api' // your axios config instance
 import { Upload } from 'lucide-react'
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
@@ -16,6 +16,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const { logout } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   // Fetch user data on mount
   useEffect(() => {
@@ -44,7 +45,6 @@ const Profile = () => {
 
     logout()
     navigate('/')
-    if (onClose) onClose()
   }
 
   // Handle input change
@@ -78,9 +78,8 @@ const Profile = () => {
   }
 
   const handleChangeImg = e => {
-    const { name, value, files } = e.target
+    const { files } = e.target
 
-    name === 'profileImg'
     const file = files[0]
     setForm(prev => ({
       ...prev,

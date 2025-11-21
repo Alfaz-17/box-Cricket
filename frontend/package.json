@@ -32,7 +32,6 @@
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "daisyui": "^5.0.43",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.17.0",
     "fs": "^0.0.1-security",
@@ -51,8 +50,8 @@
     "react-time-picker": "^7.0.0",
     "socket.io-client": "^4.8.1",
     "soket.io": "^0.0.1-security",
-    "tailwind-merge": "^3.3.0",
-    "tailwind-scrollbar": "^4.0.2",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7",
     "zustand": "^5.0.6"
   },
   "devDependencies": {

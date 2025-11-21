@@ -1,5 +1,98 @@
-@import 'tailwindcss';
-@plugin "daisyui" {
-  themes: all;
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  :root {
+    /* Sporty Theme Palette */
+    /* Primary: #556B2F -> HSL: 82, 39%, 30% */
+    --primary: 82 39% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: #8FA31E -> HSL: 69, 69%, 38% */
+    --secondary: 69 69% 38%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Accent: #C6D870 -> HSL: 70, 56%, 64% */
+    --accent: 70 56% 64%;
+    --accent-foreground: 82 39% 20%;
+
+    /* Background (Base-100): #EFF5D2 -> HSL: 71, 54%, 89% */
+    --background: 71 54% 89%;
+    --foreground: 82 39% 15%; /* Darker version of primary for text */
+
+    /* Card/Popover Backgrounds - slightly lighter/darker than background */
+    --card: 71 54% 95%;
+    --card-foreground: 82 39% 15%;
+    --popover: 71 54% 95%;
+    --popover-foreground: 82 39% 15%;
+
+    /* Muted */
+    --muted: 71 20% 85%;
+    --muted-foreground: 82 20% 40%;
+
+    /* Destructive (Error): #F87272 -> HSL: 0, 91%, 71% */
+    --destructive: 0 91% 71%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border/Input/Ring */
+    --border: 82 39% 70%;
+    --input: 82 39% 70%;
+    --ring: 82 39% 30%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark Mode - Inverted/Adjusted Sporty Theme */
+    /* Neutral: #3D4451 -> HSL: 218, 14%, 28% */
+    --background: 218 14% 15%; /* Darker neutral */
+    --foreground: 71 54% 89%; /* Light background color for text */
+
+    --card: 218 14% 20%;
+    --card-foreground: 71 54% 89%;
+    --popover: 218 14% 20%;
+    --popover-foreground: 71 54% 89%;
+
+    --primary: 82 39% 40%; /* Slightly lighter primary for dark mode */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 69 69% 48%;
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 70 56% 64%;
+    --accent-foreground: 82 39% 20%;
+
+    --muted: 218 14% 25%;
+    --muted-foreground: 218 10% 65%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 218 14% 30%;
+    --input: 218 14% 30%;
+    --ring: 82 39% 40%;
+  }
 }
-@plugin "tailwind-scrollbar";
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}

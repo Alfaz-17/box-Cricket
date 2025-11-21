@@ -2,17 +2,17 @@ import { useState, useEffect, useContext } from 'react'
 import api from '../../utils/api'
 import { User, User2, Users2 } from 'lucide-react'
 import GroupChat from './GroupChat'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AuthContext from '../../context/AuthContext'
-import toast from 'react-hot-toast'
 
 const Group = () => {
   const [groupName, setGroupName] = useState('')
   const [groups, setGroups] = useState([])
   const [loading, setLoading] = useState(false)
   const [activeGroup, setActiveGroup] = useState(null)
+  const navigate = useNavigate()
 
-  const { user } = useContext(AuthContext)
+  const { isAuthenticated } = useContext(AuthContext)
 
   const fetchGroups = async () => {
     try {
@@ -38,6 +38,10 @@ const Group = () => {
     }
   }
 
+  useEffect(() => {
+    fetchGroups()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   if (activeGroup) {
     return (
       <GroupChat
@@ -47,10 +51,6 @@ const Group = () => {
       />
     )
   }
-
-  useEffect(() => {
-    fetchGroups()
-  }, [])
 
   return (
     <div className="w-full h-screen flex flex-col md:flex-row bg-base-200">
