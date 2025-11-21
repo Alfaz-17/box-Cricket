@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, Send, Hear
 import { motion } from 'framer-motion'
 import BookMyBoxLogo from '../../assets/cri.png'
 import { Button } from '../ui/Button'
-import { Input } from '../ui/input'
+import { Input } from '../ui/Input'
 
 const currentYear = new Date().getFullYear()
 
