@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
+import logoIcon from '../../assets/logo-icon.svg'
 
 const currentYear = new Date().getFullYear()
 
@@ -31,7 +32,7 @@ export default function Footer() {
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.6 }}
               >
-                <img className="h-12 w-12" src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" />
+                <img className="h-12 w-12" src={logoIcon} alt="BookMyBox Logo" />
               </motion.div>
               <h1
                 style={{ fontFamily: 'Bebas Neue' }}

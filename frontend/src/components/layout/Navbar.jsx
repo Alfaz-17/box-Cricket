@@ -7,6 +7,8 @@ import Sidebar from '../admin/Sidebar';
 import useNotificationStore from '../../store/useNotificationStore';
 import { Button } from '../ui/Button';
 
+import logoIcon from '../../assets/logo-icon.svg';
+
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -50,7 +52,7 @@ const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x group">
               <div className="relative">
-                <img className="h-12 w-12 sm:h-12 sm:w-12 transition-transform duration-300 group-hover:scale-110" src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" />
+                <img className="h-12 w-12 sm:h-12 sm:w-12 transition-transform duration-300 group-hover:scale-110" src={logoIcon} alt="BookMyBox Logo" />
                 <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-0 group-hover:opacity-20 rounded-full transition-opacity duration-300 blur-xl" />
               </div>
               <span style={{ fontFamily: 'Bebas Neue' }} className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-wide">

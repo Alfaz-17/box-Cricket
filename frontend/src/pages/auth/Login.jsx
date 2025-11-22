@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Label } from '@/components/ui/Label';
 import api from '../../utils/api';
+import logoIcon from '../../assets/logo-icon.svg';
 
 const Login = () => {
   const [contactNumber, setContactNumber] = useState('');
@@ -60,7 +61,7 @@ const Login = () => {
         
         <div className="relative z-10 flex flex-col items-center text-center space-y-8">
           <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/10 transform hover:scale-105 transition-transform duration-500">
-            <img src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" className="h-48 w-48 object-contain drop-shadow-xl" />
+            <img src={logoIcon} alt="BookMyBox Logo" className="h-48 w-48 object-contain drop-shadow-xl" />
           </div>
           <div className="space-y-4">
             <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-7xl font-bold text-primary-foreground tracking-wider drop-shadow-md">
@@ -78,7 +79,7 @@ const Login = () => {
           
           {/* Mobile Logo (Visible only on small screens) */}
           <div className="md:hidden flex flex-col items-center mb-8">
-             <img src="/src/assets/logo-icon.svg" alt="BookMyBox" className="h-24 w-24 object-contain mb-4" />
+             <img src={logoIcon} alt="BookMyBox" className="h-24 w-24 object-contain mb-4" />
              <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-4xl font-bold text-primary">Book My Box</h1>
           </div>
 
