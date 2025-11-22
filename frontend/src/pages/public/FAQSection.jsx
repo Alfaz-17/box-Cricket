@@ -25,6 +25,16 @@ const FAQSection = () => {
       answer:
         'A mobile app is under development. For now, you can use our fully responsive web app on any device.',
     },
+    {
+      question: 'Terms and Conditions',
+      answer:
+        'By using Book My Box, you agree to: (1) Provide accurate information during registration and booking. (2) Comply with the rules and regulations of the cricket box facility. (3) Pay all applicable fees on time. (4) Not engage in any unlawful or prohibited activities. (5) Accept that we reserve the right to cancel bookings that violate our terms. (6) Understand that box owners set their own policies for usage, cancellation, and refunds. (7) Acknowledge that we act as a platform connecting users with box owners and are not responsible for the quality of facilities.',
+    },
+    {
+      question: 'Refund Policy',
+      answer:
+        'Refund eligibility depends on the individual box owner\'s policy and timing of cancellation: (1) Cancellations made 24+ hours before the booking time may be eligible for a full refund minus processing fees. (2) Cancellations made less than 24 hours before may receive partial or no refund. (3) The ₹500 advance payment refund is subject to the box owner\'s approval. (4) Refunds are processed within 5-7 business days to the original payment method. (5) No-shows are not eligible for refunds. (6) In case of facility issues or unavailability, full refunds will be provided. For specific refund queries, please contact us at alfazbilakhiya17@gmail.com or call 6353783332.',
+    },
   ]
 
   return (

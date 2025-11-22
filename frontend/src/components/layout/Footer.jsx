@@ -83,28 +83,28 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                <Link to="/support" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
                   <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                <Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
                   <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                <Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
                   <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                <Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
                   <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
                   FAQs
-                </a>
+                </Link>
               </li>
             </ul>
           </motion.div>
@@ -122,8 +122,8 @@ export default function Footer() {
             <ul className="space-y-3 text-sm mb-6">
               <li className="flex items-center text-muted-foreground hover:text-primary transition-colors group">
                 <Mail size={16} className="mr-2 text-primary group-hover:scale-110 transition-transform" />
-                <a href="mailto:alfaz_bilakhiya17@gmail.com" className="truncate">
-                  alfaz_bilakhiya17@gmail.com
+                <a href="mailto:alfazbilakhiya17@gmail.com" className="truncate">
+                  alfazbilakhiya17@gmail.com
                 </a>
               </li>
               <li className="flex items-center text-muted-foreground hover:text-primary transition-colors group">
