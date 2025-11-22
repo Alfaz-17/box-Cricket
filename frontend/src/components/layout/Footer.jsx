@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, Send, Heart, Trophy, Award, Target } from 'lucide-react'
 import { motion } from 'framer-motion'
-import BookMyBoxLogo from '../../assets/cri.png'
+
 import { Button } from '../ui/Button'
 import { Input } from '../ui/Input'
 
@@ -31,7 +31,7 @@ export default function Footer() {
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.6 }}
               >
-                <img className="h-12 w-12" src={BookMyBoxLogo} alt="BookMyBox Logo" />
+                <img className="h-12 w-12" src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" />
               </motion.div>
               <h1
                 style={{ fontFamily: 'Bebas Neue' }}

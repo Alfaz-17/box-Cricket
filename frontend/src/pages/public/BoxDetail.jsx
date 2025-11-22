@@ -29,7 +29,7 @@ const BoxDetail = () => {
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false)
   const [isProcessingBooking, setIsProcessingBooking] = useState(false)
   const [contactNumber, setContactNumber] = useState('')
-  const [activeTab, setActiveTab] = useState('details')
+  const [activeTab, setActiveTab] = useState('booking')
   const [selectedQuarter, setSelectedQuarter] = useState('')
   const [averageRating, setAverageRating] = useState('')
   const [totalReviews, setTotalReviews] = useState('')
@@ -511,177 +511,6 @@ const BoxDetail = () => {
           </motion.section>
         )}
 
-        {/* Availability / Booking Section */}
-        <motion.section
-          id="booking-section"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mb-8 bg-card/50 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-primary/20"
-        >
-          <h2
-            style={{ fontFamily: 'Bebas Neue' }}
-            className="text-3xl font-bold text-primary mb-6"
-          >
-            Book Your Slot
-          </h2>
-
-          {/* Offline Booking Notice */}
-          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-xl">
-            <div className="flex items-start gap-3">
-              <Phone className="w-6 h-6 text-destructive flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-bold text-destructive mb-2">Book Offline</h3>
-                <p className="text-sm mb-3">
-                  Online booking is currently <strong>unavailable (In development)</strong>. Please
-                  call the number below to reserve this box.
-                </p>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button
-                    asChild
-                    className="bg-gradient-to-r from-destructive to-red-600 hover:from-destructive/90 hover:to-red-600/90"
-                  >
-                    <a href={`tel:${displayBox.mobileNumber}`} className="flex items-center gap-2">
-                      <Phone size={18} />
-                      +91 - {displayBox.mobileNumber || 'N/A'}
-                    </a>
-                  </Button>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-
-          {/* Booking Form */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Date Picker */}
-            <div>
-              <label className="text-sm font-bold mb-2 block text-primary">Select Date</label>
-              <DatePicker
-                selected={selectedDate}
-                onChange={date => {
-                  setSelectedDate(date)
-                  setAvailableTimes(false)
-                }}
-                minDate={new Date()}
-                className="flex h-11 w-full rounded-lg border-2 border-primary/20 bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                dateFormat="MMMM d, yyyy"
-              />
-            </div>
-
-            {/* Contact Number */}
-            <div>
-              <label className="text-sm font-bold mb-2 block text-primary">Contact Number</label>
-              <Input
-                type="tel"
-                value={contactNumber}
-                onChange={e => setContactNumber(e.target.value)}
-                placeholder="Enter contact number"
-                className="border-2 border-primary/20 focus:border-primary h-11"
-              />
-            </div>
-
-            {/* Time Picker */}
-            <div>
-              <label className="text-sm font-bold mb-2 block text-primary">Select Time</label>
-              <TimePicker value={selectedTime} onChange={handleTimeChange} />
-              <p className="text-xs text-muted-foreground mt-2">
-                Selected: {selectedTime || 'None'}
-              </p>
-            </div>
-
-            {/* Duration */}
-            <div>
-              <label className="text-sm font-bold mb-2 block text-primary">Duration</label>
-              <Select value={duration.toString()} onValueChange={val => setDuration(Number(val))}>
-                <SelectTrigger className="border-2 border-primary/20 h-11">
-                  <SelectValue placeholder="Select duration" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4].map(hours => (
-                    <SelectItem key={hours} value={hours.toString()}>
-                      {hours} hour{hours > 1 ? 's' : ''}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Box Selection */}
-            <div>
-              <label className="text-sm font-bold mb-2 block text-primary">Select Box</label>
-              <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
-                <SelectTrigger className="border-2 border-primary/20 h-11">
-                  <SelectValue placeholder="-- Select a Box --" />
-                </SelectTrigger>
-                <SelectContent>
-                  {displayBox.quarters?.map(quarter => (
-                    <SelectItem key={quarter._id} value={quarter._id}>
-                      {quarter.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex-1">
-              <Button
-                onClick={handleCheckAvailability}
-                variant="secondary"
-                className="w-full h-12 bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg font-bold"
-                disabled={isCheckingAvailability}
-              >
-                {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </motion.div>
-
-            {contactNumber && availableTimes && duration && selectedDate && selectedTime && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex-1"
-              >
-                <Button
-                  onClick={handleBooking}
-                  className="w-full h-12 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg font-bold text-lg"
-                  disabled={isProcessingBooking}
-                >
-                  {isProcessingBooking ? 'Booking...' : 'Book Now'}
-                  <Trophy className="ml-2 w-5 h-5" />
-                </Button>
-              </motion.div>
-            )}
-          </div>
-
-          {/* Booking Policy */}
-          <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/20">
-            <div className="flex items-start gap-3">
-              <Info size={20} className="text-primary flex-shrink-0 mt-1" />
-              <div className="text-sm">
-                <p className="font-bold mb-2 text-primary text-base">Booking Policy</p>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Cancellation allowed up to 24 hours before booking time</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Payment is processed upon booking confirmation</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Please arrive 15 minutes before your slot</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </motion.section>
 
         {/* Facilities Section */}
         <motion.section
@@ -756,36 +585,204 @@ const BoxDetail = () => {
           </div>
         </motion.section>
 
-        {/* Tabs for Authenticated Users */}
-        {isAuthenticated && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="mb-8"
-          >
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full justify-start bg-muted/50 p-1 rounded-xl mb-6">
-                <TabsTrigger value="details" className="rounded-lg">Details</TabsTrigger>
-                <TabsTrigger value="booked" className="rounded-lg">Booked</TabsTrigger>
-                <TabsTrigger value="blocked" className="rounded-lg">Blocked</TabsTrigger>
-                <TabsTrigger value="reviews" className="rounded-lg">Reviews</TabsTrigger>
-              </TabsList>
-              <TabsContent value="details">
-                <p className="text-muted-foreground">View all details above</p>
-              </TabsContent>
-              <TabsContent value="booked">
-                <BookedSlots boxId={box._id} />
-              </TabsContent>
-              <TabsContent value="blocked">
-                <BlockedSlots boxId={box._id} />
-              </TabsContent>
-              <TabsContent value="reviews">
-                <ReviewsSection boxId={box._id} />
-              </TabsContent>
-            </Tabs>
-          </motion.section>
-        )}
+        {/* Tabs for All Users */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mb-8"
+        >
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full flex lg:grid lg:grid-cols-4 bg-muted/50 p-1 rounded-xl mb-6 gap-1 overflow-x-auto scrollbar-hide">
+              <TabsTrigger value="booking" className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">Book Slot</TabsTrigger>
+              {isAuthenticated && (
+                <>
+                  <TabsTrigger value="booked" className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">Booked</TabsTrigger>
+                  <TabsTrigger value="blocked" className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">Blocked</TabsTrigger>
+                  <TabsTrigger value="reviews" className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">Reviews</TabsTrigger>
+                </>
+              )}
+            </TabsList>
+            
+            <TabsContent value="booking" id="booking-section">
+              <div className="bg-card/50 backdrop-blur-sm p-4 sm:p-6 md:p-8 rounded-2xl border border-primary/20">
+                <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-4 sm:mb-6">
+                  Book Your Slot
+                </h2>
+
+                {/* Offline Booking Notice */}
+                <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-destructive/10 border border-destructive/30 rounded-xl">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-destructive flex-shrink-0 mt-1" />
+                    <div className="flex-1">
+                      <h3 className="font-bold text-destructive mb-1 sm:mb-2 text-sm sm:text-base">Book Offline</h3>
+                      <p className="text-xs sm:text-sm mb-2 sm:mb-3">
+                        Online booking is currently <strong>unavailable (In development)</strong>. Please
+                        call the number below to reserve this box.
+                      </p>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button
+                          asChild
+                          className="bg-gradient-to-r from-destructive to-red-600 hover:from-destructive/90 hover:to-red-600/90 w-full sm:w-auto text-sm sm:text-base"
+                        >
+                          <a href={`tel:${displayBox.mobileNumber}`} className="flex items-center gap-2 justify-center">
+                            <Phone size={16} className="sm:w-[18px] sm:h-[18px]" />
+                            +91 - {displayBox.mobileNumber || 'N/A'}
+                          </a>
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Booking Form - Mobile First */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {/* Date Picker */}
+                  <div>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Date</label>
+                    <DatePicker
+                      selected={selectedDate}
+                      onChange={date => {
+                        setSelectedDate(date)
+                        setAvailableTimes(false)
+                      }}
+                      minDate={new Date()}
+                      className="flex h-10 sm:h-11 w-full rounded-lg border-2 border-primary/20 bg-background px-3 sm:px-4 py-2 text-xs sm:text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                      dateFormat="MMMM d, yyyy"
+                    />
+                  </div>
+
+                  {/* Contact Number */}
+                  <div>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Contact Number</label>
+                    <Input
+                      type="tel"
+                      value={contactNumber}
+                      onChange={e => setContactNumber(e.target.value)}
+                      placeholder="Enter contact number"
+                      className="border-2 border-primary/20 focus:border-primary h-10 sm:h-11 text-xs sm:text-sm"
+                    />
+                  </div>
+
+                  {/* Time Picker */}
+                  <div>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Time</label>
+                    <TimePicker value={selectedTime} onChange={handleTimeChange} />
+                    <p className="text-xs text-muted-foreground mt-1 sm:mt-2">
+                      Selected: {selectedTime || 'None'}
+                    </p>
+                  </div>
+
+                  {/* Duration */}
+                  <div>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Duration</label>
+                    <Select value={duration.toString()} onValueChange={val => setDuration(Number(val))}>
+                      <SelectTrigger className="border-2 border-primary/20 h-10 sm:h-11">
+                        <SelectValue placeholder="Select duration" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4].map(hours => (
+                          <SelectItem key={hours} value={hours.toString()}>
+                            {hours} hour{hours > 1 ? 's' : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Box Selection */}
+                  <div className="sm:col-span-2 lg:col-span-1">
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Box</label>
+                    <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
+                      <SelectTrigger className="border-2 border-primary/20 h-10 sm:h-11">
+                        <SelectValue placeholder="-- Select a Box --" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {displayBox.quarters?.map(quarter => (
+                          <SelectItem key={quarter._id} value={quarter._id}>
+                            {quarter.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 sm:mt-6">
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex-1">
+                    <Button
+                      onClick={handleCheckAvailability}
+                      variant="secondary"
+                      className="w-full h-11 sm:h-12 bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg font-bold text-sm sm:text-base"
+                      disabled={isCheckingAvailability}
+                    >
+                      {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
+                      <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+                    </Button>
+                  </motion.div>
+
+                  {contactNumber && availableTimes && duration && selectedDate && selectedTime && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex-1"
+                    >
+                      <Button
+                        onClick={handleBooking}
+                        className="w-full h-11 sm:h-12 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg font-bold text-sm sm:text-base"
+                        disabled={isProcessingBooking}
+                      >
+                        {isProcessingBooking ? 'Booking...' : 'Book Now'}
+                        <Trophy className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+                      </Button>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Booking Policy */}
+                <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-primary/5 rounded-xl border border-primary/20">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <Info size={18} className="sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-1" />
+                    <div className="text-xs sm:text-sm">
+                      <p className="font-bold mb-1 sm:mb-2 text-primary text-sm sm:text-base">Booking Policy</p>
+                      <ul className="space-y-1 sm:space-y-2 text-muted-foreground">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span>Cancellation allowed up to 24 hours before booking time</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span>Payment is processed upon booking confirmation</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span>Please arrive 15 minutes before your slot</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            {isAuthenticated && (
+              <>
+                <TabsContent value="booked">
+                  <BookedSlots boxId={box._id} />
+                </TabsContent>
+                <TabsContent value="blocked">
+                  <BlockedSlots boxId={box._id} />
+                </TabsContent>
+                <TabsContent value="reviews">
+                  <ReviewsSection boxId={box._id} />
+                </TabsContent>
+              </>
+            )}
+          </Tabs>
+        </motion.section>
       </div>
     </div>
   )

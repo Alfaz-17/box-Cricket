@@ -92,8 +92,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           <div className="p-6 flex items-center justify-between border-b border-primary/10 bg-background/50 backdrop-blur-sm">
              {/* Logo & Brand */}
             <div className="flex items-center gap-3">
-                <div className="relative h-10 w-10 rounded-xl overflow-hidden shadow-sm bg-white/50 p-1">
-                    <img className="h-full w-full object-contain" src="/logo.png" alt="BookMyBox" />
+                <div className="relative h-15 w-15 rounded-xl overflow-hidden   p-1">
+                    <img className="h-full w-full object-contain" src="/src/assets/logo-icon.svg" alt="BookMyBox" />
                 </div>
                 <div className="flex flex-col">
                     <span style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-primary tracking-wide leading-none">
@@ -106,9 +106,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
             
             {/* Close Button (Mobile) */}
-            <button onClick={onClose} className="lg:hidden p-2 text-muted-foreground hover:text-destructive transition-colors rounded-full hover:bg-destructive/10">
-              <X size={20} />
-            </button>
+          
           </div>
 
           {/* Navigation */}

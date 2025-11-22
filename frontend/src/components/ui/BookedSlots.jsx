@@ -88,7 +88,7 @@ export default function BookedSlots({ boxId }) {
   return (
     <Card className="bg-card shadow-md">
       <CardHeader className="pb-4">
-        <CardTitle className="text-2xl font-bold flex items-center gap-2" style={{ fontFamily: 'Bebas Neue' }}>
+        <CardTitle className="text-2xl font-bold flex items-center gap-2">
           📅 Booked Slots by Boxes
         </CardTitle>
       </CardHeader>
@@ -140,10 +140,7 @@ export default function BookedSlots({ boxId }) {
               >
                 <div className="flex items-center gap-2 mb-3">
                   <Square className="w-5 h-5 text-primary" />
-                  <h3
-                    style={{ fontFamily: 'Bebas Neue' }}
-                    className="text-lg font-semibold text-primary"
-                  >
+                  <h3 className="text-lg font-semibold text-primary">
                     Boxes:{quarter.quarterName}-(box)
                   </h3>
                 </div>

@@ -130,7 +130,7 @@ const Signup = () => {
         
         <div className="relative z-10 flex flex-col items-center text-center space-y-8">
           <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/10 transform hover:scale-105 transition-transform duration-500">
-            <img src="/logo.png" alt="BookMyBox Logo" className="h-48 w-48 object-contain drop-shadow-xl" />
+            <img src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" className="h-48 w-48 object-contain drop-shadow-xl" />
           </div>
           <div className="space-y-4">
             <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-7xl font-bold text-primary-foreground tracking-wider drop-shadow-md">
@@ -149,7 +149,7 @@ const Signup = () => {
           
           {/* Mobile Logo */}
           <div className="md:hidden flex flex-col items-center mb-6">
-             <img src="/logo.png" alt="BookMyBox" className="h-20 w-20 object-contain mb-3" />
+             <img src="/src/assets/logo-icon.svg" alt="BookMyBox" className="h-20 w-20 object-contain mb-3" />
              <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl font-bold text-primary">Book My Box</h1>
           </div>
 

@@ -1,0 +1,43 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cricket Box/Net Structure -->
+  <path d="M150 100 H 362 V 312" stroke="#6B8E23" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M150 100 L 220 170" stroke="#6B8E23" stroke-width="12" stroke-linecap="round"/>
+  <path d="M362 100 L 432 170" stroke="#6B8E23" stroke-width="12" stroke-linecap="round"/>
+  <path d="M362 312 L 432 382" stroke="#6B8E23" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- Net Pattern -->
+  <path d="M220 170 H 432 V 382" stroke="#6B8E23" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M250 170 V 382" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M280 170 V 382" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M310 170 V 382" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M340 170 V 382" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M370 170 V 382" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M400 170 V 382" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  
+  <path d="M220 200 H 432" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M220 230 H 432" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M220 260 H 432" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M220 290 H 432" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M220 320 H 432" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M220 350 H 432" stroke="#6B8E23" stroke-width="4" stroke-opacity="0.6"/>
+
+  <!-- Pitch/Ground -->
+  <path d="M220 382 L 150 450 H 362 L 432 382" fill="#6B8E23" fill-opacity="0.8"/>
+  
+  <!-- Stumps -->
+  <rect x="276" y="280" width="8" height="60" rx="4" fill="#6B8E23"/>
+  <rect x="296" y="280" width="8" height="60" rx="4" fill="#6B8E23"/>
+  <rect x="316" y="280" width="8" height="60" rx="4" fill="#6B8E23"/>
+  <rect x="276" y="276" width="48" height="4" rx="2" fill="#6B8E23"/>
+
+  <!-- Calendar Icon -->
+  <rect x="80" y="180" width="160" height="160" rx="24" fill="white" stroke="#333333" stroke-width="16"/>
+  <path d="M80 230 H 240" stroke="#333333" stroke-width="12"/>
+  
+  <!-- Calendar Rings -->
+  <rect x="110" y="160" width="16" height="40" rx="8" fill="#333333"/>
+  <rect x="194" y="160" width="16" height="40" rx="8" fill="#333333"/>
+
+  <!-- Checkmark -->
+  <path d="M120 270 L 150 300 L 200 250" stroke="#6B8E23" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

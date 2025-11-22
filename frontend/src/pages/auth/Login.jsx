@@ -60,7 +60,7 @@ const Login = () => {
         
         <div className="relative z-10 flex flex-col items-center text-center space-y-8">
           <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/10 transform hover:scale-105 transition-transform duration-500">
-            <img src="/logo.png" alt="BookMyBox Logo" className="h-48 w-48 object-contain drop-shadow-xl" />
+            <img src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" className="h-48 w-48 object-contain drop-shadow-xl" />
           </div>
           <div className="space-y-4">
             <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-7xl font-bold text-primary-foreground tracking-wider drop-shadow-md">
@@ -72,14 +72,13 @@ const Login = () => {
           </div>
         </div>
       </div>
-
       {/* Right Form Panel */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-24 lg:px-32 bg-background relative">
         <div className="max-w-md w-full mx-auto space-y-10">
           
           {/* Mobile Logo (Visible only on small screens) */}
           <div className="md:hidden flex flex-col items-center mb-8">
-             <img src="/logo.png" alt="BookMyBox" className="h-24 w-24 object-contain mb-4" />
+             <img src="/src/assets/logo-icon.svg" alt="BookMyBox" className="h-24 w-24 object-contain mb-4" />
              <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-4xl font-bold text-primary">Book My Box</h1>
           </div>
 

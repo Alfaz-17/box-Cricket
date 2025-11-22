@@ -4,7 +4,7 @@ import { Search, MapPin, Clock, Calendar, Filter, TrendingUp, Users, Award, Star
 import { motion } from 'framer-motion'
 
 import api from '../../utils/api'
-import BookMyBoxLogo from '../../assets/cri.png'
+
 import TimePicker from '../../components/ui/TimePicker'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
@@ -92,20 +92,30 @@ const Home = () => {
       {/* Immersive Hero Section - Mobile First */}
       <section className="relative min-h-[90vh] sm:min-h-[85vh] flex items-center justify-center overflow-hidden mb-8 sm:mb-12 md:mb-16">
         {/* Dynamic Background */}
-        <div className="absolute inset-0 bg-primary">
-            <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-primary/90 to-black/80 z-10" />
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] z-0 mix-blend-overlay" />
+        {/* Dynamic Background */}
+        <div className="absolute inset-0 overflow-hidden">
+            {/* Hero Image */}
+            <img 
+                src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067&auto=format&fit=crop" 
+                alt="Cricket Turf" 
+                className="absolute inset-0 w-full h-full object-cover"
+            />
             
-            {/* Animated Abstract Shapes - Hidden on small mobile */}
+            {/* Overlays */}
+            <div className="absolute inset-0 bg-black/60 z-10" /> {/* Darken the image */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-primary/20 to-background/90 z-10" />
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 z-10 mix-blend-overlay" />
+            
+            {/* Animated Abstract Shapes */}
             <motion.div 
-                animate={{ rotate: 360 }}
-                transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-                className="absolute top-[-20%] right-[-10%] w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] rounded-full border-[50px] sm:border-[80px] md:border-[100px] border-white/5 blur-3xl z-0"
+                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="absolute top-[-10%] right-[-5%] w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full bg-primary/20 blur-[100px] z-10"
             />
             <motion.div 
-                animate={{ rotate: -360 }}
-                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                className="absolute bottom-[-20%] left-[-10%] w-[300px] sm:w-[500px] md:w-[600px] h-[300px] sm:h-[500px] md:h-[600px] rounded-full border-[40px] sm:border-[60px] md:border-[80px] border-secondary/20 blur-3xl z-0"
+                animate={{ rotate: -360, scale: [1, 1.2, 1] }}
+                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                className="absolute bottom-[10%] left-[-10%] w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] rounded-full bg-secondary/10 blur-[120px] z-10"
             />
         </div>
 
@@ -129,12 +139,12 @@ const Home = () => {
                         </span>
                     </motion.div>
 
-                    <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-white tracking-tight leading-none drop-shadow-2xl px-2">
-                        BOOK. <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-accent">PLAY.</span> WIN.
+                    <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black italic text-white tracking-tighter leading-[0.9] drop-shadow-2xl px-2 transform -skew-x-6">
+                        BOOK. <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-accent to-secondary animate-gradient bg-300%">PLAY.</span> WIN.
                     </h1>
                     
-                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 max-w-2xl mx-auto font-light leading-relaxed px-4">
-                        Discover and book premium cricket turfs in seconds. Elevate your game with world-class facilities.
+                    <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-2xl mx-auto font-medium tracking-wide leading-relaxed px-4 mt-6 border-l-4 border-secondary pl-6">
+                        Discover and book premium cricket turfs in seconds. <br className="hidden sm:block" /> Elevate your game with world-class facilities.
                     </p>
                 </div>
 
@@ -149,7 +159,7 @@ const Home = () => {
                         <div className="flex flex-col gap-3 sm:gap-4">
                             {/* Search Input */}
                             <div className="relative group">
-                                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-white/60 group-hover:text-white transition-colors" />
+                                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-white/80 sm:text-white/60 sm:group-hover:text-white transition-colors" />
                                 <Input
                                     type="text"
                                     placeholder="Search turfs, locations..."
@@ -161,12 +171,14 @@ const Home = () => {
                             
                             {/* Buttons - Stack on mobile */}
                             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                                {/* Filter Button Temporarily Disabled
                                 <Button 
                                     onClick={() => setShowFilters(!showFilters)}
                                     className="h-12 sm:h-14 px-6 sm:px-8 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-lg sm:rounded-xl transition-all w-full sm:w-auto"
                                 >
                                     <Filter className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Filters
                                 </Button>
+                                */}
 
                                 <Button className="h-12 sm:h-14 px-8 sm:px-10 bg-gradient-to-r from-secondary to-primary hover:from-secondary/90 hover:to-primary/90 text-white font-bold text-base sm:text-lg tracking-wide uppercase rounded-lg sm:rounded-xl shadow-lg shadow-primary/20 transition-all transform hover:scale-105 w-full sm:flex-1">
                                     Search
@@ -174,7 +186,8 @@ const Home = () => {
                             </div>
                         </div>
 
-                        {/* Expanded Filters - Mobile Optimized */}
+                        {/* Expanded Filters - Mobile Optimized (Temporarily Disabled) */}
+                        {/* 
                         {showFilters && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
@@ -215,6 +228,7 @@ const Home = () => {
                                 </div>
                             </motion.div>
                         )}
+                        */}
                     </div>
                 </motion.div>
             </motion.div>
@@ -246,7 +260,7 @@ const Home = () => {
           className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-3 sm:gap-4"
         >
           <div>
-            <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
               Available Cricket Boxes
             </h2>
             <p className="text-muted-foreground mt-1 text-sm sm:text-base">Discover premium facilities near you</p>
@@ -296,7 +310,7 @@ const Home = () => {
         className="mt-12 sm:mt-16 md:mt-24 mb-8 sm:mb-12 md:mb-16 px-4 sm:px-0"
       >
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
-          <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
             Why Choose Us?
           </h2>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
@@ -356,12 +370,12 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => {
       className="group relative"
     >
       <Card className="h-full border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-50 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300" />
         <CardContent className="pt-6 sm:pt-8 pb-5 sm:pb-6 relative z-10">
           <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-primary to-secondary rounded-xl sm:rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
             <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-white" strokeWidth={2} />
           </div>
-          <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-center group-hover:text-primary transition-colors" style={{ fontFamily: 'Bebas Neue' }}>
+          <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-center text-primary sm:text-foreground sm:group-hover:text-primary transition-colors">
             {title}
           </h3>
           <p className="text-sm sm:text-base text-muted-foreground text-center leading-relaxed">
@@ -417,7 +431,7 @@ const BoxCard = ({ box, index }) => {
         </div>
 
         <CardContent className="p-4 sm:p-5 md:p-6">
-          <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-xl sm:text-2xl font-bold text-primary mb-2 sm:mb-3 group-hover:text-secondary transition-colors line-clamp-1">
+          <h3 className="text-xl sm:text-2xl font-bold text-primary mb-2 sm:mb-3 group-hover:text-secondary transition-colors line-clamp-1">
             {box.name}
           </h3>
 

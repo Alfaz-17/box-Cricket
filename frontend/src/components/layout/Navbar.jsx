@@ -47,11 +47,15 @@ const Navbar = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2 group">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x group">
               <div className="relative">
-                <img className="h-45 w-45" src="/logo.png" alt="BookMyBox Logo" />
-                <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-0 group-hover:opacity-20 rounded-full transition-opacity duration-300" />
+                <img className="h-12 w-12 sm:h-12 sm:w-12 transition-transform duration-300 group-hover:scale-110" src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-0 group-hover:opacity-20 rounded-full transition-opacity duration-300 blur-xl" />
               </div>
+              <span style={{ fontFamily: 'Bebas Neue' }} className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-wide">
+                BookMyBox
+              </span>
             </Link>
 
             {/* Desktop Navigation */}

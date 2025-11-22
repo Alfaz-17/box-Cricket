@@ -73,7 +73,7 @@ export default function BlockedSlots({ boxId }) {
       <Card className="bg-muted/50 border-dashed">
         <CardContent className="flex flex-col items-center justify-center p-6 text-center">
           <div className="flex justify-center mb-2">
-            <CalendarX2 className="w-8 h-8 text-red-400" />
+            <CalendarX2 className="w-8 h-8 text-destructive" />
           </div>
           <p className="text-lg font-medium">No blocked slots found</p>
           <p className="text-sm text-muted-foreground">You're all clear! No time blocks are currently scheduled.</p>
@@ -84,7 +84,7 @@ export default function BlockedSlots({ boxId }) {
   return (
     <Card className="bg-card shadow-md">
       <CardHeader className="pb-4">
-        <CardTitle className="text-2xl font-bold text-primary flex items-center gap-2" style={{ fontFamily: 'Bebas Neue' }}>
+        <CardTitle className="text-2xl font-bold text-primary flex items-center gap-2">
           ⛔ Blocked Slots by Boxes
         </CardTitle>
       </CardHeader>
@@ -135,11 +135,8 @@ export default function BlockedSlots({ boxId }) {
                 className="border border-border rounded-lg p-4 bg-background/50"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <Square className="w-5 h-5 text-red-500" />
-                  <h3
-                    style={{ fontFamily: 'Bebas Neue' }}
-                    className="text-lg font-semibold text-primary "
-                  >
+                  <Square className="w-5 h-5 text-destructive" />
+                  <h3 className="text-lg font-semibold text-primary">
                     Boxes: {quarter.quarterName}-(box)
                   </h3>
                 </div>
@@ -151,19 +148,19 @@ export default function BlockedSlots({ boxId }) {
                       className="border border-border rounded-lg p-3 bg-card hover:bg-muted/50 shadow-sm transition-all"
                     >
                       <div className="flex items-center gap-2 mb-1  ">
-                        <Calendar className="w-4 h-4 text-red-500  " />
+                        <Calendar className="w-4 h-4 text-destructive" />
                         <span className="font-medium">Date:</span>
                         <span>{formatDate(slot.date)}</span>
                       </div>
                       <div className="flex items-center gap-2 mb-1 ">
-                        <Clock className="w-4 h-4 text-red-500" />
+                        <Clock className="w-4 h-4 text-destructive" />
                         <span className="font-medium">Time:</span>
                         <span>
                           {slot.startTime} - {slot.endTime}
                         </span>
                       </div>
                       <div className="flex items-center gap-2  ">
-                        <Ban className="w-4 h-4 text-red-500" />
+                        <Ban className="w-4 h-4 text-destructive" />
                         <span className="font-medium">Reason:</span>
                         <span>{slot.reason || 'N/A'}</span>
                       </div>

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
 import api from '../../utils/api'
-import BookMyBoxLogo from '../../assets/cri.png'
+
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1)
@@ -67,7 +67,7 @@ const ForgotPassword = () => {
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left side for desktop branding */}
       <div className="hidden md:flex w-1/2 bg-primary text-white items-center justify-center flex-col p-10">
-        <img src={BookMyBoxLogo} alt="BookMyBox Logo" className="h-40 w-40 mb-4" />
+        <img src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" className="h-40 w-40 mb-4" />
         <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-5xl font-bold mb-2">
           Book My Box
         </h1>
