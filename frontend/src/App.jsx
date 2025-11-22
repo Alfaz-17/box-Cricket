@@ -6,6 +6,7 @@ import AuthContext from './context/AuthContext'
 // Layout components
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
+import ScrollToTop from './components/layout/ScrollToTop'
 
 // Public pages
 import Home from './pages/public/Home'
@@ -167,6 +168,7 @@ function App() {
   return (
     <AuthContext.Provider value={authContextValue}>
       <Router>
+        <ScrollToTop />
         <div style={{ fontFamily: 'Rajdhani' }}>
           <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
             <Navbar />
