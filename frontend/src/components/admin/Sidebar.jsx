@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
+import logoIcon from '../../assets/logo-icon.svg';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
@@ -93,7 +94,7 @@ const Sidebar = ({ isOpen, onClose }) => {
              {/* Logo & Brand */}
             <div className="flex items-center gap-3">
                 <div className="relative h-15 w-15 rounded-xl overflow-hidden   p-1">
-                    <img className="h-full w-full object-contain" src="/src/assets/logo-icon.svg" alt="BookMyBox" />
+                    <img className="h-full w-full object-contain" src={logoIcon} alt="BookMyBox" />
                 </div>
                 <div className="flex flex-col">
                     <span style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-primary tracking-wide leading-none">
