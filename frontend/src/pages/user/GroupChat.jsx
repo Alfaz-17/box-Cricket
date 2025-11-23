@@ -66,22 +66,22 @@ const GroupChat = () => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-primary/10 bg-card/50 backdrop-blur-sm shadow-sm z-10">
         <div className="flex items-center gap-4">
-            <Link to={`/groups`}>
-                <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10">
-                    <ArrowLeft className="w-6 h-6 text-primary" />
-                </Button>
-            </Link>
-            <div>
-                <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold tracking-wide">
-                    {groupName}
-                </h2>
-                <p className="text-xs text-muted-foreground">Online</p>
-            </div>
+          <Link to={`/groups`}>
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10">
+              <ArrowLeft className="w-6 h-6 text-primary" />
+            </Button>
+          </Link>
+          <div>
+            <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold tracking-wide">
+              {groupName}
+            </h2>
+            <p className="text-xs text-muted-foreground">Online</p>
+          </div>
         </div>
         <Link to={`/groupInfo/${groupName}/${groupId}`}>
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10">
-                <Info className="w-6 h-6 text-primary" />
-            </Button>
+          <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10">
+            <Info className="w-6 h-6 text-primary" />
+          </Button>
         </Link>
       </div>
 
@@ -91,34 +91,41 @@ const GroupChat = () => {
           const isOwn = msg.sender?._id === user?._id
 
           return (
-            <div key={i} className={`flex ${isOwn ? 'justify-end' : 'justify-start'} items-end gap-2`}>
+            <div
+              key={i}
+              className={`flex ${isOwn ? 'justify-end' : 'justify-start'} items-end gap-2`}
+            >
               {!isOwn && (
                 <div className="w-8 h-8 rounded-full overflow-hidden border border-primary/20 flex-shrink-0">
-                    <img
-                      src={
-                        msg.sender?.profileImg ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          msg.sender?.name || 'User'
-                        )}&background=random`
-                      }
-                      alt={msg.sender?.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <img
+                    src={
+                      msg.sender?.profileImg ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        msg.sender?.name || 'User'
+                      )}&background=random`
+                    }
+                    alt={msg.sender?.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               )}
-              
-              <div className={`max-w-[75%] md:max-w-[60%] flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
+
+              <div
+                className={`max-w-[75%] md:max-w-[60%] flex flex-col ${
+                  isOwn ? 'items-end' : 'items-start'
+                }`}
+              >
                 <div className="text-xs text-muted-foreground mb-1 px-1">
-                    {isOwn ? 'You' : msg.sender?.name}
+                  {isOwn ? 'You' : msg.sender?.name}
                 </div>
                 <div
-                    className={`px-4 py-2 rounded-2xl text-sm shadow-sm ${
-                    isOwn 
-                        ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground rounded-tr-none' 
-                        : 'bg-card border border-primary/10 text-foreground rounded-tl-none'
-                    }`}
+                  className={`px-4 py-2 rounded-2xl text-sm shadow-sm ${
+                    isOwn
+                      ? 'bg-gradient-to-br from-primary to-secondary text-primary-foreground rounded-tr-none'
+                      : 'bg-card border border-primary/10 text-foreground rounded-tl-none'
+                  }`}
                 >
-                    {msg.content}
+                  {msg.content}
                 </div>
               </div>
             </div>
@@ -130,21 +137,21 @@ const GroupChat = () => {
       {/* Input */}
       <div className="p-4 border-t border-primary/10 bg-card/50 backdrop-blur-sm">
         <div className="flex items-center gap-2 max-w-4xl mx-auto">
-            <Input
-                type="text"
-                className="flex-1 rounded-full border-primary/20 focus-visible:ring-primary/50"
-                placeholder="Type a message..."
-                value={newMsg}
-                onChange={e => setNewMsg(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSend()}
-            />
-            <Button 
-                onClick={handleSend} 
-                size="icon" 
-                className="rounded-full w-10 h-10 shadow-md hover:scale-105 transition-transform"
-            >
-                <Send size={18} />
-            </Button>
+          <Input
+            type="text"
+            className="flex-1 rounded-full border-primary/20 focus-visible:ring-primary/50"
+            placeholder="Type a message..."
+            value={newMsg}
+            onChange={e => setNewMsg(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSend()}
+          />
+          <Button
+            onClick={handleSend}
+            size="icon"
+            className="rounded-full w-10 h-10 shadow-md hover:scale-105 transition-transform"
+          >
+            <Send size={18} />
+          </Button>
         </div>
       </div>
     </div>

@@ -9,10 +9,10 @@ import {
   createTemporaryBooking,
 } from '../controllers/bookingController.js'
 import { protectedRoute } from '../middleware/auth.js'
-import { bookingLimiter } from '../middleware/rateLimiter.js'
+import { bookingLimiter, checkSlotLimiter } from '../middleware/rateLimiter.js'
 const router = express.Router()
 
-router.post('/temporary-booking', protectedRoute, createTemporaryBooking, bookingLimiter)
+router.post('/temporary-booking', protectedRoute, bookingLimiter, createTemporaryBooking)
 router.post('/check-slot', protectedRoute, checkSlotAvailability)
 router.post('/cancel/:id', protectedRoute, cancelBooking)
 router.get('/report/:id', protectedRoute, getMyBookingRecipt)

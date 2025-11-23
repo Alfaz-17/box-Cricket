@@ -5,12 +5,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import { parseDateTime } from '../lib/parseDateTime.js'
 import BlockedSlot from '../models/BlockedSlot.js'
-import { sendMessage } from '../lib/whatsappBot.js'
-import axios from 'axios'
-import { getIO, getOnlineUsers } from '../lib/soket.js'
-import Notification from '../models/Notification.js'
-import redis from '../lib/redis.js'
-import { nanoid } from 'nanoid'
+
 
 export const checkSlotAvailability = async (req, res) => {
   try {
@@ -170,25 +165,25 @@ export const getAvailableBoxes = async (req, res) => {
 
 export const createTemporaryBooking = async (req, res) => {
   try {
-    const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body;
+    const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body
 
-    const now = new Date();
-    const start = parseDateTime(date, startTime);
-    const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
+    const now = new Date()
+    const start = parseDateTime(date, startTime)
+    const end = new Date(start.getTime() + duration * 60 * 60 * 1000)
 
     if (!/^\d{10}$/.test(contactNumber)) {
-      return res.status(400).json({ message: 'Invalid contact number' });
+      return res.status(400).json({ message: 'Invalid contact number' })
     }
     if (start < now) {
-      return res.status(400).json({ message: 'Start time is in the past' });
+      return res.status(400).json({ message: 'Start time is in the past' })
     }
 
-    const box = await CricketBox.findById(boxId);
-    if (!box) return res.status(404).json({ message: 'Box not found' });
+    const box = await CricketBox.findById(boxId)
+    if (!box) return res.status(404).json({ message: 'Box not found' })
 
-    const quarter = box.quarters.find(q => q._id.toString() === quarterId);
+    const quarter = box.quarters.find(q => q._id.toString() === quarterId)
     if (!quarter) {
-      return res.status(400).json({ message: 'Quarter not available' });
+      return res.status(400).json({ message: 'Quarter not available' })
     }
 
     // 🔹 Create temporary booking
@@ -210,32 +205,30 @@ export const createTemporaryBooking = async (req, res) => {
       isOffline: true,
       method: 'temporary',
       bookedBy: req.user._id,
-    });
+    })
 
-    await booking.save();
+    await booking.save()
 
     res.status(200).json({
-      message: "Temporary booking created successfully",
+      message: 'Temporary booking created successfully',
       bookingId: booking._id,
       date,
       from: startTime,
       duration,
-    });
-
+    })
   } catch (err) {
-    console.error("Temporary Booking Error:", err.message);
-    res.status(500).json({ message: "Temporary booking failed" });
+    console.error('Temporary Booking Error:', err.message)
+    res.status(500).json({ message: 'Temporary booking failed' })
   }
-};
-
+}
 
 export const getPaymentStatus = async (req, res) => {
   try {
-    const { bookingId } = req.params;
+    const { bookingId } = req.params
 
-    const booking = await Booking.findById(bookingId);
+    const booking = await Booking.findById(bookingId)
     if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
+      return res.status(404).json({ message: 'Booking not found' })
     }
 
     return res.status(200).json({
@@ -243,13 +236,12 @@ export const getPaymentStatus = async (req, res) => {
       paymentStatus: booking.paymentStatus, // 'pending' | 'paid'
       amountPaid: booking.amountPaid || 0,
       method: booking.method,
-    });
+    })
   } catch (err) {
-    console.error("❌ Error fetching payment status:", err.message);
-    return res.status(500).json({ message: "Server error" });
+    console.error('❌ Error fetching payment status:', err.message)
+    return res.status(500).json({ message: 'Server error' })
   }
-};
-
+}
 
 export const getMyBookingRecipt = async (req, res) => {
   try {

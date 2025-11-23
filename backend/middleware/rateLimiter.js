@@ -8,16 +8,24 @@ export const generalLimiter = rateLimit({
 
 export const bookingLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // 3 requests per hour
+  max:20, //  requests per hour
   message: {
     success: false,
-    error: 'Too many booking attempts. Please try again after an hour.',
+    message: 'Too many booking attempts. Please try again  after 1 hour.',
   },
-  keyGenerator: (req, res) => {
-    if (req.user?.id) return req.user.id
-    return ipKeyGenerator(req, res)
-  },
+
+  // this is count req per user and without keygenrator its count on ip per request
+  // keyGenerator: (req, res) => {
+  //   if (req.user?.id) return req.user._id
+  //   return ipKeyGenerator(req, res)
+  // },
 })
 
-// Just log once when the server starts
-console.log('Booking limiter applied ✅')
+export const checkSlotLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: {
+    success: false,
+    message: 'Too many slots check, Please wait  1 minuite',
+  },
+})

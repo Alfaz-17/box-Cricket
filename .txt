@@ -1,5 +1,9 @@
-// not create booking unitil payment is done
+// server reponse problem -redis,wp bot,websocket connection
 
-//redirect website after payment 
+//apply rate limiting in apis
 
-//whats app can send messages
+
+//check booking overlapping condiations 
+
+//add payment getway
+

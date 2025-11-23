@@ -1,7 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { MapPin, Clock, Calendar, ChevronRight, ChevronLeft, Star, Info, Phone, CheckCircle2, Users, Zap, Shield, Trophy, Target, Award, ArrowRight } from 'lucide-react'
+import {
+  MapPin,
+  Clock,
+  Calendar,
+  ChevronRight,
+  ChevronLeft,
+  Star,
+  Info,
+  Phone,
+  CheckCircle2,
+  Users,
+  Zap,
+  Shield,
+  Trophy,
+  Target,
+  Award,
+  ArrowRight,
+} from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import DatePicker from 'react-datepicker'
@@ -9,7 +26,13 @@ import 'react-datepicker/dist/react-datepicker.css'
 import AuthContext from '../../context/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import TimePicker from '../../components/ui/TimePicker'
 import ReviewsSection from '../../components/ui/ReviewsSection'
@@ -153,7 +176,7 @@ const BoxDetail = () => {
     setIsProcessingBooking(true)
 
     try {
-    await api.post('/booking/temporary-booking', {
+      await api.post('/booking/temporary-booking', {
         boxId: id,
         quarterId: selectedQuarter,
         date: formattedDate,
@@ -165,8 +188,8 @@ const BoxDetail = () => {
       toast.success('🎉 Temporary booking confirmed!')
       setAvailableTimes(false)
     } catch (error) {
-      console.error('Temp Booking error:', error)
-      toast.error(error.response?.data?.message || 'Booking failed')
+      console.error('Error booking :', error)
+      toast.error(error.response?.data?.message || 'Failed to create a booking')
     } finally {
       setIsProcessingBooking(false)
     }
@@ -258,7 +281,7 @@ const BoxDetail = () => {
       <div className="flex justify-center items-center h-screen">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           className="rounded-full h-16 w-16 border-4 border-primary border-t-transparent"
         />
       </div>
@@ -376,7 +399,11 @@ const BoxDetail = () => {
                 <span className="text-lg font-normal text-muted-foreground">/hour</span>
               </div>
             </div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full lg:w-auto">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full lg:w-auto"
+            >
               <Button
                 onClick={() => {
                   const bookingSection = document.getElementById('booking-section')
@@ -398,33 +425,18 @@ const BoxDetail = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8"
         >
-          <h2
-            style={{ fontFamily: 'Bebas Neue' }}
-            className="text-3xl font-bold text-primary mb-6"
-          >
+          <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl font-bold text-primary mb-6">
             Key Details
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <KeyDetailItem
-              icon={Trophy}
-              label="Price/Hour"
-              value={`₹${displayBox.hourlyRate}`}
-            />
-            <KeyDetailItem
-              icon={Clock}
-              label="Weekdays"
-              value={displayBox.openingHours.weekdays}
-            />
+            <KeyDetailItem icon={Trophy} label="Price/Hour" value={`₹${displayBox.hourlyRate}`} />
+            <KeyDetailItem icon={Clock} label="Weekdays" value={displayBox.openingHours.weekdays} />
             <KeyDetailItem
               icon={Calendar}
               label="Weekends"
               value={displayBox.openingHours.weekends}
             />
-            <KeyDetailItem
-              icon={Users}
-              label="Capacity"
-              value="10+ Players"
-            />
+            <KeyDetailItem icon={Users} label="Capacity" value="10+ Players" />
           </div>
         </motion.section>
 
@@ -489,13 +501,19 @@ const BoxDetail = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <div className="text-3xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+                      <div
+                        className="text-3xl font-bold text-primary"
+                        style={{ fontFamily: 'Bebas Neue' }}
+                      >
                         {item.duration} Hour{item.duration > 1 ? 's' : ''}
                       </div>
                       <div className="text-sm text-muted-foreground">Duration</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent" style={{ fontFamily: 'Bebas Neue' }}>
+                      <div
+                        className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent"
+                        style={{ fontFamily: 'Bebas Neue' }}
+                      >
                         ₹{item.price}
                       </div>
                       <div className="text-sm text-muted-foreground">Total</div>
@@ -506,7 +524,6 @@ const BoxDetail = () => {
             </div>
           </motion.section>
         )}
-
 
         {/* Facilities Section */}
         <motion.section
@@ -590,16 +607,36 @@ const BoxDetail = () => {
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full flex lg:grid lg:grid-cols-4 bg-muted/50 p-1 rounded-xl mb-6 gap-1 overflow-x-auto scrollbar-hide">
-              <TabsTrigger value="booking" className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">Book Slot</TabsTrigger>
+              <TabsTrigger
+                value="booking"
+                className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white"
+              >
+                Book Slot
+              </TabsTrigger>
               {isAuthenticated && (
                 <>
-                  <TabsTrigger value="booked" className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">Booked</TabsTrigger>
-                  <TabsTrigger value="blocked" className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">Blocked</TabsTrigger>
-                  <TabsTrigger value="reviews" className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white">Reviews</TabsTrigger>
+                  <TabsTrigger
+                    value="booked"
+                    className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white"
+                  >
+                    Booked
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="blocked"
+                    className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white"
+                  >
+                    Blocked
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="reviews"
+                    className="flex-shrink-0 min-w-[120px] sm:min-w-0 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white"
+                  >
+                    Reviews
+                  </TabsTrigger>
                 </>
               )}
             </TabsList>
-            
+
             <TabsContent value="booking" id="booking-section">
               <div className="bg-card/50 backdrop-blur-sm p-4 sm:p-6 md:p-8 rounded-2xl border border-primary/20">
                 <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-4 sm:mb-6">
@@ -611,17 +648,22 @@ const BoxDetail = () => {
                   <div className="flex items-start gap-2 sm:gap-3">
                     <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-destructive flex-shrink-0 mt-1" />
                     <div className="flex-1">
-                      <h3 className="font-bold text-destructive mb-1 sm:mb-2 text-sm sm:text-base">Book Offline</h3>
+                      <h3 className="font-bold text-destructive mb-1 sm:mb-2 text-sm sm:text-base">
+                        Book Offline
+                      </h3>
                       <p className="text-xs sm:text-sm mb-2 sm:mb-3">
-                        Online booking is currently <strong>unavailable (In development)</strong>. Please
-                        call the number below to reserve this box.
+                        Online booking is currently <strong>unavailable (In development)</strong>.
+                        Please call the number below to reserve this box.
                       </p>
                       <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                         <Button
                           asChild
                           className="bg-gradient-to-r from-destructive to-red-600 hover:from-destructive/90 hover:to-red-600/90 w-full sm:w-auto text-sm sm:text-base"
                         >
-                          <a href={`tel:${displayBox.mobileNumber}`} className="flex items-center gap-2 justify-center">
+                          <a
+                            href={`tel:${displayBox.mobileNumber}`}
+                            className="flex items-center gap-2 justify-center"
+                          >
                             <Phone size={16} className="sm:w-[18px] sm:h-[18px]" />
                             +91 - {displayBox.mobileNumber || 'N/A'}
                           </a>
@@ -635,7 +677,9 @@ const BoxDetail = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {/* Date Picker */}
                   <div>
-                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Date</label>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">
+                      Select Date
+                    </label>
                     <DatePicker
                       selected={selectedDate}
                       onChange={date => {
@@ -650,7 +694,9 @@ const BoxDetail = () => {
 
                   {/* Contact Number */}
                   <div>
-                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Contact Number</label>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">
+                      Contact Number
+                    </label>
                     <Input
                       type="tel"
                       value={contactNumber}
@@ -662,7 +708,9 @@ const BoxDetail = () => {
 
                   {/* Time Picker */}
                   <div>
-                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Time</label>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">
+                      Select Time
+                    </label>
                     <TimePicker value={selectedTime} onChange={handleTimeChange} />
                     <p className="text-xs text-muted-foreground mt-1 sm:mt-2">
                       Selected: {selectedTime || 'None'}
@@ -671,8 +719,13 @@ const BoxDetail = () => {
 
                   {/* Duration */}
                   <div>
-                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Duration</label>
-                    <Select value={duration.toString()} onValueChange={val => setDuration(Number(val))}>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">
+                      Duration
+                    </label>
+                    <Select
+                      value={duration.toString()}
+                      onValueChange={val => setDuration(Number(val))}
+                    >
                       <SelectTrigger className="border-2 border-primary/20 h-10 sm:h-11">
                         <SelectValue placeholder="Select duration" />
                       </SelectTrigger>
@@ -688,7 +741,9 @@ const BoxDetail = () => {
 
                   {/* Box Selection */}
                   <div className="sm:col-span-2 lg:col-span-1">
-                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Box</label>
+                    <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">
+                      Select Box
+                    </label>
                     <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
                       <SelectTrigger className="border-2 border-primary/20 h-10 sm:h-11">
                         <SelectValue placeholder="-- Select a Box --" />
@@ -706,7 +761,11 @@ const BoxDetail = () => {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 sm:mt-6">
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex-1">
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1"
+                  >
                     <Button
                       onClick={handleCheckAvailability}
                       variant="secondary"
@@ -743,7 +802,9 @@ const BoxDetail = () => {
                   <div className="flex items-start gap-2 sm:gap-3">
                     <Info size={18} className="sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-1" />
                     <div className="text-xs sm:text-sm">
-                      <p className="font-bold mb-1 sm:mb-2 text-primary text-sm sm:text-base">Booking Policy</p>
+                      <p className="font-bold mb-1 sm:mb-2 text-primary text-sm sm:text-base">
+                        Booking Policy
+                      </p>
                       <ul className="space-y-1 sm:space-y-2 text-muted-foreground">
                         <li className="flex items-start gap-2">
                           <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-0.5 flex-shrink-0" />
@@ -763,7 +824,7 @@ const BoxDetail = () => {
                 </div>
               </div>
             </TabsContent>
-            
+
             {isAuthenticated && (
               <>
                 <TabsContent value="booked">
