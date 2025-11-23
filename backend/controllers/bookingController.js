@@ -209,11 +209,11 @@ export const createTemporaryBooking = async (req, res) => {
       bookedBy: req.user._id,
     })
 
-    await booking.save()
-     sendMessage(
-      `91${contactNumber}`,
-      `Your Booking Is Confirm `
-    )
+    await booking.save();
+
+
+    await sendMessage(`91${contactNumber}`, ` Your Booking is Confirm`)
+
 
     res.status(200).json({
       message: 'Temporary booking created successfully',
