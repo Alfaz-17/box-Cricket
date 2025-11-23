@@ -3,7 +3,6 @@ import User from '../models/User.js'
 import { generateToken } from '../lib/generateToken.js'
 import dotenv from 'dotenv'
 import redis from '../lib/redis.js'
-import { connection } from '../lib/redisClient.js'
 import { sendMessage } from '../lib/whatsappBot.js'
 dotenv.config()
 
@@ -57,7 +56,7 @@ export const verifyOtp = async (req, res) => {
     const { contactNumber, otp } = req.body
 
     // Check OTP from Redis
-    const storedOtp = await connection.get(`otp:${contactNumber}`)
+    const storedOtp = await redis.get(`otp:${contactNumber}`)
     if (!storedOtp) {
       return res.status(400).json({ message: 'OTP expired or not found' })
     }
@@ -97,7 +96,7 @@ export const completeSignup = async (req, res) => {
     })
     await user.save()
     // ✅ Cleanup OTP from Redis after signup
-    await connection.del(`otp:${contactNumber}`)
+    await redis.del(`otp:${contactNumber}`)
     const token = generateToken(user._id)
     res.status(200).json({
       message: 'Signup successful',

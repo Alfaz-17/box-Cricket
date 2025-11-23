@@ -16,7 +16,6 @@ import { startBot } from './lib/whatsappBot.js'
 import http from 'http'
 import cors from 'cors'
 import { initSocket } from './lib/soket.js'
-import './workers/otpWorker.js'
 import { generalLimiter } from './middleware/rateLimiter.js'
 dotenv.config()
 const app = express()
@@ -47,13 +46,7 @@ app.use('/api/messages', messageRoutes)
 app.use('/api/notification', notificationRoutes)
 
 //start whatsApp chaybot
-startBot()
-  .then(() => {
-    console.log('WhatsApp bot started successfully')
-  })
-  .catch(err => {
-    console.error('Failed to start WhatsApp bot:', err)
-  })
+
 
 console.log(process.env.PORT)
 server.listen(PORT, () => {
@@ -61,3 +54,10 @@ server.listen(PORT, () => {
 
   connectMongoDB()
 })
+startBot()
+  .then(() => {
+    console.log('WhatsApp bot started successfully')
+  })
+  .catch(err => {
+    console.error('Failed to start WhatsApp bot:', err)
+  })
