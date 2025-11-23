@@ -24,7 +24,6 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       enum: ['pending', 'paid', 'failed'],
     },
-    paymentIntentId: { type: String, required: true },
     cashfreePaymentId: { type: String },
     contactNumber: { type: String },
     confirmedAt: { type: Date },

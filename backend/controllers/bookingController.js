@@ -168,10 +168,9 @@ export const getAvailableBoxes = async (req, res) => {
   }
 }
 
-export const createPaymentLink = async (req, res) => {
+export const createTemporaryBooking = async (req, res) => {
   try {
-    const { boxId, quarterId, date, startTime, duration, contactNumber, amountPaid } = req.body
-    const isOffline = req.body.isOffline === true
+    const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body
 
     const now = new Date()
     const start = parseDateTime(date, startTime)
@@ -192,157 +191,39 @@ export const createPaymentLink = async (req, res) => {
       return res.status(400).json({ message: 'Quarter not available' })
     }
 
-    const linkId = nanoid(20)
-    let paymentLink = null
+    // 🔹 Create temporary booking
+    const booking = new Booking({
+      user: req.user.name,
+      userId: req.user._id,
+      box: boxId,
+      quarter: quarterId,
+      quarterName: quarter.name,
+      date,
+      startTime,
+      endTime: end,
+      startDateTime: start,
+      endDateTime: end,
+      duration,
+      amountPaid: 0,
+      contactNumber,
+      paymentStatus: 'pending', // temp status
+      isOffline: true,
+      method: 'temporary',
+      bookedBy: req.user._id,
+    })
 
-    // Create pending booking even before payment
-    if (!isOffline) {
-      const pendingBooking = new Booking({
-        user: req.user.name,
-        userId: req.user._id,
-        box: boxId,
-        quarter: quarterId,
-        quarterName: quarter.name,
-        date,
-        startTime,
-        endTime: end,
-        duration,
-        amountPaid: 0, // pending
-        contactNumber,
-        startDateTime: start,
-        endDateTime: end,
-        paymentIntentId: linkId, // linkId maps to payment
-        cashfreePaymentId: null,
-        paymentStatus: 'pending',
-        bookedBy: req.user._id,
-        isOffline: false,
-        method: 'online',
-      })
-
-      await pendingBooking.save()
-
-      // Create Cashfree Payment Link
-      const resp = await axios.post(
-        'https://sandbox.cashfree.com/pg/links',
-        {
-          customer_details: {
-            customer_id: String(req.user._id),
-            customer_email: req.user.email || `guest_${linkId}@example.com`,
-            customer_phone: contactNumber,
-          },
-          link_notify: { send_email: true, send_sms: true },
-          link_id: linkId,
-          link_amount: amountPaid || 500,
-          link_currency: 'INR',
-          link_purpose: `Booking for ${box.name}, ${quarter.name}`,
-          link_meta: {
-            redirect_url: `https://book-my-box.vercel.app/my-bookings`, // optional
-          },
-          link_redirect_url: `https://book-my-box.vercel.app/my-bookings`, // fallback
-        },
-        {
-          headers: {
-            'x-client-id': process.env.CF_CLIENT_ID,
-            'x-client-secret': process.env.CF_CLIENT_SECRET,
-            'x-api-version': '2022-09-01',
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-
-      paymentLink = resp.data.link_url
-    }
+    await booking.save()
 
     res.status(200).json({
-      message: 'Payment link created',
-      paymentLink,
-      linkId,
+      message: 'Temporary booking created successfully',
+      bookingId: booking._id,
+      date,
+      from: startTime,
+      duration,
     })
   } catch (err) {
-    console.error('Cashfree Error:', err.response?.data || err.message)
-    res.status(500).json({ message: 'Payment link creation failed' })
-  }
-}
-
-export const cashfreeWebhook = async (req, res) => {
-  try {
-    console.log('🔔 Cashfree Webhook Received:', JSON.stringify(req.body, null, 2))
-
-    const data = req.body.data
-    const linkId = data.order?.order_tags?.link_id
-    const linkStatus = data.payment?.payment_status // Cashfree uses "SUCCESS"
-    const linkAmount = data.payment?.payment_amount
-    const cfPaymentId = data.payment?.cf_payment_id
-
-    if (linkStatus === 'SUCCESS') {
-      // Find pending booking by linkId
-      const booking = await Booking.findOne({
-        paymentIntentId: linkId,
-        paymentStatus: 'pending',
-      })
-      if (!booking) {
-        console.warn('❌ Pending booking not found for linkId:', linkId)
-        return res.status(404).send('Pending booking not found')
-      }
-
-      // Update booking to paid
-      booking.paymentStatus = 'paid'
-      booking.amountPaid = linkAmount
-      booking.cashfreePaymentId = cfPaymentId
-
-      await booking.save()
-
-      // Notify owner
-      const box = await CricketBox.findById(booking.box)
-      const quarter = box.quarters.find(q => q._id.toString() === booking.quarter.toString())
-
-      if (!quarter) {
-        console.warn(`⚠️ Quarter not found for booking ${booking._id}`)
-        // You can either skip notification or use a fallback name
-        return res.status(404).send('Quarter not found')
-      }
-
-      const formattedDate = new Date(booking.date).toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
-      const formattedStartTime = booking.startDateTime.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      })
-      const formattedEndTime = booking.endDateTime.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      })
-
-      const notification = await Notification.create({
-        fromUser: booking.userId,
-        toUser: box.owner._id,
-        type: 'booking_created',
-        message: `New booking for Quarter "${quarter.name}" on ${formattedDate} from ${formattedStartTime} to ${formattedEndTime} (${booking.duration} hrs).`,
-      })
-
-      const io = getIO()
-      const onlineUser = getOnlineUsers()
-      const socketId = onlineUser.get(String(box.owner._id))
-      if (socketId) {
-        io.to(socketId).emit('new_notification', {
-          toUser: booking.userId,
-          message: notification.message,
-          type: notification.type,
-        })
-      }
-
-      console.log(`✅ Booking ${booking._id} updated to paid`)
-    }
-
-    res.status(200).send('Webhook received')
-  } catch (err) {
-    console.error('Webhook Error:', err)
-    res.status(500).send('Webhook error')
+    console.error('Temporary Booking Error:', err.message)
+    res.status(500).json({ message: 'Temporary booking failed' })
   }
 }
 
@@ -355,39 +236,11 @@ export const getPaymentStatus = async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' })
     }
 
-    // If booking is already marked paid, no need to call Cashfree
-    if (booking.paymentStatus === 'paid') {
-      return res.status(200).json({
-        bookingId: booking._id,
-        paymentStatus: 'paid',
-        amountPaid: booking.amountPaid,
-      })
-    }
-
-    // Otherwise, query Cashfree using your paymentIntentId
-    const paymentIntentId = booking.paymentIntentId // this should be your orderId
-
-    const response = await axios.get(`https://sandbox.cashfree.com/pg/orders/${paymentIntentId}`, {
-      headers: {
-        'x-api-version': '2022-09-01',
-        'x-client-id': process.env.CASHFREE_APP_ID,
-        'x-client-secret': process.env.CASHFREE_SECRET_KEY,
-      },
-    })
-
-    const cashfreeStatus = response.data.order_status
-
-    // Optional: Update DB if status changed
-    if (cashfreeStatus === 'PAID' && booking.paymentStatus !== 'paid') {
-      booking.paymentStatus = 'paid'
-      await booking.save()
-    }
-
     return res.status(200).json({
       bookingId: booking._id,
-      paymentStatus: booking.paymentStatus,
-      cashfreeStatus,
-      amountPaid: booking.amountPaid,
+      paymentStatus: booking.paymentStatus, // 'pending' | 'paid'
+      amountPaid: booking.amountPaid || 0,
+      method: booking.method,
     })
   } catch (err) {
     console.error('❌ Error fetching payment status:', err.message)

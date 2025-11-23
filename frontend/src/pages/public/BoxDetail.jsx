@@ -153,7 +153,7 @@ const BoxDetail = () => {
     setIsProcessingBooking(true)
 
     try {
-      const res = await api.post('/booking/temporary-booking', {
+    await api.post('/booking/temporary-booking', {
         boxId: id,
         quarterId: selectedQuarter,
         date: formattedDate,
@@ -162,10 +162,6 @@ const BoxDetail = () => {
         duration,
         contactNumber,
       })
-      if (res.data.paymentLink) {
-        window.location.href = res.data.paymentLink // Cashfree checkout page
-      }
-
       toast.success('🎉 Temporary booking confirmed!')
       setAvailableTimes(false)
     } catch (error) {
