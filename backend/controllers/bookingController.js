@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import { parseDateTime } from '../lib/parseDateTime.js'
 import BlockedSlot from '../models/BlockedSlot.js'
-
+import { sendMessage } from '../lib/whatsappBot.js'
 
 export const checkSlotAvailability = async (req, res) => {
   try {
@@ -77,6 +77,11 @@ export const checkSlotAvailability = async (req, res) => {
     if (overlappingBookings.length > 0) {
       return res.json({ available: false, error: 'Slot not available' })
     }
+
+    await sendMessage(
+      `91${contactNumber}`,
+      `Your Booking Is Confirm at ${boxName} from ${startTime} to ${endDateTime} Date:${date}`
+    )
 
     // ✅ Slot is available
     return res.json({ available: true, message: 'Slot is available' })

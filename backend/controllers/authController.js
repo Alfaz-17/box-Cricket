@@ -31,7 +31,7 @@ export const sendOtp = async (req, res) => {
     //set otp in redis
     await redis.set(`otp:${contactNumber}`, otp, 'EX', ttl)
 
-    sendMessage(`91${contactNumber}`, `Your OTP is ${otp}. It is valid for 5 minutes.`)
+   await sendMessage(`91${contactNumber}`, `Your OTP is ${otp}. It is valid for 5 minutes.`)
 
     // await redis.publish(
     //   "whatsapp:send",
