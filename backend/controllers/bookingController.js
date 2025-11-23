@@ -78,10 +78,7 @@ export const checkSlotAvailability = async (req, res) => {
       return res.json({ available: false, error: 'Slot not available' })
     }
 
-    await sendMessage(
-      `91${contactNumber}`,
-      `Your Booking Is Confirm at ${boxName} from ${startTime} to ${endDateTime} Date:${date}`
-    )
+  
 
     // ✅ Slot is available
     return res.json({ available: true, message: 'Slot is available' })
@@ -213,6 +210,10 @@ export const createTemporaryBooking = async (req, res) => {
     })
 
     await booking.save()
+     sendMessage(
+      `91${contactNumber}`,
+      `Your Booking Is Confirm `
+    )
 
     res.status(200).json({
       message: 'Temporary booking created successfully',
