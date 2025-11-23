@@ -22,7 +22,7 @@ const app = express()
 
 //create socket server
 const server = http.createServer(app)
-initSocket(server)
+
 app.use(generalLimiter)
 app.use(
   cors({
@@ -53,7 +53,10 @@ server.listen(PORT, () => {
   console.log('server is runnning on port', PORT)
 
   connectMongoDB()
-})
+});
+
+initSocket(server)
+
 startBot()
   .then(() => {
     console.log('WhatsApp bot started successfully')
