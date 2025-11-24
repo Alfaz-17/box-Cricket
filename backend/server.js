@@ -57,6 +57,8 @@ server.listen(PORT, () => {
 
 initSocket(server)
 
+app.get("/", (req, res) => res.send("OK"));
+
 startBot()
   .then(() => {
     console.log('WhatsApp bot started successfully')

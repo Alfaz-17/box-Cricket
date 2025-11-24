@@ -131,6 +131,10 @@ export default function Footer() {
                 <Phone size={16} className="mr-2 text-primary group-hover:scale-110 transition-transform" />
                 <a href="tel:+916353783332">+91 63537 83332</a>
               </li>
+               <li className="flex items-center text-muted-foreground hover:text-primary transition-colors group">
+                <Phone size={16} className="mr-2 text-primary group-hover:scale-110 transition-transform" />
+                <a href="#">Bilakhiya Alfaj Abbasbhai</a>
+              </li>
               <li className="flex items-start text-muted-foreground group">
                 <MapPin size={16} className="mr-2 mt-0.5 text-primary group-hover:scale-110 transition-transform" />
                 <span>India</span>
