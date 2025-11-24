@@ -61,15 +61,12 @@ const BoxDetail = () => {
   const navigate = useNavigate();
 
 
+useEffect(() => {
+  socket.emit("join-box", `box-${id}`); // 👈 room name match
+  return () => socket.emit("leave-box", `box-${id}`);
+  
+}, [id]);
 
-useEffect(()=>{
-  socket.emit("join-box",id)
-
-  return ()=>{
-    socket.emit("leave-box",id);
-  }
-
-},[id]);
 
 
 
@@ -93,7 +90,7 @@ useEffect(()=>{
   }, [id]);
 
 
-  
+
 
   const fetchReviews = async () => {
     setLoading(true)

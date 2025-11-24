@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import socket from '../../utils/soket'
+import toast from 'react-hot-toast'
 export default function BookedSlots({ boxId }) {
   const [bookedSlots, setBookedSlots] = useState([])
   const [filteredSlots, setFilteredSlots] = useState([])
@@ -14,10 +15,12 @@ export default function BookedSlots({ boxId }) {
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedQuarter, setSelectedQuarter] = useState('')
 
-  //fetch Booked solts api
-  useEffect(() => {
-    async function fetchSlots() {
-      try {
+
+
+
+
+   const fetchSlots =async () =>{
+        try {
         const res = await api.get(`/slots/booked-blocked-slots/${boxId}`)
         setBookedSlots(res.data.bookedSlots || [])
         setFilteredSlots(res.data.bookedSlots || [])
@@ -26,20 +29,24 @@ export default function BookedSlots({ boxId }) {
       } finally {
         setLoading(false)
       }
-    }
-    fetchSlots()
+   }
+  //fetch Booked solts api
+  useEffect(() => {
+  
+    fetchSlots();
   }, [boxId]);
 
 
 
   useEffect(() => {
   socket.on("new-booking", data => {
-    console.log("📢 new-booking booking update received:", data)
+    console.log("📢 new-booking booking update received:", data);
+    toast.success("New Booking created");
     fetchSlots() ; // refresh booked slots list
   })
 
   return () => socket.off("new-booking")
-}, [])
+}, []);
 
 
   // Extract unique quarters from booked slots

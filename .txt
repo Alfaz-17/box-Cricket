@@ -1,6 +1,9 @@
 // server reponse problem -redis,wp bot,websocket connection
 
-//apply rate limiting in apis
+done  //apply rate limiting in apis:
+
+
+
 
 
 //check booking overlapping condiations 

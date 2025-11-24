@@ -113,6 +113,49 @@ export const createTemporaryBooking = async (req, res) => {
       return res.status(400).json({ message: 'Quarter not available' })
     }
 
+
+
+    //prvent overlapping during booking 
+ //prvent overlapping during booking 
+const overlappingBookings = await Booking.find({
+  box: boxId,
+  quarter: quarterId,
+  startDateTime: { $lt: end },
+  endDateTime: { $gt: start },
+  status: 'confirmed',
+})
+if (overlappingBookings.length > 0) {
+  return res.json({ available: false, error: 'Slot not available' })
+}
+
+
+
+// 🚫 Check if the time slot is blocked by admin (boxId + quarterId)
+    const blockedSlots = await BlockedSlot.find({ boxId, quarterId })
+        const isBlocked = blockedSlots.some(slot => {
+      const blockStart = parseDateTime(slot.date, slot.startTime)
+      const blockEnd = parseDateTime(slot.date, slot.endTime)
+
+      // 🕛 Handle overnight blocking (e.g., 11PM to 2AM)
+      if (blockEnd <= blockStart) {
+        blockEnd.setDate(blockEnd.getDate() + 1)
+      }
+
+      // 🔁 Check overlap between blocked slot and requested slot
+      return blockStart < end && blockEnd > start
+    })
+
+    if (isBlocked) {
+      return res.json({
+        available: false,
+        error: 'Slot is blocked by admin for this quarter',
+      })
+    }
+
+
+
+
+
     // 🔹 Create temporary booking
     const booking = new Booking({
       user: req.user.name,
