@@ -14,7 +14,6 @@ let isConnected = false
 export async function startBot() {
   try {
     const { version } = await baileys.fetchLatestBaileysVersion()
-    console.log(`✅ Using Baileys version: ${version.join('.')}`)
 
     // Connect to MongoDB
     const client = new MongoClient(process.env.MONGO_URI)
@@ -31,7 +30,7 @@ export async function startBot() {
     sock = baileys.makeWASocket({
       version,
       auth: state,
-      logger: P({ level: 'error' }),
+      logger: P({ level: 'silent' }),
     })
 
     sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
@@ -60,7 +59,10 @@ export async function startBot() {
       }
     })
 
-    sock.ev.on('creds.update', saveCreds)
+    sock.ev.on('creds.update', async () => {
+      await saveCreds() // save to MongoDB silently
+      // No console.log here -> prevents credential print
+    })
   } catch (err) {
     console.error('❌ Failed to start WhatsApp bot:', err)
   }
