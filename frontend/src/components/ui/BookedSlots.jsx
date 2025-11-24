@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
-
+import socket from '../../utils/soket'
 export default function BookedSlots({ boxId }) {
   const [bookedSlots, setBookedSlots] = useState([])
   const [filteredSlots, setFilteredSlots] = useState([])
@@ -28,7 +28,19 @@ export default function BookedSlots({ boxId }) {
       }
     }
     fetchSlots()
-  }, [boxId])
+  }, [boxId]);
+
+
+
+  useEffect(() => {
+  socket.on("new-booking", data => {
+    console.log("📢 new-booking booking update received:", data)
+    fetchSlots() ; // refresh booked slots list
+  })
+
+  return () => socket.off("new-booking")
+}, [])
+
 
   // Extract unique quarters from booked slots
   const uniqueQuarters = [...new Set(bookedSlots.map(q => q.quarterName))]

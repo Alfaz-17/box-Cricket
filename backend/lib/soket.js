@@ -23,7 +23,18 @@ export const initSocket = server => {
       onlineUsers.set(userId, socket.id)
       console.log(`✅ User ${userId} registered with socket ID ${socket.id}`)
     })
+  socket.on("join-box", boxId => {
+    socket.join(boxId)
+    console.log(`📌 User joined room: ${boxId}`)
+  })
 
+  // 🔹 Leave room (optional when switching pages)
+  socket.on("leave-box", boxId => {
+    socket.leave(boxId)
+    console.log(`📤 User left room: ${boxId}`)
+  });
+
+  
     // Handle disconnect
     socket.on('disconnect', () => {
       console.log('❌ Disconnected:', socket.id)
@@ -34,8 +45,15 @@ export const initSocket = server => {
         }
       }
     })
+
+
+
+
+
+
+    
   })
 }
 
-export const getIO = () => io
+export const getIO = () => io ;
 export const getOnlineUsers = () => onlineUsers

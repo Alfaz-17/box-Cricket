@@ -6,6 +6,7 @@ dotenv.config()
 import { parseDateTime } from '../lib/parseDateTime.js'
 import BlockedSlot from '../models/BlockedSlot.js'
 import { sendMessage } from '../lib/whatsappBot.js'
+import { getIO } from '../lib/soket.js'
 
 export const checkSlotAvailability = async (req, res) => {
   try {
@@ -38,9 +39,9 @@ export const checkSlotAvailability = async (req, res) => {
     }
 
     // 🔒 Prevent owners from booking
-    if (req.user.role === 'owner') {
-      return res.status(400).json({ message: "Owner can't book a box" })
-    }
+    // if (req.user.role === 'owner') {
+    //   return res.status(400).json({ message: "Owner can't book a box" })
+    // }
 
     // 🚫 Check if the time slot is blocked by admin (boxId + quarterId)
     const blockedSlots = await BlockedSlot.find({ boxId, quarterId })
@@ -86,7 +87,91 @@ export const checkSlotAvailability = async (req, res) => {
     console.error('❌ Error checking slot:', err.message)
     res.status(500).json({ message: err.message || 'Server error' })
   }
+};
+
+
+export const createTemporaryBooking = async (req, res) => {
+  try {
+    const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body
+
+    const now = new Date()
+    const start = parseDateTime(date, startTime)
+    const end = new Date(start.getTime() + duration * 60 * 60 * 1000)
+
+    if (!/^\d{10}$/.test(contactNumber)) {
+      return res.status(400).json({ message: 'Invalid contact number' })
+    }
+    if (start < now) {
+      return res.status(400).json({ message: 'Start time is in the past' })
+    }
+
+    const box = await CricketBox.findById(boxId)
+    if (!box) return res.status(404).json({ message: 'Box not found' })
+
+    const quarter = box.quarters.find(q => q._id.toString() === quarterId)
+    if (!quarter) {
+      return res.status(400).json({ message: 'Quarter not available' })
+    }
+
+    // 🔹 Create temporary booking
+    const booking = new Booking({
+      user: req.user.name,
+      userId: req.user._id,
+      box: boxId,
+      quarter: quarterId,
+      quarterName: quarter.name,
+      date,
+      startTime,
+      endTime: end,
+      startDateTime: start,
+      endDateTime: end,
+      duration,
+      amountPaid: 0,
+      contactNumber,
+      paymentStatus: 'pending', // temp status
+      isOffline: true,
+      method: 'temporary',
+      bookedBy: req.user._id,
+    })
+
+    await booking.save();
+
+
+
+
+const io =getIO();
+io.to(`box-${boxId}`).emit('new-booking',{
+  bookingId:booking._id,
+  boxId,
+  quarterId,
+  date,
+  startTime,
+  duration,
+  bookedBy:req.user._id,
+  bookedByName:req.user.name
+  
+});
+
+
+    await sendMessage(`91${contactNumber}`, ` Your Booking is Confirm`)
+
+
+    res.status(200).json({
+      message: 'Temporary booking created successfully',
+      bookingId: booking._id,
+      date,
+      from: startTime,
+      duration,
+    })
+  } catch (err) {
+    console.error('Temporary Booking Error:', err.message)
+    res.status(500).json({ message: 'Temporary booking failed' })
+  }
 }
+
+
+
+
 
 export const getAvailableBoxes = async (req, res) => {
   try {
@@ -165,68 +250,7 @@ export const getAvailableBoxes = async (req, res) => {
   }
 }
 
-export const createTemporaryBooking = async (req, res) => {
-  try {
-    const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body
 
-    const now = new Date()
-    const start = parseDateTime(date, startTime)
-    const end = new Date(start.getTime() + duration * 60 * 60 * 1000)
-
-    if (!/^\d{10}$/.test(contactNumber)) {
-      return res.status(400).json({ message: 'Invalid contact number' })
-    }
-    if (start < now) {
-      return res.status(400).json({ message: 'Start time is in the past' })
-    }
-
-    const box = await CricketBox.findById(boxId)
-    if (!box) return res.status(404).json({ message: 'Box not found' })
-
-    const quarter = box.quarters.find(q => q._id.toString() === quarterId)
-    if (!quarter) {
-      return res.status(400).json({ message: 'Quarter not available' })
-    }
-
-    // 🔹 Create temporary booking
-    const booking = new Booking({
-      user: req.user.name,
-      userId: req.user._id,
-      box: boxId,
-      quarter: quarterId,
-      quarterName: quarter.name,
-      date,
-      startTime,
-      endTime: end,
-      startDateTime: start,
-      endDateTime: end,
-      duration,
-      amountPaid: 0,
-      contactNumber,
-      paymentStatus: 'pending', // temp status
-      isOffline: true,
-      method: 'temporary',
-      bookedBy: req.user._id,
-    })
-
-    await booking.save();
-
-
-    await sendMessage(`91${contactNumber}`, ` Your Booking is Confirm`)
-
-
-    res.status(200).json({
-      message: 'Temporary booking created successfully',
-      bookingId: booking._id,
-      date,
-      from: startTime,
-      duration,
-    })
-  } catch (err) {
-    console.error('Temporary Booking Error:', err.message)
-    res.status(500).json({ message: 'Temporary booking failed' })
-  }
-}
 
 export const getPaymentStatus = async (req, res) => {
   try {

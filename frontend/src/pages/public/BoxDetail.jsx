@@ -40,7 +40,7 @@ import api from '../../utils/api.js'
 import BookedSlots from '../../components/ui/BookedSlots.jsx'
 import BlockedSlots from '../../components/ui/BlockedSlots.jsx'
 import BoxMap from '../../components/ui/BoxMap.jsx'
-
+import socket from "../../utils/soket.js"
 const BoxDetail = () => {
   const { id } = useParams()
   const [box, setBox] = useState('')
@@ -58,7 +58,23 @@ const BoxDetail = () => {
   const [totalReviews, setTotalReviews] = useState('')
 
   const { isAuthenticated } = useContext(AuthContext)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+
+
+useEffect(()=>{
+  socket.emit("join-box",id)
+
+  return ()=>{
+    socket.emit("leave-box",id);
+  }
+
+},[id]);
+
+
+
+
+
 
   useEffect(() => {
     const fetchBoxDetails = async () => {
@@ -74,7 +90,10 @@ const BoxDetail = () => {
     }
 
     fetchBoxDetails()
-  }, [id])
+  }, [id]);
+
+
+  
 
   const fetchReviews = async () => {
     setLoading(true)
@@ -266,6 +285,8 @@ const BoxDetail = () => {
       prevIndex === 0 ? displayBox.images.length - 1 : prevIndex - 1
     )
   }, [displayBox.images.length])
+
+
 
   // Auto-slide every 4 seconds
   useEffect(() => {
