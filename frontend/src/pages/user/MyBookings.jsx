@@ -6,7 +6,7 @@ import { Card, CardContent } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
 import api from '../../utils/api'
 import { jsPDF } from 'jspdf'
-import { formatDate } from '../../utils/formatDate'
+import { formatDate, formatTime } from '../../utils/formatDate'
 import { motion } from 'framer-motion'
 
 const MyBookings = () => {
@@ -267,7 +267,7 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
                 <div className="min-w-0">
                     <p className="text-xs text-muted-foreground font-semibold uppercase">Time</p>
                     <p className="font-medium text-sm sm:text-base truncate">
-                        {booking.startTime} - {booking.endTime}
+                        {booking.startTime} - {formatTime(booking.endTime)}
                     </p>
                 </div>
               </div>

@@ -16,6 +16,7 @@ import api from '../../utils/api'
 import toast from 'react-hot-toast'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { formatTime } from '../../utils/formatDate'
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false)
@@ -187,7 +188,7 @@ const Dashboard = () => {
                         <td className="px-6 py-4">
                           <div className="font-medium">{booking.date}</div>
                           <div className="text-xs text-muted-foreground">
-                            {booking.startTime} - {booking.endTime}
+                            {booking.startTime} - {formatTime(booking.endTime)}
                           </div>
                         </td>
                         <td className="px-6 py-4 font-bold text-primary">₹{booking.amountPaid}</td>
