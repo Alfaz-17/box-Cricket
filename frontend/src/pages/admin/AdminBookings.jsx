@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { Calendar, Clock, MapPin, User, Search, Phone, Filter, ChevronDown } from 'lucide-react'
 import api from '../../utils/api'
-import { formatDate } from '../../utils/formatDate'
+import { formatDate, formatTime } from '../../utils/formatDate'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -178,7 +178,7 @@ const AdminBookings = () => {
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                           <Clock size={14} />
-                          {booking.startTime} - {booking.endTime}
+                          {booking.startTime} - {formatTime(booking.endTime)}
                         </div>
                       </td>
                       <td className="px-6 py-4">
