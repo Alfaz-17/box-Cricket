@@ -23,9 +23,7 @@ C:\Users\alfaz\OneDrive\Desktop\cricket box\frontend\src\pages\admin\BoxManageme
 C:\Users\alfaz\OneDrive\Desktop\cricket box\frontend\src\pages\admin\EditBox.jsx
   39:6  warning  React Hook useEffect has a missing dependency: 'fetchBoxDetails'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
 
-C:\Users\alfaz\OneDrive\Desktop\cricket box\frontend\src\pages\admin\OfflineBookingForm.jsx
-  26:6  warning  React Hook useEffect has a missing dependency: 'fetchBoxes'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-  45:6  warning  React Hook useEffect has a missing dependency: 'boxes'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+
 
 C:\Users\alfaz\OneDrive\Desktop\cricket box\frontend\src\pages\public\Home.jsx
   67:7  error  'setBoxes' is not defined  no-undef

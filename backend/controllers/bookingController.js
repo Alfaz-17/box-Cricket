@@ -7,156 +7,72 @@ import { parseDateTime } from '../lib/parseDateTime.js'
 import BlockedSlot from '../models/BlockedSlot.js'
 import { sendMessage } from '../lib/whatsappBot.js'
 import { getIO } from '../lib/soket.js'
+import { validateSlot } from '../lib/slotValidator.js'
 
 export const checkSlotAvailability = async (req, res) => {
   try {
-    const { boxId, quarterId, date, startTime, duration } = req.body
+    const { boxId, quarterId, date, startTime, duration } = req.body;
 
-    // Check for missing required fields
     if (!boxId || !quarterId || !date || !startTime || !duration) {
-      return res.status(400).json({ message: 'Missing required fields' })
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const now = new Date()
-    const start = parseDateTime(date, startTime)
-    const end = new Date(start.getTime() + duration * 60 * 60 * 1000) // Calculate end time by adding duration (in hours)
-
-    //  Disallow bookings in the past
+    const now = new Date();
+    const start = parseDateTime(date, startTime);
     if (start < now) {
-      return res.status(400).json({ message: 'Start time cannot be in the past' })
+      return res.status(400).json({ message: "Start time cannot be in the past" });
     }
 
-    //  Find the Cricket Box by ID
-    const box = await CricketBox.findById(boxId)
-    if (!box) {
-      return res.status(404).json({ message: 'Box not found' })
-    }
+    const box = await CricketBox.findById(boxId);
+    if (!box) return res.status(404).json({ message: "Box not found" });
 
-    //  Find the selected quarter inside the box
-    const quarter = box.quarters.find(q => q._id.toString() === quarterId)
-    if (!quarter) {
-      return res.status(400).json({ message: 'Invalid quarter selected' })
-    }
+    const quarter = box.quarters.find(q => q._id.toString() === quarterId);
+    if (!quarter) return res.status(400).json({ message: "Invalid quarter selected" });
 
-    // 🔒 Prevent owners from booking
-    // if (req.user.role === 'owner') {
-    //   return res.status(400).json({ message: "Owner can't book a box" })
-    // }
+    // ⏱ Shared Slot Validation
+    const { available, error } = await validateSlot({ boxId, quarterId, date, startTime, duration });
 
-    // 🚫 Check if the time slot is blocked by admin (boxId + quarterId)
-    const blockedSlots = await BlockedSlot.find({ boxId, quarterId })
+    if (!available) return res.json({ available: false, error });
 
-    const isBlocked = blockedSlots.some(slot => {
-      const blockStart = parseDateTime(slot.date, slot.startTime)
-      const blockEnd = parseDateTime(slot.date, slot.endTime)
+    return res.json({ available: true, message: "Slot is available" });
 
-      // 🕛 Handle overnight blocking (e.g., 11PM to 2AM)
-      if (blockEnd <= blockStart) {
-        blockEnd.setDate(blockEnd.getDate() + 1)
-      }
-
-      // 🔁 Check overlap between blocked slot and requested slot
-      return blockStart < end && blockEnd > start
-    })
-
-    if (isBlocked) {
-      return res.json({
-        available: false,
-        error: 'Slot is blocked by admin for this quarter',
-      })
-    }
-
-    // 🔁 Check for overlapping bookings for this quarter
-    const overlappingBookings = await Booking.find({
-      box: boxId,
-      quarter: quarterId,
-      startDateTime: { $lt: end },
-      endDateTime: { $gt: start },
-      status: 'confirmed', // Only check confirmed bookings
-    })
-
-    if (overlappingBookings.length > 0) {
-      return res.json({ available: false, error: 'Slot not available' })
-    }
-
-  
-
-    // ✅ Slot is available
-    return res.json({ available: true, message: 'Slot is available' })
   } catch (err) {
-    console.error('❌ Error checking slot:', err.message)
-    res.status(500).json({ message: err.message || 'Server error' })
+    console.error("❌ Slot Availability Error:", err.message);
+    res.status(500).json({ message: err.message || "Server error" });
   }
 };
 
 
+
 export const createTemporaryBooking = async (req, res) => {
   try {
-    const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body
+    const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body;
+    const now = new Date();
+    const start = parseDateTime(date, startTime);
 
-    const now = new Date()
-    const start = parseDateTime(date, startTime)
-    const end = new Date(start.getTime() + duration * 60 * 60 * 1000)
+    if (start < now) {
+      return res.status(400).json({ message: "Start time cannot be in the past" });
+    }
 
     if (!/^\d{10}$/.test(contactNumber)) {
-      return res.status(400).json({ message: 'Invalid contact number' })
-    }
-    if (start < now) {
-      return res.status(400).json({ message: 'Start time is in the past' })
+      return res.status(400).json({ message: "Invalid contact number. It must be exactly 10 digits." });
     }
 
-    const box = await CricketBox.findById(boxId)
-    if (!box) return res.status(404).json({ message: 'Box not found' })
+    const box = await CricketBox.findById(boxId);
+    if (!box) return res.status(404).json({ message: "Box not found" });
 
-    const quarter = box.quarters.find(q => q._id.toString() === quarterId)
-    if (!quarter) {
-      return res.status(400).json({ message: 'Quarter not available' })
+    const quarter = box.quarters.find(q => q._id.toString() === quarterId);
+    if (!quarter) return res.status(400).json({ message: "Invalid quarter selected" });
+
+    // ⏱ Shared Slot Validation
+    const { available, error, start: validatedStart, end: validatedEnd } =
+      await validateSlot({ boxId, quarterId, date, startTime, duration });
+
+    if (!available) {
+      return res.status(400).json({ message: error });
     }
 
-
-
-    //prvent overlapping during booking 
- //prvent overlapping during booking 
-const overlappingBookings = await Booking.find({
-  box: boxId,
-  quarter: quarterId,
-  startDateTime: { $lt: end },
-  endDateTime: { $gt: start },
-  status: 'confirmed',
-})
-if (overlappingBookings.length > 0) {
-  return res.json({ available: false, error: 'Slot not available' })
-}
-
-
-
-// 🚫 Check if the time slot is blocked by admin (boxId + quarterId)
-    const blockedSlots = await BlockedSlot.find({ boxId, quarterId })
-        const isBlocked = blockedSlots.some(slot => {
-      const blockStart = parseDateTime(slot.date, slot.startTime)
-      const blockEnd = parseDateTime(slot.date, slot.endTime)
-
-      // 🕛 Handle overnight blocking (e.g., 11PM to 2AM)
-      if (blockEnd <= blockStart) {
-        blockEnd.setDate(blockEnd.getDate() + 1)
-      }
-
-      // 🔁 Check overlap between blocked slot and requested slot
-      return blockStart < end && blockEnd > start
-    })
-
-    if (isBlocked) {
-      return res.json({
-        available: false,
-        error: 'Slot is blocked by admin for this quarter',
-      })
-    }
-
-
-
-
-
-    // 🔹 Create temporary booking
+    // ✔ Create booking
     const booking = new Booking({
       user: req.user.name,
       userId: req.user._id,
@@ -165,52 +81,49 @@ if (overlappingBookings.length > 0) {
       quarterName: quarter.name,
       date,
       startTime,
-      endTime: end,
-      startDateTime: start,
-      endDateTime: end,
+      endTime: validatedEnd,
+      startDateTime: validatedStart,
+      endDateTime: validatedEnd,
       duration,
       amountPaid: 0,
       contactNumber,
-      paymentStatus: 'pending', // temp status
+      paymentStatus: "pending",
       isOffline: true,
-      method: 'temporary',
+      method: "temporary",
       bookedBy: req.user._id,
-    })
+    });
 
     await booking.save();
 
+    const io = getIO();
+    io.to(`box-${boxId}`).emit("new-booking", {
+      bookingId: booking._id,
+      boxId,
+      quarterId,
+      date,
+      startTime,
+      duration,
+      bookedBy: req.user._id,
+      bookedByName: req.user.name,
+    });
 
-
-
-const io =getIO();
-io.to(`box-${boxId}`).emit('new-booking',{
-  bookingId:booking._id,
-  boxId,
-  quarterId,
-  date,
-  startTime,
-  duration,
-  bookedBy:req.user._id,
-  bookedByName:req.user.name
-  
-});
-
-
-    await sendMessage(`91${contactNumber}`, ` Your Booking is Confirm`)
-
+    await sendMessage(`91${contactNumber}`, ` Your Booking is Confirm`);
 
     res.status(200).json({
-      message: 'Temporary booking created successfully',
+      message: "Temporary booking created successfully",
       bookingId: booking._id,
       date,
       from: startTime,
       duration,
-    })
+    });
+
   } catch (err) {
-    console.error('Temporary Booking Error:', err.message)
-    res.status(500).json({ message: 'Temporary booking failed' })
+    console.error("Temporary Booking Error:", err.message);
+    res.status(500).json({ message: "Temporary booking failed" });
   }
-}
+};
+
+
 
 
 

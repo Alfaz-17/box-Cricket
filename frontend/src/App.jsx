@@ -44,7 +44,6 @@ import '@fontsource/poppins'
 import '@fontsource/roboto'
 import Notifications from './pages/user/Notifications'
 import useNotificationStore from './store/useNotificationStore'
-import OfflineBookingForm from './pages/admin/OfflineBookingForm'
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext)
@@ -328,14 +327,8 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route
-                    path="/admin/offline-booking"
-                    element={
-                      <ProtectedRoute role="owner">
-                        <OfflineBookingForm />
-                      </ProtectedRoute>
-                    }
-                  />
+                
+                 
                 </Routes>
               )}
             </main>

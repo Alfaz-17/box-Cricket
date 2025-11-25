@@ -5,83 +5,95 @@ import Booking from '../models/Booking.js'
 
 export const blockTimeSlot = async (req, res) => {
   try {
-    const { date, startTime, endTime, reason, quarterName } = req.body
+    const { date, startTime, endTime, reason, quarterName } = req.body;
 
-    const box = await CricketBox.findOne({ owner: req.user._id })
+    // 1️⃣ Find Owner Box
+    const box = await CricketBox.findOne({ owner: req.user._id });
     if (!box) {
-      return res.status(404).json({ message: 'No box found. Please create a box.' })
+      return res.status(404).json({ message: "No box found. Please create a box." });
     }
 
-    // ✅ Check if quarter exists in box
-    // First, get the quarterId
-    const quarter = box.quarters.find(q => q.name === quarterName)
+    // 2️⃣ Validate Quarter
+    const quarter = box.quarters.find(q => q.name === quarterName);
     if (!quarter) {
-      return res.status(404).json({ message: `Quarter "${quarterName}" not found in this box.` })
+      return res.status(404).json({ message: `Quarter "${quarterName}" not found in this box.` });
     }
-    const quarterId = quarter._id
+    const quarterId = quarter._id;
 
-    // Convert date+time to full Date objects for comparison
-    const startDateTime = parseDateTime(date, startTime)
-    const endDateTime = parseDateTime(date, endTime)
-    const now = new Date()
+    // 3️⃣ Convert times to Date objects
+    const startDateTime = parseDateTime(date, startTime);
+    let endDateTime = parseDateTime(date, endTime);
 
-    // check start time not less than current time
+    // 🔥 Handle overnight slot (end next day)
+    if (endDateTime <= startDateTime) {
+      endDateTime.setDate(endDateTime.getDate() + 1);
+    }
+
+    const now = new Date();
+
+    // 4️⃣ Cannot block past times
     if (startDateTime < now) {
-      return res.status(400).json({ message: 'Start time cannot be in the past' })
+      return res.status(400).json({ message: "Start time cannot be in the past." });
     }
 
-    // Check for overlapping confirmed bookings
+    // 5️⃣ Check overlap with confirmed bookings
     const overlappingBooking = await Booking.findOne({
       box: box._id,
       quarter: quarterId,
-      status: 'confirmed',
+      status: "confirmed",
       startDateTime: { $lt: endDateTime },
-      endDateTime: { $gt: startDateTime },
-    })
+      endDateTime: { $gt: startDateTime }
+    });
 
     if (overlappingBooking) {
       return res.status(409).json({
-        message: `This time slot in "${quarterName}" has a confirmed booking and cannot be blocked.`,
-      })
+        message: `Cannot block — "${quarterName}" has a confirmed booking in this time range.`
+      });
     }
 
-    // 🔒 Check for overlapping blocked slots
-    const overlappingBlocked = await BlockedSlot.findOne({
+    // 6️⃣ Check overlap with existing blocked slots
+    const existingBlockedSlots = await BlockedSlot.find({ boxId: box._id, quarterId });
+
+    const isOverlappingBlock = existingBlockedSlots.some(slot => {
+      const bStart = parseDateTime(slot.date, slot.startTime);
+      let bEnd = parseDateTime(slot.date, slot.endTime);
+
+      // Handle overnight blocked slot
+      if (bEnd <= bStart) {
+        bEnd.setDate(bEnd.getDate() + 1);
+      }
+
+      return bStart < endDateTime && bEnd > startDateTime;
+    });
+
+    if (isOverlappingBlock) {
+      return res.status(409).json({
+        message: `This time slot in "${quarterName}" is already blocked.`
+      });
+    }
+
+    // 7️⃣ Save Blocked Slot
+    await BlockedSlot.create({
       boxId: box._id,
       quarterId,
-      date,
-      $or: [
-        {
-          startTime: { $lt: endTime },
-          endTime: { $gt: startTime },
-        },
-      ],
-    })
-
-    if (overlappingBlocked) {
-      return res.status(409).json({
-        message: `This time slot in "${quarterName}" is already blocked.`,
-      })
-    }
-
-    const newBlockedSlot = new BlockedSlot({
-      boxId: box._id,
-      quarterName, // <== save quarter name
+      quarterName,
       date,
       startTime,
       endTime,
-      reason,
-      quarterId,
-    })
+      reason
+    });
 
-    await newBlockedSlot.save()
+    return res.json({
+      message: `Time slot blocked successfully in "${quarterName}".`
+    });
 
-    res.json({ message: `Time slot blocked successfully in "${quarterName}"` })
   } catch (error) {
-    console.log('❌ Error in blockTimeSlot controller:', error)
-    res.status(500).json({ message: 'Failed to block time slot' })
+    console.log("❌ Error in blockTimeSlot controller:", error);
+    return res.status(500).json({ message: "Failed to block time slot" });
   }
-}
+};
+
+
 
 export const getBlockedAndBookedSlots = async (req, res) => {
   try {
