@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import toast, { Toaster } from 'react-hot-toast'
-import AuthContext from './context/AuthContext'
+import toast, { Toaster } from 'react-hot-toast';
+import AuthContext from './context/AuthContext';
 
 // Layout components
-import Navbar from './components/layout/Navbar'
-import Footer from './components/layout/Footer'
-import ScrollToTop from './components/layout/ScrollToTop'
-import { CelestialSphere } from './components/ui/CelestialSphere'
+import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
+import ScrollToTop from './components/layout/ScrollToTop';
+import { CelestialSphere } from './components/ui/CelestialSphere';
 
 // Public pages
-import Home from './pages/public/Home'
-import BoxDetail from './pages/public/BoxDetail'
+import Home from './pages/public/Home';
+import BoxDetail from './pages/public/BoxDetail';
 
 // Auth pages
 import Login from './pages/auth/Login'
