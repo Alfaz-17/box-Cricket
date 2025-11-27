@@ -107,7 +107,7 @@ const Home = () => {
               className="inline-block mb-6"
             >
               <span className="px-6 py-2 rounded-full bg-secondary/10 border border-secondary/30 text-secondary text-sm font-bold tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(143,163,30,0.3)] backdrop-blur-md">
-                IPL Season Ready
+              Book. paly. win.
               </span>
             </motion.div>
 
