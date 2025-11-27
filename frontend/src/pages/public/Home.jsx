@@ -140,7 +140,7 @@ const Home = () => {
                 />
               </div>
               <Button className="h-14 px-10 bg-secondary hover:bg-secondary/90 text-primary-foreground font-bold text-lg uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(143,163,30,0.4)] hover:shadow-[0_0_30px_rgba(143,163,30,0.6)] hover:scale-105 transition-all">
-                Book Now
+                Find Your Turf
               </Button>
             </motion.div>
           </motion.div>

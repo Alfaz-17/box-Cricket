@@ -7,7 +7,7 @@ import AuthContext from './context/AuthContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ScrollToTop from './components/layout/ScrollToTop'
-import AnimatedShaderBackground from './components/ui/AnimatedShaderBackground'
+import { CelestialSphere } from './components/ui/CelestialSphere'
 
 // Public pages
 import Home from './pages/public/Home'
@@ -184,10 +184,14 @@ function App() {
       <Router>
         <ScrollToTop />
         <div className="relative min-h-screen overflow-hidden">
-          {/* Global Animated Background */}
-          <div className="fixed inset-0 z-0">
-            <AnimatedShaderBackground />
-          </div>
+          {/* Global Celestial Sphere Background */}
+          <CelestialSphere
+            hue={75.0}           // Lime/green hue matching neon sports palette
+            speed={0.35}         // Smooth, moderate animation
+            zoom={1.3}           // Slight zoom for better detail
+            particleSize={3.5}   // Prominent stars
+            className="fixed inset-0 z-0"
+          />
           
           {/* Content Wrapper */}
           <div className="relative z-10 flex flex-col min-h-screen bg-transparent text-foreground transition-colors duration-300">
