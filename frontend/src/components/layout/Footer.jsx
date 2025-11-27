@@ -38,7 +38,7 @@ export default function Footer() {
                 style={{ fontFamily: 'Bebas Neue' }}
                 className="ml-2 text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
               >
-                Book My Box
+                BookMyBox
               </h1>
             </Link>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
@@ -181,7 +181,7 @@ export default function Footer() {
           {/* Copyright */}
           <div className="text-center">
             <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-              © {currentYear} Book My Box. Made with
+              © {currentYear} BookMyBox. Made with
               <motion.span
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}

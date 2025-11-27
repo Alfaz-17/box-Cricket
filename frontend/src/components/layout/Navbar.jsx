@@ -93,7 +93,7 @@ const Navbar = () => {
                   style={{ fontFamily: 'Bebas Neue' }} 
                   className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-wider"
                 >
-                  BookmyBox
+                  BookMyBox
                 </span>
                 <span className="text-[10px] text-muted-foreground tracking-widest uppercase">Premium Turfs</span>
               </div>
