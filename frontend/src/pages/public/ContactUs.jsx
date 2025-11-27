@@ -37,6 +37,7 @@ const ContactUs = () => {
       title: 'Email',
       value: 'alfazbilakhiya17@gmail.com',
       link: 'mailto:alfazbilakhiya17@gmail.com',
+    
       description: 'Send us an email anytime',
     },
     {

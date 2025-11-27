@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { UserPlus, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { UserPlus, ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import api from '../../utils/api';
+import logoIcon from '../../assets/logo-icon.svg';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -30,6 +32,8 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOtpSending, setIsOtpSending] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -119,79 +123,97 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-background">
-      {/* Left Branding Panel */}
-      <div className="hidden md:flex w-1/2 bg-primary relative overflow-hidden items-center justify-center p-12">
-        {/* Abstract Sporty Patterns */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-10">
-            <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full border-[80px] border-white/20 blur-xl"></div>
-            <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-white/20 blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 flex flex-col items-center text-center space-y-8">
-          <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/10 transform hover:scale-105 transition-transform duration-500">
-            <img src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" className="h-48 w-48 object-contain drop-shadow-xl" />
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-lg relative z-10"
+      >
+        {/* Logo and Branding */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="text-center mb-8"
+        >
+          <div className="flex justify-center mb-4">
+            <div className="relative">
+              <div className="absolute inset-0 bg-secondary/30 blur-2xl rounded-full" />
+              <img 
+                src={logoIcon} 
+                alt="BookMyBox Logo" 
+                className="h-20 w-20 relative z-10 drop-shadow-[0_0_20px_rgba(143,163,30,0.4)]" 
+              />
+            </div>
           </div>
-          <div className="space-y-4">
-            <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-7xl font-bold text-primary-foreground tracking-wider drop-shadow-md">
-              Join the Club
-            </h1>
-            <p className="text-xl text-primary-foreground/90 font-medium max-w-md leading-relaxed">
-              Create your account and start booking premium cricket turfs today.
-            </p>
-          </div>
-        </div>
-      </div>
+          <h1 
+            style={{ fontFamily: 'Bebas Neue' }} 
+            className="text-5xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-wider mb-2"
+          >
+            Join The Club
+          </h1>
+          <p className="text-foreground/60 text-lg">
+            Create your account to start booking
+          </p>
+        </motion.div>
 
-      {/* Right Form Panel */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-24 lg:px-32 bg-background relative overflow-y-auto">
-        <div className="max-w-md w-full mx-auto space-y-8">
-          
-          {/* Mobile Logo */}
-          <div className="md:hidden flex flex-col items-center mb-6">
-             <img src="/src/assets/logo-icon.svg" alt="BookMyBox" className="h-20 w-20 object-contain mb-3" />
-             <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl font-bold text-primary">Book My Box</h1>
-          </div>
-
-          <div className="space-y-2 text-center md:text-left">
-            <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-4xl md:text-5xl font-bold text-foreground tracking-wide">
-              Create Account
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Fill in your details to get started
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Form */}
+        <motion.form
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
+          <AnimatePresence mode="wait">
             {/* Phase 1: OTP Verification */}
             {!isOtpVerified && (
-              <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
+              <motion.div
+                key="otp-phase"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="space-y-5"
+              >
+                {/* Contact Number */}
                 <div className="space-y-2">
-                  <Label htmlFor="contactNumber" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Contact Number</Label>
+                  <Label htmlFor="contactNumber" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
+                    Contact Number
+                  </Label>
                   <div className="flex gap-3">
-                      <Input
-                        id="contactNumber"
-                        name="contactNumber"
-                        type="tel"
-                        value={formData.contactNumber}
-                        onChange={handleChange}
-                        placeholder="Enter 10-digit number"
-                        className={`h-12 bg-muted/30 border-2 focus:border-primary/50 focus:ring-0 rounded-xl transition-all duration-200 ${errors.contactNumber ? 'border-destructive' : 'border-transparent hover:border-primary/20'}`}
-                      />
-                      <Button 
-                        type="button" 
-                        onClick={sendOtp} 
-                        disabled={isOtpSending || !formData.contactNumber}
-                        className="h-12 px-6 rounded-xl font-bold uppercase tracking-wide bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-                      >
-                        {isOtpSending ? 'Sending...' : 'Send OTP'}
-                      </Button>
+                    <Input
+                      id="contactNumber"
+                      name="contactNumber"
+                      type="tel"
+                      value={formData.contactNumber}
+                      onChange={handleChange}
+                      placeholder="Enter 10-digit number"
+                      className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl transition-all ${
+                        errors.contactNumber ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
+                      }`}
+                    />
+                    <Button
+                      type="button"
+                      onClick={sendOtp}
+                      disabled={isOtpSending || !formData.contactNumber}
+                      className="h-14 px-6 rounded-xl font-bold uppercase bg-secondary hover:bg-secondary/90 whitespace-nowrap"
+                    >
+                      {isOtpSending ? 'Sending...' : 'Send OTP'}
+                    </Button>
                   </div>
-                  {errors.contactNumber && <p className="text-xs text-destructive font-medium mt-1 ml-1">{errors.contactNumber}</p>}
+                  {errors.contactNumber && (
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 font-medium ml-1">
+                      {errors.contactNumber}
+                    </motion.p>
+                  )}
                 </div>
 
+                {/* OTP Input */}
                 <div className="space-y-2">
-                  <Label htmlFor="otp" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Enter OTP</Label>
+                  <Label htmlFor="otp" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
+                    Enter OTP
+                  </Label>
                   <Input
                     id="otp"
                     name="otp"
@@ -199,75 +221,126 @@ const Signup = () => {
                     value={formData.otp}
                     onChange={handleChange}
                     placeholder="Enter the 6-digit code"
-                    className={`h-12 bg-muted/30 border-2 focus:border-primary/50 focus:ring-0 rounded-xl transition-all duration-200 ${errors.otp ? 'border-destructive' : 'border-transparent hover:border-primary/20'}`}
+                    className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl ${
+                      errors.otp ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
+                    }`}
                   />
-                  {errors.otp && <p className="text-xs text-destructive font-medium mt-1 ml-1">{errors.otp}</p>}
+                  {errors.otp && (
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 font-medium ml-1">
+                      {errors.otp}
+                    </motion.p>
+                  )}
                 </div>
 
-                <Button type="button" onClick={verifyOtp} className="w-full h-12 text-lg font-bold tracking-wider uppercase rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
+                <Button
+                  type="button"
+                  onClick={verifyOtp}
+                  className="w-full h-14 text-lg font-bold uppercase rounded-xl bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg"
+                >
                   Verify & Continue
                 </Button>
-              </div>
+              </motion.div>
             )}
 
             {/* Phase 2: Account Details */}
             {isOtpVerified && (
-              <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="p-4 bg-primary/10 rounded-xl flex items-center gap-3 mb-4 border border-primary/20">
-                    <CheckCircle2 className="text-primary h-6 w-6" />
-                    <div>
-                        <p className="text-sm font-bold text-primary">Number Verified</p>
-                        <p className="text-xs text-muted-foreground">{formData.contactNumber}</p>
-                    </div>
+              <motion.div
+                key="details-phase"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-4"
+              >
+                {/* Verified Badge */}
+                <div className="p-4 bg-secondary/10 rounded-xl flex items-center gap-3 border border-secondary/20">
+                  <CheckCircle2 className="text-secondary h-6 w-6 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-bold text-secondary">Number Verified</p>
+                    <p className="text-xs text-foreground/60">{formData.contactNumber}</p>
+                  </div>
                 </div>
 
+                {/* Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Full Name</Label>
+                  <Label htmlFor="name" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
+                    Full Name
+                  </Label>
                   <Input
                     id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Enter your full name"
-                    className={`h-12 bg-muted/30 border-2 focus:border-primary/50 focus:ring-0 rounded-xl transition-all duration-200 ${errors.name ? 'border-destructive' : 'border-transparent hover:border-primary/20'}`}
+                    className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl ${
+                      errors.name ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
+                    }`}
                   />
-                  {errors.name && <p className="text-xs text-destructive font-medium mt-1 ml-1">{errors.name}</p>}
+                  {errors.name && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 ml-1">{errors.name}</motion.p>}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                    <Label htmlFor="password" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Password</Label>
-                    <Input
+                {/* Password Fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Input
                         id="password"
                         name="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         value={formData.password}
                         onChange={handleChange}
                         placeholder="Create password"
-                        className={`h-12 bg-muted/30 border-2 focus:border-primary/50 focus:ring-0 rounded-xl transition-all duration-200 ${errors.password ? 'border-destructive' : 'border-transparent hover:border-primary/20'}`}
-                    />
-                    {errors.password && <p className="text-xs text-destructive font-medium mt-1 ml-1">{errors.password}</p>}
+                        className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl pr-12 ${
+                          errors.password ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground/80"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
+                    {errors.password && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 ml-1">{errors.password}</motion.p>}
+                  </div>
 
-                    <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Confirm</Label>
-                    <Input
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
+                      Confirm
+                    </Label>
+                    <div className="relative">
+                      <Input
                         id="confirmPassword"
                         name="confirmPassword"
-                        type="password"
+                        type={showConfirmPassword ? 'text' : 'password'}
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         placeholder="Confirm password"
-                        className={`h-12 bg-muted/30 border-2 focus:border-primary/50 focus:ring-0 rounded-xl transition-all duration-200 ${errors.confirmPassword ? 'border-destructive' : 'border-transparent hover:border-primary/20'}`}
-                    />
-                    {errors.confirmPassword && <p className="text-xs text-destructive font-medium mt-1 ml-1">{errors.confirmPassword}</p>}
+                        className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl pr-12 ${
+                          errors.confirmPassword ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground/80"
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
+                    {errors.confirmPassword && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 ml-1">{errors.confirmPassword}</motion.p>}
+                  </div>
                 </div>
 
+                {/* Role Selection */}
                 <div className="space-y-2">
-                  <Label htmlFor="role" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">I am a</Label>
+                  <Label htmlFor="role" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
+                    I am a
+                  </Label>
                   <Select value={formData.role} onValueChange={handleSelectChange}>
-                    <SelectTrigger className="h-12 bg-muted/30 border-2 border-transparent hover:border-primary/20 focus:border-primary/50 focus:ring-0 rounded-xl">
+                    <SelectTrigger className="h-14 bg-background/40 backdrop-blur-sm border-2 border-foreground/10 hover:border-foreground/20 focus:border-secondary/50 focus:ring-0 rounded-xl">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -277,9 +350,17 @@ const Signup = () => {
                   </Select>
                 </div>
 
+                {/* Owner Code (conditional) */}
                 {formData.role === 'owner' && (
-                  <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                    <Label htmlFor="ownerCode" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Owner Code</Label>
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-2"
+                  >
+                    <Label htmlFor="ownerCode" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
+                      Owner Code
+                    </Label>
                     <Input
                       id="ownerCode"
                       name="ownerCode"
@@ -287,20 +368,32 @@ const Signup = () => {
                       value={formData.ownerCode}
                       onChange={handleChange}
                       placeholder="Enter owner verification code"
-                      className={`h-12 bg-muted/30 border-2 focus:border-primary/50 focus:ring-0 rounded-xl transition-all duration-200 ${errors.ownerCode ? 'border-destructive' : 'border-transparent hover:border-primary/20'}`}
+                      className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl ${
+                        errors.ownerCode ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
+                      }`}
                     />
-                    {errors.ownerCode && <p className="text-xs text-destructive font-medium mt-1 ml-1">{errors.ownerCode}</p>}
-                  </div>
+                    {errors.ownerCode && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 ml-1">{errors.ownerCode}</motion.p>}
+                  </motion.div>
                 )}
 
+                {/* Terms Checkbox */}
                 <div className="flex items-center space-x-2 py-2">
-                  <Checkbox id="terms" required className="rounded border-2 border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
-                  <Label htmlFor="terms" className="text-sm font-medium text-muted-foreground cursor-pointer select-none">
-                    I agree to the <span className="text-primary hover:underline">Terms</span> & <span className="text-primary hover:underline">Privacy Policy</span>
+                  <Checkbox
+                    id="terms"
+                    required
+                    className="rounded border-2 border-foreground/20 data-[state=checked]:bg-secondary data-[state=checked]:border-secondary"
+                  />
+                  <Label htmlFor="terms" className="text-sm font-medium text-foreground/70 cursor-pointer select-none">
+                    I agree to the <span className="text-secondary hover:underline">Terms</span> & <span className="text-secondary hover:underline">Privacy Policy</span>
                   </Label>
                 </div>
 
-                <Button type="submit" className="w-full h-14 text-lg font-bold tracking-wider uppercase rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300" disabled={isLoading}>
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  className="w-full h-14 text-lg font-bold uppercase rounded-xl bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all"
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
                       <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -312,20 +405,29 @@ const Signup = () => {
                     </span>
                   )}
                 </Button>
-              </div>
+              </motion.div>
             )}
-          </form>
+          </AnimatePresence>
+        </motion.form>
 
-          <div className="text-center">
-            <p className="text-muted-foreground">
-              Already have an account?{' '}
-              <Link to="/login" className="text-primary font-bold hover:underline decoration-2 underline-offset-4 transition-all">
-                Log In
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
+        {/* Login Link */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-center mt-8"
+        >
+          <p className="text-foreground/60">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="text-secondary font-bold hover:text-accent transition-colors underline decoration-2 underline-offset-4"
+            >
+              Log In
+            </Link>
+          </p>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

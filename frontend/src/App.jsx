@@ -7,6 +7,7 @@ import AuthContext from './context/AuthContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ScrollToTop from './components/layout/ScrollToTop'
+import AnimatedShaderBackground from './components/ui/AnimatedShaderBackground'
 
 // Public pages
 import Home from './pages/public/Home'
@@ -182,8 +183,14 @@ function App() {
     <AuthContext.Provider value={authContextValue}>
       <Router>
         <ScrollToTop />
-        <div>
-          <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
+        <div className="relative min-h-screen overflow-hidden">
+          {/* Global Animated Background */}
+          <div className="fixed inset-0 z-0">
+            <AnimatedShaderBackground />
+          </div>
+          
+          {/* Content Wrapper */}
+          <div className="relative z-10 flex flex-col min-h-screen bg-transparent text-foreground transition-colors duration-300">
             <Navbar />
             <main className="flex-grow container mx-auto px-4 py-8">
               {loading ? (

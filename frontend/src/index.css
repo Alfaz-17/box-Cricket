@@ -3,43 +3,43 @@
 
 @layer base {
   :root {
-    /* Sporty Theme Palette */
-    /* Primary: #556B2F -> HSL: 82, 39%, 30% */
+    /* High-Energy Neon Sports Palette - DARK MODE BASE */
+    /* Primary: Olive Green -> HSL(82 39% 30%) */
     --primary: 82 39% 30%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary: #8FA31E -> HSL: 69, 69%, 38% */
+    /* Secondary: Lime Yellow -> HSL(69 69% 38%) */
     --secondary: 69 69% 38%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary-foreground: 82 39% 10%;
 
-    /* Accent: #C6D870 -> HSL: 70, 56%, 64% */
+    /* Accent: Bright Highlights -> HSL(70 56% 64%) */
     --accent: 70 56% 64%;
     --accent-foreground: 82 39% 20%;
 
-    /* Background (Base-100): #EFF5D2 -> HSL: 71, 54%, 89% */
-    --background: 71 54% 89%;
-    --foreground: 82 39% 15%; /* Darker version of primary for text */
+    /* Background: Dark Stadium Vibe -> HSL(82 20% 5%) */
+    --background: 82 20% 5%; 
+    --foreground: 82 20% 90%;
 
-    /* Card/Popover Backgrounds - slightly lighter/darker than background */
-    --card: 71 54% 95%;
-    --card-foreground: 82 39% 15%;
-    --popover: 71 54% 95%;
-    --popover-foreground: 82 39% 15%;
+    /* Card/Popover */
+    --card: 82 20% 8%;
+    --card-foreground: 82 20% 90%;
+    --popover: 82 20% 8%;
+    --popover-foreground: 82 20% 90%;
 
     /* Muted */
-    --muted: 71 20% 85%;
-    --muted-foreground: 82 20% 40%;
+    --muted: 82 20% 15%;
+    --muted-foreground: 82 20% 60%;
 
-    /* Destructive (Error): #F87272 -> HSL: 0, 91%, 71% */
-    --destructive: 0 91% 71%;
+    /* Destructive */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     /* Border/Input/Ring */
-    --border: 82 39% 70%;
-    --input: 82 39% 70%;
-    --ring: 82 39% 30%;
+    --border: 82 20% 20%;
+    --input: 82 20% 20%;
+    --ring: 69 69% 38%; 
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {

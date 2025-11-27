@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Bell, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Menu, Bell, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import Sidebar from '../admin/Sidebar';
 import useNotificationStore from '../../store/useNotificationStore';
@@ -12,6 +12,7 @@ import logoIcon from '../../assets/logo-icon.svg';
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [scrolled, setScrolled] = useState(false);
   const { user, isAuthenticated, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,6 +24,14 @@ const Navbar = () => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -43,108 +52,211 @@ const Navbar = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="sticky top-0 z-50 backdrop-blur-lg bg-background/70 border-b border-primary/20 shadow-lg"
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled 
+            ? 'bg-background/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(143,163,30,0.15)] border-b border-secondary/20' 
+            : 'bg-background/80 backdrop-blur-md border-b border-border/50'
+        }`}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x group">
-              <div className="relative">
-                <img className="h-12 w-12 sm:h-12 sm:w-12 transition-transform duration-300 group-hover:scale-110" src={logoIcon} alt="BookMyBox Logo" />
-                <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-0 group-hover:opacity-20 rounded-full transition-opacity duration-300 blur-xl" />
+        {/* Animated Gradient Accent Line */}
+        <motion.div 
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-secondary to-transparent"
+          animate={{ 
+            backgroundPosition: ['0% 50%', '100% 50%'],
+            opacity: scrolled ? 0.8 : 0.4
+          }}
+          transition={{ 
+            backgroundPosition: { duration: 3, repeat: Infinity, ease: "linear" },
+            opacity: { duration: 0.3 }
+          }}
+          style={{ backgroundSize: '200% 100%' }}
+        />
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 sm:h-18">
+            {/* Logo Section */}
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 group relative z-10">
+              <motion.div 
+                className="relative"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="absolute inset-0 bg-secondary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <img 
+                  className="h-10 w-10 sm:h-12 sm:w-12 relative z-10 drop-shadow-[0_0_8px_rgba(143,163,30,0.3)]" 
+                  src={logoIcon} 
+                  alt="BookMyBox Logo" 
+                />
+              </motion.div>
+              <div className="flex flex-col leading-none">
+                <span 
+                  style={{ fontFamily: 'Bebas Neue' }} 
+                  className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-wider"
+                >
+                  BookmyBox
+                </span>
+                <span className="text-[10px] text-muted-foreground tracking-widest uppercase">Premium Turfs</span>
               </div>
-              <span style={{ fontFamily: 'Bebas Neue' }} className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-wide">
-                BookMyBox
-              </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-2">
+            <div className="hidden lg:flex items-center gap-1">
               <NavLink to="/" icon={Home} isActive={isActive('/')}>Home</NavLink>
+              
               {isAuthenticated && user?.role === 'user' && (
-                <NavLink to="/my-bookings" icon={Calendar} isActive={isActive('/my-bookings')}>My Bookings</NavLink>
+                <NavLink to="/my-bookings" icon={Calendar} isActive={isActive('/my-bookings')}>
+                  My Bookings
+                </NavLink>
               )}
+              
               {isAuthenticated && user?.role === 'owner' && (
                 <>
-                  <NavLink to="/admin/bookings" icon={Calendar} isActive={isActive('/admin/bookings')}>Bookings</NavLink>
-                  <NavLink to="/admin" icon={LayoutDashboard} isActive={isActive('/admin')}>Dashboard</NavLink>
-                  <NavLink to="/admin/boxes" icon={Package} isActive={isActive('/admin/boxes')}>Boxes</NavLink>
-                  <NavLink to="/admin/block-slot" icon={Lock} isActive={isActive('/admin/block-slot')}>Block Slot</NavLink>
-                  <NavLink to="/my-profile" icon={UserCircle} isActive={isActive('/my-profile')}>Profile</NavLink>
+                  <NavLink to="/admin/bookings" icon={Calendar} isActive={isActive('/admin/bookings')}>
+                    Bookings
+                  </NavLink>
+                  <NavLink to="/admin" icon={LayoutDashboard} isActive={isActive('/admin')}>
+                    Dashboard
+                  </NavLink>
+                  <NavLink to="/admin/boxes" icon={Package} isActive={isActive('/admin/boxes')}>
+                    Boxes
+                  </NavLink>
+                  <NavLink to="/admin/block-slot" icon={Lock} isActive={isActive('/admin/block-slot')}>
+                    Block Slot
+                  </NavLink>
+                  <NavLink to="/my-profile" icon={UserCircle} isActive={isActive('/my-profile')}>
+                    Profile
+                  </NavLink>
                 </>
               )}
+              
+              {/* Notification Bell - Desktop */}
+              {isAuthenticated && (
+                <Link to="/notifications" className="relative group mx-2">
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }} 
+                    whileTap={{ scale: 0.9 }}
+                    className="relative p-2 rounded-lg hover:bg-secondary/10 transition-colors"
+                  >
+                    <Bell className="w-5 h-5 text-foreground/70 group-hover:text-secondary transition-colors" />
+                    {unreadCount > 0 && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg ring-2 ring-background"
+                      >
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </motion.span>
+                    )}
+                  </motion.div>
+                </Link>
+              )}
+              
+              {/* Auth Buttons */}
               {isAuthenticated ? (
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button onClick={handleLogout} className="bg-gradient-to-r from-destructive to-red-600 hover:from-destructive/90 hover:to-red-600/90 shadow-md">
-                    <LogOut size={18} className="mr-2" />Logout
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    onClick={handleLogout} 
+                    variant="outline"
+                    className="ml-2 border-red-500/30 hover:bg-red-500/10 hover:border-red-500/50 text-red-400 hover:text-red-300"
+                  >
+                    <LogOut size={16} className="mr-2" />
+                    Logout
                   </Button>
                 </motion.div>
               ) : (
-                <>
-                  <NavLink to="/login" icon={UserCircle} isActive={isActive('/login')}>Login</NavLink>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button asChild className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-md">
+                <div className="flex items-center gap-2 ml-2">
+                  <NavLink to="/login" icon={UserCircle} isActive={isActive('/login')}>
+                    Login
+                  </NavLink>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button 
+                      asChild 
+                      className="bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 text-primary-foreground shadow-lg shadow-secondary/20"
+                    >
                       <Link to="/signup">Sign Up</Link>
                     </Button>
                   </motion.div>
-                  <NavLink to="/settings" icon={Settings} isActive={isActive('/settings')}>Settings</NavLink>
-                </>
+                  <NavLink to="/settings" icon={Settings} isActive={isActive('/settings')}>
+                    Settings
+                  </NavLink>
+                </div>
               )}
             </div>
 
-            {/* Mobile Menu */}
-            <div className="flex md:hidden items-center space-x-3">
-              <Link to="/notifications" className="relative group">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                  <Bell className="w-6 h-6 text-primary group-hover:text-secondary transition-colors" />
-                  {unreadCount > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg"
-                    >
-                      {unreadCount}
-                    </motion.span>
-                  )}
-                </motion.div>
-              </Link>
+            {/* Mobile Menu Button */}
+            <div className="flex lg:hidden items-center gap-3">
+              {/* Notification Bell - Mobile */}
+              {isAuthenticated && (
+                <Link to="/notifications" className="relative group">
+                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                    <Bell className="w-6 h-6 text-foreground/70 group-hover:text-secondary transition-colors" />
+                    {unreadCount > 0 && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg ring-2 ring-background"
+                      >
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </motion.span>
+                    )}
+                  </motion.div>
+                </Link>
+              )}
+              
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-               {!sidebarOpen ? <Button onClick={() => setSidebarOpen(true)} size="icon" className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-md">
-                  <Menu size={24} />
-                </Button>:
-                <Button onClick={() => setSidebarOpen(false)} size="icon" className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-md">
-                  <X size={24} />
+                <Button 
+                  onClick={() => setSidebarOpen(!sidebarOpen)} 
+                  size="icon" 
+                  className="bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg shadow-secondary/20"
+                >
+                  {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
                 </Button>
-}
               </motion.div>
             </div>
           </div>
         </div>
       </motion.nav>
 
+      {/* Add padding to prevent content from being hidden under fixed navbar */}
+      <div className="h-16 sm:h-18" />
+
       {isMobile && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
     </>
   );
 };
 
-// Enhanced NavLink Component
+// Professional NavLink Component with Hover Effects
 const NavLink = ({ to, icon: Icon, children, isActive }) => {
   return (
     <Link to={to}>
-      <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }} className="relative">
-        <Button variant="ghost" className={`relative group ${isActive ? 'bg-primary/10 text-primary' : 'hover:bg-primary/5'}`}>
-          {Icon && <Icon size={18} className="mr-2" />}
-          {children}
+      <motion.div 
+        whileHover={{ y: -1 }} 
+        whileTap={{ scale: 0.98 }} 
+        className="relative"
+      >
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className={`relative group px-3 py-2 ${
+            isActive 
+              ? 'bg-secondary/15 text-secondary hover:bg-secondary/20' 
+              : 'hover:bg-foreground/5 text-foreground/70 hover:text-foreground'
+          }`}
+        >
+          {Icon && <Icon size={16} className="mr-2" />}
+          <span className="text-sm font-medium">{children}</span>
+          
+          {/* Active Indicator */}
           {isActive && (
             <motion.div
               layoutId="activeTab"
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-secondary to-accent"
+              className="absolute bottom-0 left-1 right-1 h-[2px] bg-gradient-to-r from-secondary via-accent to-secondary rounded-full"
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md" />
+          
+          {/* Hover Glow Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary/0 via-secondary/5 to-secondary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md" />
         </Button>
       </motion.div>
     </Link>
