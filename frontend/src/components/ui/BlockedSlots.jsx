@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { Calendar, Clock, Ban, Square, Filter, CalendarX2 } from 'lucide-react'
+import React, { useEffect, useState, useMemo } from 'react'
+import { Calendar, Clock, Ban, CalendarX2 } from 'lucide-react'
 import api from '../../utils/api'
-import { formatDate } from '../../utils/formatDate'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { formatDate, formatTime } from '../../utils/formatDate'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { List, AutoSizer } from 'react-virtualized'
+import 'react-virtualized/styles.css'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 export default function BlockedSlots({ boxId }) {
   const [blockedSlots, setBlockedSlots] = useState([])
@@ -14,7 +17,6 @@ export default function BlockedSlots({ boxId }) {
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedQuarter, setSelectedQuarter] = useState('')
 
-  // fetch block slots
   useEffect(() => {
     async function fetchSlots() {
       try {
@@ -30,155 +32,180 @@ export default function BlockedSlots({ boxId }) {
     fetchSlots()
   }, [boxId])
 
-  //add filter for BlockSlots (date,quater)
-  const filterSlots = (date, quarter) => {
-    let filtered = blockedSlots
-
-    if (quarter !== '' && quarter !== 'all') {
-      filtered = filtered.filter(q => q.quarterName === quarter)
-    }
-
-    filtered = filtered.map(q => ({
-      ...q,
-      slots: date === '' ? q.slots : q.slots.filter(slot => slot.date === date),
-    }))
+  const applyFilters = (date, quarter) => {
+    const filtered = blockedSlots
+      .filter(q => quarter === '' || q.quarterName === quarter)
+      .map(q => ({
+        ...q,
+        slots: date ? q.slots.filter(slot => slot.date === date) : q.slots,
+      }))
+      .filter(q => q.slots.length > 0)
 
     setFilteredSlots(filtered)
   }
 
-  const handleDateChange = e => {
-    const date = e.target.value
+  const handleDateChange = date => {
     setSelectedDate(date)
-    filterSlots(date, selectedQuarter)
+    const dateString = date ? date.toISOString().split('T')[0] : ''
+    applyFilters(dateString, selectedQuarter)
   }
 
   const handleQuarterChange = (value) => {
     const quarter = value === "all" ? "" : value
     setSelectedQuarter(quarter)
-    filterSlots(selectedDate, quarter)
+    applyFilters(selectedDate, quarter)
   }
 
-  // Extract unique quarters from blocked slots
-  const noFilteredResults = filteredSlots.every(q => q.slots.length === 0)
+  // Flatten the list for virtualization
+  const flattenedItems = useMemo(() => {
+    const items = []
+    filteredSlots.forEach(quarter => {
+      items.push({ type: 'header', content: quarter.quarterName })
+      quarter.slots.forEach(slot => {
+        items.push({ type: 'slot', content: slot })
+      })
+    })
+    return items
+  }, [filteredSlots])
+
+  const rowRenderer = ({ index, key, style }) => {
+    const item = flattenedItems[index]
+
+    if (item.type === 'header') {
+      return (
+        <div key={key} style={style} className="flex items-end pb-2">
+           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/5 pb-1 inline-block">
+            {item.content}
+          </h3>
+        </div>
+      )
+    }
+
+    const slot = item.content
+    return (
+      <div key={key} style={{ ...style, height: style.height - 12 }} className="pr-2">
+        <div className="group relative flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-r-xl transition-all duration-300 overflow-hidden h-full">
+            {/* Accent Bar - Destructive for Blocked */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-destructive shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+
+            <div className="flex flex-col gap-1 pl-3">
+                {/* Reason / Title */}
+                <div className="flex items-center gap-2">
+                    <Ban className="w-3 h-3 text-destructive/70" />
+                    <span className="font-bold text-foreground text-sm tracking-wide">
+                        {slot.reason || 'Blocked'}
+                    </span>
+                </div>
+                
+                {/* Date */}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Calendar className="w-3 h-3" />
+                    <span>{formatDate(slot.date)}</span>
+                </div>
+            </div>
+
+            {/* Time */}
+            <div className="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg border border-white/5">
+                <Clock className="w-3 h-3 text-destructive" />
+                <span className="text-xs font-mono font-medium text-destructive">
+                    {slot.startTime} - {formatTime(slot.endTime)}
+                </span>
+            </div>
+        </div>
+      </div>
+    )
+  }
+
+  const getRowHeight = ({ index }) => {
+    return flattenedItems[index].type === 'header' ? 40 : 80
+  }
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex justify-center items-center h-48">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-destructive"></div>
       </div>
     )
 
   if (blockedSlots.length === 0)
     return (
-      <Card className="bg-muted/50 border-dashed">
-        <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-          <div className="flex justify-center mb-2">
-            <CalendarX2 className="w-8 h-8 text-destructive" />
-          </div>
-          <p className="text-lg font-medium">No blocked slots found</p>
-          <p className="text-sm text-muted-foreground">You're all clear! No time blocks are currently scheduled.</p>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed border-destructive/20 rounded-2xl bg-destructive/5">
+        <CalendarX2 className="w-10 h-10 text-destructive/50 mb-3" />
+        <p className="text-lg font-medium text-destructive">No blocked slots</p>
+        <p className="text-sm text-muted-foreground">All slots are currently open.</p>
+      </div>
     )
 
   return (
-    <Card className="bg-card shadow-md">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-2xl font-bold text-primary flex items-center gap-2">
-          ⛔ Blocked Slots by Boxes
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-6 flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-primary" />
-            <Input
-              type="date"
-              value={selectedDate}
+    <div className="space-y-6 h-full flex flex-col">
+      {/* Header & Filters */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5 shrink-0">
+        <h2 className="text-xl font-bold text-destructive" style={{ fontFamily: 'Bebas Neue' }}>
+          Blocked Slots
+        </h2>
+        
+        <div className="grid grid-cols-2 sm:flex items-center gap-3 w-full md:w-auto">
+          <div className="relative col-span-2 sm:col-span-1">
+             <DatePicker
+              selected={selectedDate}
               onChange={handleDateChange}
-              className="w-auto"
+              className="w-full sm:w-auto h-9 bg-transparent border-b border-white/20 text-xs focus:outline-none placeholder:text-muted-foreground"
+              placeholderText="Filter by Date"
+              dateFormat="yyyy-MM-dd"
             />
           </div>
 
           <Select value={selectedQuarter || "all"} onValueChange={handleQuarterChange}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[140px] h-9 bg-transparent border-white/10 text-xs">
               <SelectValue placeholder="All Boxes" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Boxes</SelectItem>
               {[...new Set(blockedSlots.map(q => q.quarterName))].map(name => (
                 <SelectItem key={name} value={name}>
-                  {name}-(box)
+                  {name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSelectedDate('')
-              setSelectedQuarter('')
-              setFilteredSlots(blockedSlots)
-            }}
-            className="ml-auto text-primary hover:text-primary/80 hover:bg-primary/10"
-          >
-            Clear Filter
-          </Button>
-        </div>
-
-        <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
-          {filteredSlots.map(quarter =>
-            quarter.slots.length === 0 ? null : (
-              <div
-                key={quarter.quarterName}
-                className="border border-border rounded-lg p-4 bg-background/50"
+          {(selectedDate || selectedQuarter) && (
+             <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedDate('')
+                  setSelectedQuarter('')
+                  setFilteredSlots(blockedSlots)
+                }}
+                className="h-9 text-xs text-muted-foreground hover:text-destructive col-span-2 sm:col-span-1"
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <Square className="w-5 h-5 text-destructive" />
-                  <h3 className="text-lg font-semibold text-primary">
-                    Boxes: {quarter.quarterName}-(box)
-                  </h3>
-                </div>
-
-                <div className="space-y-3">
-                  {quarter.slots.map(slot => (
-                    <div
-                      key={slot._id}
-                      className="border border-border rounded-lg p-3 bg-card hover:bg-muted/50 shadow-sm transition-all"
-                    >
-                      <div className="flex items-center gap-2 mb-1  ">
-                        <Calendar className="w-4 h-4 text-destructive" />
-                        <span className="font-medium">Date:</span>
-                        <span>{formatDate(slot.date)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 mb-1 ">
-                        <Clock className="w-4 h-4 text-destructive" />
-                        <span className="font-medium">Time:</span>
-                        <span>
-                          {slot.startTime} - {slot.endTime}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2  ">
-                        <Ban className="w-4 h-4 text-destructive" />
-                        <span className="font-medium">Reason:</span>
-                        <span>{slot.reason || 'N/A'}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
+                Clear
+              </Button>
           )}
         </div>
+      </div>
 
-        {noFilteredResults && (
-          <div className="text-center bg-muted/30 p-4 rounded-md shadow mt-4">
-            <p className="text-lg font-semibold">No blocked slots found for selected date.</p>
-            <p className="text-sm text-muted-foreground">Try choosing a different date or clear the filter.</p>
-          </div>
+      {/* Virtualized List */}
+      <div className="flex-1 min-h-[500px]" style={{ height: 500 }}>
+        {flattenedItems.length > 0 ? (
+            <AutoSizer>
+            {({ height, width }) => (
+                <List
+                width={width}
+                height={height}
+                rowCount={flattenedItems.length}
+                rowHeight={getRowHeight}
+                rowRenderer={rowRenderer}
+                />
+            )}
+            </AutoSizer>
+        ) : (
+            <div className="text-center py-8 text-muted-foreground">
+                <p>No blocked slots found for the selected filters.</p>
+            </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
