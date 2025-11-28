@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import toast, { Toaster } from 'react-hot-toast';
-import AuthContext from './context/AuthContext';
+import toast, { Toaster } from 'react-hot-toast'
+import AuthContext from './context/AuthContext'
 
 // Layout components
-import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
-import ScrollToTop from './components/layout/ScrollToTop';
-import { CelestialSphere } from './components/ui/CelestialSphere';
+import Navbar from './components/layout/Navbar'
+import Footer from './components/layout/Footer'
+import ScrollToTop from './components/layout/ScrollToTop'
+import AnimatedShaderBackground from './components/ui/AnimatedShaderBackground'
 
 // Public pages
-import Home from './pages/public/Home';
-import BoxDetail from './pages/public/BoxDetail';
+import Home from './pages/public/Home'
+import BoxDetail from './pages/public/BoxDetail'
 
 // Auth pages
 import Login from './pages/auth/Login'
@@ -185,13 +185,8 @@ function App() {
         <ScrollToTop />
         <div className="relative min-h-screen overflow-hidden">
           {/* Global Celestial Sphere Background */}
-          <CelestialSphere
-            hue={75.0}           // Lime/green hue matching neon sports palette
-            speed={0.35}         // Smooth, moderate animation
-            zoom={1.3}           // Slight zoom for better detail
-            particleSize={3.5}   // Prominent stars
-            className="fixed inset-0 z-0"
-          />
+          {/* Global Animated Shader Background */}
+          <AnimatedShaderBackground />
           
           {/* Content Wrapper */}
           <div className="relative z-10 flex flex-col min-h-screen bg-transparent text-foreground transition-colors duration-300">

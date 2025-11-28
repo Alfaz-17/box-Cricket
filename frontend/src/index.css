@@ -118,3 +118,12 @@
   background-size: 200% 200%;
   animation: gradient 15s ease infinite;
 }
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
