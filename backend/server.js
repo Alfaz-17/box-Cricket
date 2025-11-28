@@ -26,7 +26,11 @@ const server = http.createServer(app)
 app.use(generalLimiter)
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || process.env.CLIENT_URL_TEST,
+    origin: [
+      process.env.CLIENT_URL,
+      process.env.CLIENT_URL_TEST,
+      "http://localhost:5173",  // optional local dev
+    ].filter(Boolean),
   })
 )
 
