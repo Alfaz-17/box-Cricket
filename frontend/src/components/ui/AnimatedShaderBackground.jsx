@@ -11,25 +11,13 @@ const AnimatedShaderBackground = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    
-    // Handle resize properly
-    const updateSize = () => {
-      if (container) {
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-        renderer.setSize(width, height);
-        if (material.uniforms.iResolution) {
-          material.uniforms.iResolution.value.set(width, height);
-        }
-      }
-    };
-
+    renderer.setSize(window.innerWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
 
     const material = new THREE.ShaderMaterial({
       uniforms: {
         iTime: { value: 0 },
-        iResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) }
+        iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
       },
       vertexShader: `
         void main() {
@@ -81,23 +69,12 @@ const AnimatedShaderBackground = () => {
           for (float i = 0.0; i < 35.0; i++) {
             v = p + cos(i * i + (iTime + p.x * 0.08) * 0.025 + i * vec2(13.0, 11.0)) * 3.5 + vec2(sin(iTime * 3.0 + i) * 0.003, cos(iTime * 3.5 - i) * 0.003);
             float tailNoise = fbm(v + vec2(iTime * 0.5, i)) * 0.3 * (1.0 - (i / 35.0));
-            
-            // Neon Sports Palette Colors (Greens/Limes)
-            // Primary: Olive/Dark Green
-            // Secondary: Lime Yellow
-            // Accent: Bright Lime
-            
             vec4 auroraColors = vec4(
-              0.2 + 0.1 * sin(i * 0.2 + iTime * 0.4), // R: Low red component for greens
-              0.4 + 0.4 * cos(i * 0.3 + iTime * 0.5), // G: High green component
-              0.1 + 0.1 * sin(i * 0.4 + iTime * 0.3), // B: Low blue component
+              0.2 + 0.2 * sin(i * 0.2 + iTime * 0.4), // Red: Moderate for yellow/lime mix
+              0.5 + 0.4 * cos(i * 0.3 + iTime * 0.5), // Green: Dominant
+              0.1 + 0.1 * sin(i * 0.4 + iTime * 0.3), // Blue: Low
               1.0
             );
-            
-            // Boost the lime/yellow feel
-            auroraColors.r += 0.1 * sin(iTime); // Add some yellow (Red + Green)
-            auroraColors.g += 0.2; 
-
             vec4 currentContribution = auroraColors * exp(sin(i * i + iTime * 0.8)) / length(max(v, vec2(v.x * f * 0.015, v.y * 1.5)));
             float thinnessFactor = smoothstep(0.0, 1.0, i / 35.0) * 0.6;
             o += currentContribution * (1.0 + tailNoise * 0.8) * thinnessFactor;
@@ -113,8 +90,6 @@ const AnimatedShaderBackground = () => {
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-    updateSize();
-
     let frameId;
     const animate = () => {
       material.uniforms.iTime.value += 0.016;
@@ -123,14 +98,15 @@ const AnimatedShaderBackground = () => {
     };
     animate();
 
-    const handleWindowResize = () => {
-      updateSize();
+    const handleResize = () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      material.uniforms.iResolution.value.set(window.innerWidth, window.innerHeight);
     };
-    window.addEventListener('resize', handleWindowResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
       cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', handleWindowResize);
+      window.removeEventListener('resize', handleResize);
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);
       }
@@ -141,7 +117,7 @@ const AnimatedShaderBackground = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 w-full h-full z-0" />
+    <div ref={containerRef} className="fixed inset-0 -z-10 w-full h-full bg-black" />
   );
 };
 
