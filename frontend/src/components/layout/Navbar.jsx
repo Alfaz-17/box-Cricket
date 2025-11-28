@@ -4,7 +4,7 @@ import { Menu, Bell, LogOut, Home, Calendar, Settings, LayoutDashboard, Package,
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import Sidebar from '../admin/Sidebar';
-import useNotificationStore from '../../store/useNotificationStore';
+
 import { Button } from '../ui/Button';
 
 import logoIcon from '../../assets/logo-icon.svg';
@@ -17,8 +17,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const unreadCount = useNotificationStore(state => state.unreadCount);
-  const { fetchUnreadCount } = useNotificationStore.getState();
+
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -34,9 +33,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    fetchUnreadCount();
-  }, [fetchUnreadCount]);
+
 
   const handleLogout = () => {
     logout();
@@ -129,27 +126,7 @@ const Navbar = () => {
                 </>
               )}
               
-              {/* Notification Bell - Desktop */}
-              {isAuthenticated && (
-                <Link to="/notifications" className="relative group mx-2">
-                  <motion.div 
-                    whileHover={{ scale: 1.1 }} 
-                    whileTap={{ scale: 0.9 }}
-                    className="relative p-2 rounded-lg hover:bg-secondary/10 transition-colors"
-                  >
-                    <Bell className="w-5 h-5 text-foreground/70 group-hover:text-secondary transition-colors" />
-                    {unreadCount > 0 && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg ring-2 ring-background"
-                      >
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </motion.span>
-                    )}
-                  </motion.div>
-                </Link>
-              )}
+
               
               {/* Auth Buttons */}
               {isAuthenticated ? (
@@ -185,23 +162,7 @@ const Navbar = () => {
 
             {/* Mobile Menu Button */}
             <div className="flex lg:hidden items-center gap-3">
-              {/* Notification Bell - Mobile */}
-              {isAuthenticated && (
-                <Link to="/notifications" className="relative group">
-                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    <Bell className="w-6 h-6 text-foreground/70 group-hover:text-secondary transition-colors" />
-                    {unreadCount > 0 && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg ring-2 ring-background"
-                      >
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </motion.span>
-                    )}
-                  </motion.div>
-                </Link>
-              )}
+
               
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button 
