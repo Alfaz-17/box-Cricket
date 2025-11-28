@@ -28,28 +28,31 @@ const BookingForm = ({
   handleBooking,
 }) => {
   return (
-    <div className="bg-card/50 backdrop-blur-sm p-4 sm:p-6 md:p-8 rounded-2xl border border-primary/20">
-      <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-4 sm:mb-6">
-        Book Your Slot
-      </h2>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-white/5 pb-4">
+        <h2 className="text-2xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+            Book Your Slot
+        </h2>
+      </div>
 
       {/* Offline Booking Notice */}
-      <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-destructive/10 border border-destructive/30 rounded-xl">
-        <div className="flex items-start gap-2 sm:gap-3">
-          <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-destructive flex-shrink-0 mt-1" />
+      <div className="p-4 bg-destructive/5 border-l-2 border-destructive rounded-r-lg">
+        <div className="flex items-start gap-3">
+          <Phone className="w-5 h-5 text-destructive flex-shrink-0 mt-1" />
           <div className="flex-1">
-            <h3 className="font-bold text-destructive mb-1 sm:mb-2 text-sm sm:text-base">Book Offline</h3>
-            <p className="text-xs sm:text-sm mb-2 sm:mb-3">
-              Online booking is currently <strong>unavailable (In development)</strong>. Please
-              call the number below to reserve this box.
+            <h3 className="font-bold text-destructive mb-1 text-sm uppercase tracking-wide">Book Offline</h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Online booking is currently <strong>unavailable</strong>. Please call to reserve.
             </p>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 asChild
-                className="bg-gradient-to-r from-destructive to-red-600 hover:from-destructive/90 hover:to-red-600/90 w-full sm:w-auto text-sm sm:text-base"
+                variant="outline"
+                className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive h-9 text-sm"
               >
-                <a href={`tel:${displayBox.mobileNumber}`} className="flex items-center gap-2 justify-center">
-                  <Phone size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <a href={`tel:${displayBox.mobileNumber}`} className="flex items-center gap-2">
+                  <Phone size={14} />
                   +91 - {displayBox.mobileNumber || 'N/A'}
                 </a>
               </Button>
@@ -58,49 +61,52 @@ const BookingForm = ({
         </div>
       </div>
 
-      {/* Booking Form - Mobile First */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* Booking Form Fields */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Date Picker */}
-        <div>
-          <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Date</label>
-          <DatePicker
-            selected={selectedDate}
-            onChange={date => {
-              setSelectedDate(date)
-              setAvailableTimes(false)
-            }}
-            minDate={new Date()}
-            className="flex h-10 sm:h-11 w-full rounded-lg border-2 border-primary/20 bg-background px-3 sm:px-4 py-2 text-xs sm:text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-            dateFormat="MMMM d, yyyy"
-          />
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Date</label>
+          <div className="relative">
+            <DatePicker
+                selected={selectedDate}
+                onChange={date => {
+                setSelectedDate(date)
+                setAvailableTimes(false)
+                }}
+                minDate={new Date()}
+                className="flex h-11 w-full rounded-none border-b border-white/20 bg-transparent px-0 py-2 text-sm focus:border-primary focus:outline-none transition-colors placeholder:text-muted-foreground/50"
+                dateFormat="MMMM d, yyyy"
+                placeholderText="Select a date"
+            />
+          </div>
         </div>
 
         {/* Contact Number */}
-        <div>
-          <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Contact Number</label>
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Contact Number</label>
           <Input
             type="tel"
             value={contactNumber}
             onChange={e => setContactNumber(e.target.value)}
             placeholder="Enter contact number"
-            className="border-2 border-primary/20 focus:border-primary h-10 sm:h-11 text-xs sm:text-sm"
+            className="h-11 rounded-none border-0 border-b border-white/20 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-primary"
           />
         </div>
 
         {/* Time Picker */}
-        <div>
-          <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Time</label>
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Time</label>
           <TimePicker value={selectedTime} onChange={handleTimeChange} />
-          <p className="text-xs text-muted-foreground mt-1 sm:mt-2">
-            Selected: {selectedTime || 'None'}
+          <p className="text-xs text-primary mt-1 font-mono">
+            {selectedTime ? `Selected: ${selectedTime}` : ' '}
           </p>
         </div>
 
         {/* Duration */}
-        <div>
-          <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Duration</label>
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Duration</label>
           <Select value={duration.toString()} onValueChange={val => setDuration(Number(val))}>
-            <SelectTrigger className="border-2 border-primary/20 h-10 sm:h-11">
+            <SelectTrigger className="h-11 rounded-none border-0 border-b border-white/20 bg-transparent px-0 focus:ring-0 focus:border-primary">
               <SelectValue placeholder="Select duration" />
             </SelectTrigger>
             <SelectContent>
@@ -114,10 +120,10 @@ const BookingForm = ({
         </div>
 
         {/* Box Selection */}
-        <div className="sm:col-span-2 lg:col-span-1">
-          <label className="text-xs sm:text-sm font-bold mb-2 block text-primary">Select Box</label>
+        <div className="sm:col-span-2 lg:col-span-1 space-y-2">
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Box</label>
           <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
-            <SelectTrigger className="border-2 border-primary/20 h-10 sm:h-11">
+            <SelectTrigger className="h-11 rounded-none border-0 border-b border-white/20 bg-transparent px-0 focus:ring-0 focus:border-primary">
               <SelectValue placeholder="-- Select a Box --" />
             </SelectTrigger>
             <SelectContent>
@@ -132,16 +138,16 @@ const BookingForm = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 sm:mt-6">
+      <div className="flex flex-col sm:flex-row gap-4 pt-4">
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex-1">
           <Button
             onClick={handleCheckAvailability}
-            variant="secondary"
-            className="w-full h-11 sm:h-12 bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg font-bold text-sm sm:text-base"
+            variant="outline"
+            className="w-full h-12 border-primary/50 text-primary hover:bg-primary hover:text-black font-bold uppercase tracking-wide"
             disabled={isCheckingAvailability}
           >
             {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
-            <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+            <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </motion.div>
 
@@ -155,33 +161,33 @@ const BookingForm = ({
           >
             <Button
               onClick={handleBooking}
-              className="w-full h-11 sm:h-12 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg font-bold text-sm sm:text-base"
+              className="w-full h-12 bg-primary text-black hover:bg-primary/90 font-bold uppercase tracking-wide shadow-[0_0_20px_rgba(157,255,0,0.3)]"
               disabled={isProcessingBooking}
             >
               {isProcessingBooking ? 'Booking...' : 'Book Now'}
-              <Trophy className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+              <Trophy className="ml-2 w-4 h-4" />
             </Button>
           </motion.div>
         )}
       </div>
 
       {/* Booking Policy */}
-      <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-primary/5 rounded-xl border border-primary/20">
-        <div className="flex items-start gap-2 sm:gap-3">
-          <Info size={18} className="sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-1" />
-          <div className="text-xs sm:text-sm">
-            <p className="font-bold mb-1 sm:mb-2 text-primary text-sm sm:text-base">Booking Policy</p>
-            <ul className="space-y-1 sm:space-y-2 text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-0.5 flex-shrink-0" />
+      <div className="pt-6 border-t border-white/5">
+        <div className="flex items-start gap-3">
+          <Info size={16} className="text-muted-foreground mt-1" />
+          <div className="text-sm text-muted-foreground space-y-2">
+            <p className="font-semibold text-foreground">Booking Policy</p>
+            <ul className="space-y-1 text-xs">
+              <li className="flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-primary" />
                 <span>Cancellation allowed up to 24 hours before booking time</span>
               </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-0.5 flex-shrink-0" />
+              <li className="flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-primary" />
                 <span>Payment is processed upon booking confirmation</span>
               </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-0.5 flex-shrink-0" />
+              <li className="flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-primary" />
                 <span>Please arrive 15 minutes before your slot</span>
               </li>
             </ul>

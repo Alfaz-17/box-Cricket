@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
-import { Star } from 'lucide-react'
+import { Star, MessageSquarePlus, User } from 'lucide-react'
 import AuthContext from '../../context/AuthContext'
 import api from '../../utils/api'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const ReviewsSection = ({ boxId }) => {
   const [reviews, setReviews] = useState([])
@@ -56,106 +56,148 @@ const ReviewsSection = ({ boxId }) => {
   }, [boxId])
 
   return (
-    <Card className="mt-8 bg-muted/30">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-primary">
-          Reviews
-        </CardTitle>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-white/5 pb-4">
+        <h2 className="text-2xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+          Reviews & Ratings
+        </h2>
         {isAuthenticated && (
           <Button
-            variant="secondary"
+            variant="ghost"
             size="sm"
             onClick={() => setShowForm(!showForm)}
+            className="text-primary hover:text-primary hover:bg-primary/10"
           >
-            {showForm ? 'Cancel' : 'Write a Review'}
+            {showForm ? 'Cancel' : (
+                <>
+                    <MessageSquarePlus className="w-4 h-4 mr-2" />
+                    Write a Review
+                </>
+            )}
           </Button>
         )}
-      </CardHeader>
-      <CardContent>
-        {/* Review Form */}
+      </div>
+
+      {/* Review Form */}
+      <AnimatePresence>
         {showForm && (
-          <div className="mb-8 space-y-4 animate-fade-in bg-card p-4 rounded-lg border border-border">
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, index) => (
-                <Star
-                  key={index}
-                  size={28}
-                  className={`cursor-pointer transition-transform duration-200 hover:scale-110 ${
-                    index < rating ? 'text-primary fill-current' : 'text-muted-foreground/30'
-                  }`}
-                  onClick={() => setRating(index + 1)}
-                />
-              ))}
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white/5 rounded-xl p-6 space-y-4 border border-white/10">
+                <div className="flex flex-col gap-2">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Your Rating</label>
+                    <div className="flex items-center gap-2">
+                        {[...Array(5)].map((_, index) => (
+                            <Star
+                            key={index}
+                            size={24}
+                            className={`cursor-pointer transition-all duration-200 hover:scale-110 ${
+                                index < rating ? 'text-primary fill-primary' : 'text-muted-foreground/30 hover:text-primary/50'
+                            }`}
+                            onClick={() => setRating(index + 1)}
+                            />
+                        ))}
+                        <span className="ml-2 text-sm font-medium text-primary">
+                            {rating > 0 ? `${rating} / 5` : 'Select stars'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Your Review</label>
+                    <Textarea
+                        rows={4}
+                        value={comment}
+                        onChange={e => setComment(e.target.value)}
+                        placeholder="Share your experience with this box..."
+                        className="bg-black/20 border-white/10 focus:border-primary resize-none"
+                    />
+                </div>
+
+                {errorMsg && <p className="text-destructive text-sm font-medium">{errorMsg}</p>}
+
+                <div className="flex justify-end">
+                    <Button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className="bg-primary text-black hover:bg-primary/90 font-bold"
+                    >
+                        {loading ? 'Submitting...' : 'Post Review'}
+                    </Button>
+                </div>
             </div>
-
-            <Textarea
-              rows={4}
-              value={comment}
-              onChange={e => setComment(e.target.value)}
-              placeholder="Write your comment..."
-              className="bg-background"
-            />
-
-            {errorMsg && <p className="text-destructive text-sm">{errorMsg}</p>}
-
-            <Button
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? 'Submitting...' : 'Submit Review'}
-            </Button>
-          </div>
+          </motion.div>
         )}
+      </AnimatePresence>
 
-        {/* Review List */}
+      {/* Review List */}
+      <div className="space-y-6">
         {reviews.length === 0 ? (
-          <div className="text-muted-foreground text-sm italic">No reviews yet.</div>
+          <div className="text-center py-12 border border-dashed border-white/10 rounded-xl">
+            <p className="text-muted-foreground italic">No reviews yet. Be the first to share your experience!</p>
+          </div>
         ) : (
-          <div className="space-y-6">
-            {reviews.map(review => (
-              <div
-                key={review._id}
-                className="border-b border-border pb-6 last:mb-0 last:pb-0 last:border-none"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex items-center gap-3">
+          reviews.map((review, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              key={review._id}
+              className="group border-b border-white/5 pb-6 last:border-0"
+            >
+              <div className="flex items-start gap-4">
+                {/* Avatar */}
+                <div className="flex-shrink-0">
                     {review.profilePic ? (
                       <img
                         src={review.profilePic}
                         alt={review.name}
-                        className="w-9 h-9 rounded-full object-cover border border-border"
+                        className="w-10 h-10 rounded-full object-cover border border-white/10"
                       />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm uppercase">
-                        {review.name?.charAt(0)}
+                      <div className="w-10 h-10 rounded-full bg-white/5 text-primary flex items-center justify-center font-bold text-sm border border-white/10">
+                        {review.name?.charAt(0).toUpperCase() || <User size={16} />}
                       </div>
                     )}
-                    <span className="font-medium">{review.name}</span>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </div>
                 </div>
 
-                <div className="flex items-center mb-2">
-                  {[...Array(5)].map((_, index) => (
-                    <Star
-                      key={index}
-                      size={18}
-                      className={`mr-1 ${
-                        index < review.rating ? 'text-primary fill-current' : 'text-muted-foreground/30'
-                      }`}
-                    />
-                  ))}
+                {/* Content */}
+                <div className="flex-1 space-y-1">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h4 className="font-bold text-foreground text-sm">{review.name}</h4>
+                            <div className="flex items-center gap-1 mt-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star
+                                    key={i}
+                                    size={12}
+                                    className={`${
+                                        i < review.rating ? 'text-primary fill-primary' : 'text-muted-foreground/20'
+                                    }`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground font-mono">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                        </span>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground leading-relaxed mt-2 group-hover:text-foreground transition-colors">
+                        {review.comment}
+                    </p>
                 </div>
-
-                <p className="text-foreground text-sm">{review.comment}</p>
               </div>
-            ))}
-          </div>
+            </motion.div>
+          ))
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 

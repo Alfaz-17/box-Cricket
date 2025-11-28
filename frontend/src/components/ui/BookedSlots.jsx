@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { Calendar, Clock, UserRound, CalendarX2, Square, Filter } from 'lucide-react'
+import React, { useEffect, useState, useMemo } from 'react'
+import { Calendar, Clock, UserRound, CalendarX2 } from 'lucide-react'
 import api from '../../utils/api'
-import { formatDate } from '../../utils/formatDate'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { formatDate, formatTime } from '../../utils/formatDate'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import socket from '../../utils/soket'
 import toast from 'react-hot-toast'
+import { List, AutoSizer } from 'react-virtualized'
+import 'react-virtualized/styles.css'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+
 export default function BookedSlots({ boxId }) {
   const [bookedSlots, setBookedSlots] = useState([])
   const [filteredSlots, setFilteredSlots] = useState([])
@@ -15,191 +19,209 @@ export default function BookedSlots({ boxId }) {
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedQuarter, setSelectedQuarter] = useState('')
 
-
-
-
-
-   const fetchSlots =async () =>{
-        try {
-        const res = await api.get(`/slots/booked-blocked-slots/${boxId}`)
-        setBookedSlots(res.data.bookedSlots || [])
-        setFilteredSlots(res.data.bookedSlots || [])
-      } catch (error) {
-        console.error('Failed to fetch booked slots:', error)
-      } finally {
-        setLoading(false)
-      }
-   }
-  //fetch Booked solts api
-  useEffect(() => {
-  
-    fetchSlots();
-  }, [boxId]);
-
-
+  const fetchSlots = async () => {
+    try {
+      const res = await api.get(`/slots/booked-blocked-slots/${boxId}`)
+      setBookedSlots(res.data.bookedSlots || [])
+      setFilteredSlots(res.data.bookedSlots || [])
+    } catch (error) {
+      console.error('Failed to fetch booked slots:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-  socket.on("new-booking", data => {
-    console.log("📢 new-booking booking update received:", data);
-    toast.success("New Booking created");
-    fetchSlots() ; // refresh booked slots list
-  })
+    fetchSlots()
+  }, [boxId])
 
-  return () => socket.off("new-booking")
-}, []);
+  useEffect(() => {
+    socket.on("new-booking", data => {
+      console.log("📢 new-booking booking update received:", data)
+      toast.success("New Booking created")
+      fetchSlots()
+    })
 
+    return () => socket.off("new-booking")
+  }, [])
 
-  // Extract unique quarters from booked slots
-  const uniqueQuarters = [...new Set(bookedSlots.map(q => q.quarterName))]
+  const uniqueQuarters = useMemo(() => [...new Set(bookedSlots.map(q => q.quarterName))], [bookedSlots])
 
-  // add filter
   const handleQuarterChange = (value) => {
     const quarter = value === "all" ? "" : value
     setSelectedQuarter(quarter)
+    applyFilters(selectedDate, quarter)
+  }
 
+  const handleDateChange = date => {
+    setSelectedDate(date)
+    // Format date to YYYY-MM-DD for filtering if date exists, else empty string
+    const dateString = date ? date.toISOString().split('T')[0] : ''
+    applyFilters(dateString, selectedQuarter)
+  }
+
+  const applyFilters = (date, quarter) => {
     const filtered = bookedSlots
       .filter(q => quarter === '' || q.quarterName === quarter)
       .map(q => ({
         ...q,
-        slots: selectedDate ? q.slots.filter(slot => slot.date === selectedDate) : q.slots,
-      }))
-
-    setFilteredSlots(filtered)
-  }
-
-  const handleDateChange = e => {
-    const date = e.target.value
-    setSelectedDate(date)
-
-    const filtered = bookedSlots
-      .filter(q => selectedQuarter === '' || q.quarterName === selectedQuarter)
-      .map(q => ({
-        ...q,
         slots: date ? q.slots.filter(slot => slot.date === date) : q.slots,
       }))
+      .filter(q => q.slots.length > 0)
 
     setFilteredSlots(filtered)
   }
 
-  // Filter out quarters with no slots after applying date filter
-  const noFilteredResults = filteredSlots.every(q => q.slots.length === 0)
+  // Flatten the list for virtualization
+  const flattenedItems = useMemo(() => {
+    const items = []
+    filteredSlots.forEach(quarter => {
+      items.push({ type: 'header', content: quarter.quarterName })
+      quarter.slots.forEach(slot => {
+        items.push({ type: 'slot', content: slot })
+      })
+    })
+    return items
+  }, [filteredSlots])
+
+  const rowRenderer = ({ index, key, style }) => {
+    const item = flattenedItems[index]
+
+    if (item.type === 'header') {
+      return (
+        <div key={key} style={style} className="flex items-end pb-2">
+           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/5 pb-1 inline-block">
+            {item.content}
+          </h3>
+        </div>
+      )
+    }
+
+    const slot = item.content
+    return (
+      <div key={key} style={{ ...style, height: style.height - 12 }} className="pr-2">
+        <div className="group relative flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-r-xl transition-all duration-300 overflow-hidden h-full">
+            {/* Accent Bar */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_rgba(157,255,0,0.5)]" />
+
+            <div className="flex flex-col gap-1 pl-3">
+                {/* User Name */}
+                <div className="flex items-center gap-2">
+                    <UserRound className="w-3 h-3 text-primary/70" />
+                    <span className="font-bold text-foreground text-sm tracking-wide">
+                        {slot.user}
+                    </span>
+                </div>
+                
+                {/* Date */}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Calendar className="w-3 h-3" />
+                    <span>{formatDate(slot.date)}</span>
+                </div>
+            </div>
+
+            {/* Time */}
+            <div className="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg border border-white/5">
+                <Clock className="w-3 h-3 text-primary" />
+                <span className="text-xs font-mono font-medium text-primary">
+                    {slot.startTime} - {formatTime(slot.endTime)}
+                </span>
+            </div>
+        </div>
+      </div>
+    )
+  }
+
+  const getRowHeight = ({ index }) => {
+    return flattenedItems[index].type === 'header' ? 40 : 80
+  }
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex justify-center items-center h-48">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     )
 
   if (bookedSlots.length === 0)
     return (
-      <Card className="bg-muted/50 border-dashed">
-        <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-          <div className="flex justify-center mb-2">
-            <CalendarX2 className="w-8 h-8 text-primary" />
-          </div>
-          <p className="text-lg font-medium">No upcoming booked slots</p>
-          <p className="text-sm text-muted-foreground">There are currently no bookings scheduled for this box.</p>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed border-primary/20 rounded-2xl bg-primary/5">
+        <CalendarX2 className="w-10 h-10 text-primary/50 mb-3" />
+        <p className="text-lg font-medium text-primary">No upcoming bookings</p>
+        <p className="text-sm text-muted-foreground">The schedule is currently empty.</p>
+      </div>
     )
 
   return (
-    <Card className="bg-card shadow-md">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-2xl font-bold flex items-center gap-2">
-          📅 Booked Slots by Boxes
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-6 flex items-center gap-4 flex-wrap">
-          <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-primary" />
-            <Input
-              type="date"
-              value={selectedDate}
+    <div className="space-y-6 h-full flex flex-col">
+      {/* Header & Filters */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5 shrink-0">
+        <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+          Booked Slots
+        </h2>
+        
+        <div className="grid grid-cols-2 sm:flex items-center gap-3 w-full md:w-auto">
+          <div className="relative col-span-2 sm:col-span-1">
+             <DatePicker
+              selected={selectedDate}
               onChange={handleDateChange}
-              className="w-auto"
+              className="w-full sm:w-auto h-9 bg-transparent border-b border-white/20 text-xs focus:outline-none placeholder:text-muted-foreground"
+              placeholderText="Filter by Date"
+              dateFormat="yyyy-MM-dd"
             />
           </div>
 
           <Select value={selectedQuarter || "all"} onValueChange={handleQuarterChange}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[140px] h-9 bg-transparent border-white/10 text-xs">
               <SelectValue placeholder="All Boxes" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Boxes</SelectItem>
               {uniqueQuarters.map(qtr => (
                 <SelectItem key={qtr} value={qtr}>
-                  {qtr}-box
+                  {qtr}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSelectedDate('')
-              setSelectedQuarter('')
-              setFilteredSlots(bookedSlots)
-            }}
-            className="ml-auto text-primary hover:text-primary/80 hover:bg-primary/10"
-          >
-            Clear Filter
-          </Button>
-        </div>
-
-        <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2">
-          {filteredSlots.map(quarter =>
-            quarter.slots.length === 0 ? null : (
-              <div
-                key={quarter.quarterName}
-                className="border border-border rounded-lg p-4 bg-background/50"
+          {(selectedDate || selectedQuarter) && (
+             <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedDate('')
+                  setSelectedQuarter('')
+                  setFilteredSlots(bookedSlots)
+                }}
+                className="h-9 text-xs text-muted-foreground hover:text-primary col-span-2 sm:col-span-1"
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <Square className="w-5 h-5 text-primary" />
-                  <h3 className="text-lg font-semibold text-primary">
-                    Boxes:{quarter.quarterName}-(box)
-                  </h3>
-                </div>
-
-                <div className="space-y-3">
-                  {quarter.slots.map(slot => (
-                    <div
-                      key={slot._id}
-                      className="border border-border rounded-lg p-3 bg-card hover:bg-muted/50 shadow-sm transition-all"
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <UserRound className="w-4 h-4 text-primary" />
-                        <span className="font-medium">User:</span>
-                        <span>{slot.user}</span>
-                      </div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="w-4 h-4 text-primary" />
-                        <span className="font-medium">Date:</span>
-                        <span>{formatDate(slot.date)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-primary" />
-                        <span className="font-medium">Time:</span>
-                        <span>
-                          {slot.startTime} - {slot.endTime}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
+                Clear
+              </Button>
           )}
         </div>
-        {noFilteredResults && (
-          <div className="text-center text-primary bg-muted/30 p-4 rounded-md shadow mt-4">
-            <p className="font-medium">No booked slots found for selected filter(s).</p>
-          </div>
+      </div>
+
+      {/* Virtualized List */}
+      <div className="flex-1 min-h-[500px]" style={{ height: 500 }}>
+        {flattenedItems.length > 0 ? (
+            <AutoSizer>
+            {({ height, width }) => (
+                <List
+                width={width}
+                height={height}
+                rowCount={flattenedItems.length}
+                rowHeight={getRowHeight}
+                rowRenderer={rowRenderer}
+                />
+            )}
+            </AutoSizer>
+        ) : (
+             <div className="text-center py-8 text-muted-foreground">
+                <p>No bookings found for the selected filters.</p>
+            </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
