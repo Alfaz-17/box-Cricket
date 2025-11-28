@@ -12,7 +12,7 @@ import {
   Home,
   CalendarCheck,
   LogIn,
-  Group,
+
   Contact,
   BookImageIcon,
   X,
@@ -47,13 +47,13 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/admin/block-slot', name: 'Block Time Slots', icon: <Clock size={20} /> },
     { path: '/my-profile', name: 'My Profile', icon: <Users size={20} /> },
     { path: '/settings', name: 'Settings', icon: <Settings size={20} /> },
-    { path: '/groups', name: 'Group', icon: <Group size={20} /> },
+
   ];
 
   const userMenuItems = [
     { path: '/', name: 'Home', icon: <Home size={20} /> },
     { path: '/my-bookings', name: 'My Bookings', icon: <CalendarCheck size={20} /> },
-    { path: '/groups', name: 'Group', icon: <Group size={20} /> },
+
     { path: '/my-profile', name: 'My Profile', icon: <Users size={20} /> },
     { path: '/settings', name: 'Settings', icon: <Settings size={20} /> },
     { path: '/support', name: 'Contact Us', icon: <Contact size={20} /> },

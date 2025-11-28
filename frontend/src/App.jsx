@@ -35,17 +35,8 @@ import AdminBookings from './pages/admin/AdminBookings'
 import BlockSlot from './pages/admin/BlockSlot'
 
 import api from './utils/api'
-import Group from './pages/user/Group'
-import InviteUsers from './pages/user/InviteUsers'
 import socket from './utils/soket'
-import GroupChat from './pages/user/GroupChat'
-import GroupInfo from './pages/user/GroupInfo'
-import '@fontsource/inter' // Loads 400 weight by default
-import '@fontsource/mulish'
-import '@fontsource/poppins'
-import '@fontsource/roboto'
-import Notifications from './pages/user/Notifications'
-import useNotificationStore from './store/useNotificationStore'
+
 
 const ProtectedRoute = ({ children, role }) => {
   const { user, isAuthenticated, loading } = React.useContext(AuthContext)
@@ -71,7 +62,7 @@ function App() {
   const [user, setUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
-  const { fetchNotifications, fetchUnreadCount, markAllAsRead } = useNotificationStore()
+
 
   // Initialize Theme (Default to Dark)
   useEffect(() => {
@@ -110,29 +101,7 @@ function App() {
     }
   }, [user])
 
-  // use soket to show real time notification alert
-  useEffect(() => {
-    const handleNotification = data => {
-      toast.success(data.message)
-      // refereh all componnet when sokets alert
 
-      fetchUnreadCount()
-      fetchNotifications()
-      markAllAsRead()
-    }
-
-    socket.on('group-invite', handleNotification)
-    socket.on('group-join-success', handleNotification)
-    socket.on('group-joined', handleNotification)
-    socket.on('new_notification', handleNotification)
-
-    return () => {
-      socket.off('group-invite', handleNotification)
-      socket.off('group-join-success', handleNotification)
-      socket.off('group-joined', handleNotification)
-      socket.off('new_notification', handleNotification)
-    }
-  }, [fetchUnreadCount, fetchNotifications])
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -227,56 +196,7 @@ function App() {
                     }
                   />
 
-                  <Route
-                    path="/invite/:id"
-                    element={
-                      <ProtectedRoute>
-                        <InviteUsers />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/groups"
-                    element={
-                      <ProtectedRoute>
-                        <Group />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/groupChat/:groupName/:groupId"
-                    element={
-                      <ProtectedRoute>
-                        <GroupChat />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/groupInfo/:groupName/:groupId"
-                    element={
-                      <ProtectedRoute>
-                        <GroupInfo />
-                      </ProtectedRoute>
-                    }
-                  />
 
-                  <Route
-                    path="/support"
-                    element={
-                      <ProtectedRoute>
-                        <FeedbackSupport />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  <Route
-                    path="/notifications"
-                    element={
-                      <ProtectedRoute>
-                        <Notifications />
-                      </ProtectedRoute>
-                    }
-                  />
 
                   {/* Admin Routes */}
                   <Route

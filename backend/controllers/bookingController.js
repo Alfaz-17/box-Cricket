@@ -9,6 +9,7 @@ import { sendMessage } from '../lib/whatsappBot.js'
 import { getIO } from '../lib/soket.js'
 import { validateSlot } from '../lib/slotValidator.js'
 
+
 export const checkSlotAvailability = async (req, res) => {
   try {
     const { boxId, quarterId, date, startTime, duration } = req.body;
@@ -116,6 +117,9 @@ export const createTemporaryBooking = async (req, res) => {
       from: startTime,
       duration,
     });
+
+
+
 
   } catch (err) {
     console.error("Temporary Booking Error:", err.message);
