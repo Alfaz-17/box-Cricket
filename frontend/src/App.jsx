@@ -12,6 +12,7 @@ import AnimatedShaderBackground from './components/ui/AnimatedShaderBackground'
 // Public pages
 import Home from './pages/public/Home'
 import BoxDetail from './pages/public/BoxDetail'
+import BoxBooking from './pages/public/BoxBooking'
 
 // Auth pages
 import Login from './pages/auth/Login'
@@ -201,6 +202,7 @@ function App() {
                   {/* Public Routes */}
                   <Route path="/" element={<Home />} />
                   <Route path="/box/:id" element={<BoxDetail />} />
+                  <Route path="/box/:id/booking" element={<BoxBooking />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
