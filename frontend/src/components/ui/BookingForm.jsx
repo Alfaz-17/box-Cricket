@@ -6,25 +6,21 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
-import TimePicker from './TimePicker'
+import SlotPicker from './SlotPicker'
 
 const BookingForm = ({
   displayBox,
   selectedDate,
   setSelectedDate,
-  selectedTime,
-  handleTimeChange,
-  duration,
-  setDuration,
+  selectedSlots,
+  onSlotSelect,
+  bookedSlots,
+  blockedSlots,
   contactNumber,
   setContactNumber,
   selectedQuarter,
   setSelectedQuarter,
-  availableTimes,
-  setAvailableTimes,
-  isCheckingAvailability,
   isProcessingBooking,
-  handleCheckAvailability,
   handleBooking,
 }) => {
   return (
@@ -62,113 +58,115 @@ const BookingForm = ({
       </div>
 
       {/* Booking Form Fields */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Date Picker */}
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Date</label>
-          <div className="relative">
-            <DatePicker
-                selected={selectedDate}
-                onChange={date => {
-                setSelectedDate(date)
-                setAvailableTimes(false)
-                }}
-                minDate={new Date()}
-                className="flex h-11 w-full rounded-none border-b border-white/20 bg-transparent px-0 py-2 text-sm focus:border-primary focus:outline-none transition-colors placeholder:text-muted-foreground/50"
-                dateFormat="MMMM d, yyyy"
-                placeholderText="Select a date"
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Left Column: Date & Details */}
+        <div className="space-y-6">
+            {/* Box Selection */}
+            <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Box</label>
+            <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
+                <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 px-4 focus:ring-primary/50 focus:border-primary">
+                <SelectValue placeholder="-- Select a Box --" />
+                </SelectTrigger>
+                <SelectContent>
+                {displayBox.quarters?.map(quarter => (
+                    <SelectItem key={quarter._id} value={quarter._id}>
+                    {quarter.name}
+                    </SelectItem>
+                ))}
+                </SelectContent>
+            </Select>
+            </div>
+
+            {/* Date Picker */}
+            <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Date</label>
+            <div className="relative">
+                <DatePicker
+                    selected={selectedDate}
+                    onChange={date => {
+                    setSelectedDate(date)
+                    setAvailableTimes(false)
+                    }}
+                    minDate={new Date()}
+                    className="flex h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm focus:border-primary focus:outline-none transition-colors placeholder:text-muted-foreground/50"
+                    dateFormat="MMMM d, yyyy"
+                    placeholderText="Select a date"
+                />
+            </div>
+            </div>
+
+            {/* Contact Number */}
+            <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Contact Number</label>
+            <Input
+                type="tel"
+                value={contactNumber}
+                onChange={e => setContactNumber(e.target.value)}
+                placeholder="Enter contact number"
+                className="h-12 rounded-xl border-white/10 bg-white/5 px-4 focus-visible:ring-primary/50 focus-visible:border-primary"
             />
-          </div>
+            </div>
+
+            {/* Summary / Actions */}
+            <div className="pt-4">
+                 {/* Action Buttons */}
+                <div className="flex flex-col gap-4">
+                    {/* Only show Book Now if slots are selected */}
+                    {selectedSlots.length > 0 && contactNumber && selectedQuarter ? (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <Button
+                            onClick={handleBooking}
+                            className="w-full h-14 bg-gradient-to-r from-primary to-secondary text-black hover:from-primary/90 hover:to-secondary/90 font-bold uppercase tracking-wide shadow-[0_0_20px_rgba(157,255,0,0.3)] text-lg"
+                            disabled={isProcessingBooking}
+                            >
+                            {isProcessingBooking ? 'Booking...' : `Book ${selectedSlots.length} Slot${selectedSlots.length > 1 ? 's' : ''}`}
+                            <Trophy className="ml-2 w-5 h-5" />
+                            </Button>
+                        </motion.div>
+                    ) : (
+                         <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+                            <p className="text-muted-foreground text-sm">Select a box, date, and slots to proceed.</p>
+                         </div>
+                    )}
+                </div>
+            </div>
         </div>
 
-        {/* Contact Number */}
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Contact Number</label>
-          <Input
-            type="tel"
-            value={contactNumber}
-            onChange={e => setContactNumber(e.target.value)}
-            placeholder="Enter contact number"
-            className="h-11 rounded-none border-0 border-b border-white/20 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-primary"
-          />
+        {/* Right Column: Slot Picker */}
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Available Slots</label>
+                {selectedSlots.length > 0 && (
+                    <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">
+                        {selectedSlots.length} Selected ({selectedSlots[0].startTime} - {selectedSlots[selectedSlots.length-1].endTime})
+                    </span>
+                )}
+            </div>
+            
+            <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                {selectedQuarter ? (
+                    <SlotPicker 
+                        selectedDate={selectedDate}
+                        bookedSlots={bookedSlots}
+                        blockedSlots={blockedSlots}
+                        selectedQuarter={selectedQuarter}
+                        onSlotSelect={onSlotSelect}
+                        selectedSlots={selectedSlots}
+                    />
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/10 rounded-xl bg-white/5 text-muted-foreground">
+                        <Info className="w-8 h-8 mb-2 opacity-50" />
+                        <p>Please select a box first</p>
+                    </div>
+                )}
+            </div>
         </div>
-
-        {/* Time Picker */}
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Time</label>
-          <TimePicker value={selectedTime} onChange={handleTimeChange} />
-          <p className="text-xs text-primary mt-1 font-mono">
-            {selectedTime ? `Selected: ${selectedTime}` : ' '}
-          </p>
-        </div>
-
-        {/* Duration */}
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Duration</label>
-          <Select value={duration.toString()} onValueChange={val => setDuration(Number(val))}>
-            <SelectTrigger className="h-11 rounded-none border-0 border-b border-white/20 bg-transparent px-0 focus:ring-0 focus:border-primary">
-              <SelectValue placeholder="Select duration" />
-            </SelectTrigger>
-            <SelectContent>
-              {[1, 2, 3, 4].map(hours => (
-                <SelectItem key={hours} value={hours.toString()}>
-                  {hours} hour{hours > 1 ? 's' : ''}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Box Selection */}
-        <div className="sm:col-span-2 lg:col-span-1 space-y-2">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Box</label>
-          <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
-            <SelectTrigger className="h-11 rounded-none border-0 border-b border-white/20 bg-transparent px-0 focus:ring-0 focus:border-primary">
-              <SelectValue placeholder="-- Select a Box --" />
-            </SelectTrigger>
-            <SelectContent>
-              {displayBox.quarters?.map(quarter => (
-                <SelectItem key={quarter._id} value={quarter._id}>
-                  {quarter.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 pt-4">
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex-1">
-          <Button
-            onClick={handleCheckAvailability}
-            variant="outline"
-            className="w-full h-12 border-primary/50 text-primary hover:bg-primary hover:text-black font-bold uppercase tracking-wide"
-            disabled={isCheckingAvailability}
-          >
-            {isCheckingAvailability ? 'Checking...' : 'Check Availability'}
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-        </motion.div>
-
-        {contactNumber && availableTimes && duration && selectedDate && selectedTime && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex-1"
-          >
-            <Button
-              onClick={handleBooking}
-              className="w-full h-12 bg-primary text-black hover:bg-primary/90 font-bold uppercase tracking-wide shadow-[0_0_20px_rgba(157,255,0,0.3)]"
-              disabled={isProcessingBooking}
-            >
-              {isProcessingBooking ? 'Booking...' : 'Book Now'}
-              <Trophy className="ml-2 w-4 h-4" />
-            </Button>
-          </motion.div>
-        )}
       </div>
 
       {/* Booking Policy */}

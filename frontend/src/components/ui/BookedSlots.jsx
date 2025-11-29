@@ -3,14 +3,12 @@ import { Calendar, Clock, UserRound, CalendarX2 } from 'lucide-react'
 import api from '../../utils/api'
 import { formatDate, formatTime } from '../../utils/formatDate'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import socket from '../../utils/soket'
 import toast from 'react-hot-toast'
-import { List, AutoSizer } from 'react-virtualized'
-import 'react-virtualized/styles.css'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { motion } from 'framer-motion'
 
 export default function BookedSlots({ boxId }) {
   const [bookedSlots, setBookedSlots] = useState([])
@@ -55,7 +53,6 @@ export default function BookedSlots({ boxId }) {
 
   const handleDateChange = date => {
     setSelectedDate(date)
-    // Format date to YYYY-MM-DD for filtering if date exists, else empty string
     const dateString = date ? date.toISOString().split('T')[0] : ''
     applyFilters(dateString, selectedQuarter)
   }
@@ -72,69 +69,23 @@ export default function BookedSlots({ boxId }) {
     setFilteredSlots(filtered)
   }
 
-  // Flatten the list for virtualization
-  const flattenedItems = useMemo(() => {
-    const items = []
+  // Group slots by Date -> Quarter
+  const groupedSlots = useMemo(() => {
+    const groups = {}
     filteredSlots.forEach(quarter => {
-      items.push({ type: 'header', content: quarter.quarterName })
       quarter.slots.forEach(slot => {
-        items.push({ type: 'slot', content: slot })
+        if (!groups[slot.date]) {
+          groups[slot.date] = []
+        }
+        groups[slot.date].push({ ...slot, quarterName: quarter.quarterName })
       })
     })
-    return items
+    // Sort dates
+    return Object.keys(groups).sort().map(date => ({
+      date,
+      slots: groups[date].sort((a, b) => a.startTime.localeCompare(b.startTime))
+    }))
   }, [filteredSlots])
-
-  const rowRenderer = ({ index, key, style }) => {
-    const item = flattenedItems[index]
-
-    if (item.type === 'header') {
-      return (
-        <div key={key} style={style} className="flex items-end pb-2">
-           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/5 pb-1 inline-block">
-            {item.content}
-          </h3>
-        </div>
-      )
-    }
-
-    const slot = item.content
-    return (
-      <div key={key} style={{ ...style, height: style.height - 12 }} className="pr-2">
-        <div className="group relative flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-r-xl transition-all duration-300 overflow-hidden h-full">
-            {/* Accent Bar */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_rgba(157,255,0,0.5)]" />
-
-            <div className="flex flex-col gap-1 pl-3">
-                {/* User Name */}
-                <div className="flex items-center gap-2">
-                    <UserRound className="w-3 h-3 text-primary/70" />
-                    <span className="font-bold text-foreground text-sm tracking-wide">
-                        {slot.user}
-                    </span>
-                </div>
-                
-                {/* Date */}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="w-3 h-3" />
-                    <span>{formatDate(slot.date)}</span>
-                </div>
-            </div>
-
-            {/* Time */}
-            <div className="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg border border-white/5">
-                <Clock className="w-3 h-3 text-primary" />
-                <span className="text-xs font-mono font-medium text-primary">
-                    {slot.startTime} - {formatTime(slot.endTime)}
-                </span>
-            </div>
-        </div>
-      </div>
-    )
-  }
-
-  const getRowHeight = ({ index }) => {
-    return flattenedItems[index].type === 'header' ? 40 : 80
-  }
 
   if (loading)
     return (
@@ -202,20 +153,54 @@ export default function BookedSlots({ boxId }) {
         </div>
       </div>
 
-      {/* Virtualized List */}
-      <div className="flex-1 min-h-[500px]" style={{ height: 500 }}>
-        {flattenedItems.length > 0 ? (
-            <AutoSizer>
-            {({ height, width }) => (
-                <List
-                width={width}
-                height={height}
-                rowCount={flattenedItems.length}
-                rowHeight={getRowHeight}
-                rowRenderer={rowRenderer}
-                />
-            )}
-            </AutoSizer>
+      {/* Grid Layout */}
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-8">
+        {groupedSlots.length > 0 ? (
+          groupedSlots.map((group) => (
+            <div key={group.date} className="space-y-4">
+              {/* Date Header */}
+              <div className="flex items-center gap-3">
+                <div className="h-px flex-1 bg-gradient-to-r from-primary/50 to-transparent" />
+                <h3 className="text-lg font-bold text-primary uppercase tracking-wider flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  {formatDate(group.date)}
+                </h3>
+                <div className="h-px flex-1 bg-gradient-to-l from-primary/50 to-transparent" />
+              </div>
+
+              {/* Slots Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {group.slots.map((slot, idx) => (
+                  <motion.div
+                    key={`${slot._id}-${idx}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="group relative p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 hover:border-primary/30 transition-all duration-300"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                        {slot.quarterName}
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        {slot.startTime} - {formatTime(slot.endTime)}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-black font-bold text-xs">
+                        {slot.user.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="font-medium text-foreground text-sm truncate">
+                        {slot.user}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          ))
         ) : (
              <div className="text-center py-8 text-muted-foreground">
                 <p>No bookings found for the selected filters.</p>

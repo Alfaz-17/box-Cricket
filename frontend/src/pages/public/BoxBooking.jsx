@@ -32,10 +32,10 @@ const BoxBooking = () => {
 
   // Booking State
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [selectedTime, setSelectedTime] = useState('')
-  const [duration, setDuration] = useState(1)
-  const [availableTimes, setAvailableTimes] = useState([])
-  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false)
+  const [selectedSlots, setSelectedSlots] = useState([]) // New state for slots
+  const [bookedSlots, setBookedSlots] = useState([]) // New state for fetched booked slots
+  const [blockedSlots, setBlockedSlots] = useState([]) // New state for fetched blocked slots
+  
   const [isProcessingBooking, setIsProcessingBooking] = useState(false)
   const [contactNumber, setContactNumber] = useState('')
   const [selectedQuarter, setSelectedQuarter] = useState('')
@@ -62,56 +62,36 @@ const BoxBooking = () => {
     fetchBoxDetails()
   }, [id]);
 
-  const handleTimeChange = newTime => {
-    setSelectedTime(newTime)
-    setAvailableTimes(false)
+  // Fetch Booked/Blocked Slots
+  const fetchSlots = async () => {
+    try {
+      const res = await api.get(`/slots/booked-blocked-slots/${id}`)
+      setBookedSlots(res.data.bookedSlots || [])
+      setBlockedSlots(res.data.blockedSlots || [])
+    } catch (error) {
+      console.error('Failed to fetch slots:', error)
+    }
   }
+
+  useEffect(() => {
+    fetchSlots()
+  }, [id])
+
+  // Listen for new bookings to refresh slots
+  useEffect(() => {
+    socket.on("new-booking", data => {
+      console.log("📢 new-booking booking update received:", data)
+      fetchSlots()
+    })
+    return () => socket.off("new-booking")
+  }, [])
+
 
   const formattedDate = selectedDate.toISOString().split('T')[0]
-  const time = selectedTime.toString()
-
-  const handleCheckAvailability = async () => {
-    if (!selectedDate || !selectedTime || !duration || !contactNumber) {
-      toast.error('Please fill all details')
-      return
-    }
-
-    if (!isAuthenticated) {
-      toast.error('Please log in to book a cricket box')
-      navigate('/login', { state: { from: `/box/${id}/booking` } })
-      return
-    }
-    if (!selectedQuarter) {
-      toast.error('Please select a quarter')
-      return
-    }
-
-    setIsCheckingAvailability(true)
-
-    try {
-      const response = await api.post('/booking/check-slot', {
-        boxId: id,
-        date: formattedDate,
-        quarterId: selectedQuarter,
-        startTime: time,
-        duration,
-      })
-
-      const data = response.data
-      setAvailableTimes(data.available)
-
-      if (data.message) {
-        return toast.success(data.message)
-      }
-
-      toast.error(data.error || 'Slot not available')
-    } catch (error) {
-      console.error('Error checking availability:', error)
-      toast.error(error.response?.data?.message || 'Failed to check availability')
-    } finally {
-      setIsCheckingAvailability(false)
-    }
-  }
+  
+  // Derived values from selectedSlots
+  const startTime = selectedSlots.length > 0 ? selectedSlots[0].startTime : ''
+  const duration = selectedSlots.length
 
   const handleBooking = async () => {
     if (!isAuthenticated) {
@@ -120,7 +100,7 @@ const BoxBooking = () => {
       return
     }
 
-    if (!selectedDate || !selectedTime || !duration || !selectedQuarter) {
+    if (!selectedDate || !startTime || !duration || !selectedQuarter) {
       toast.error('Please select all booking details')
       return
     }
@@ -130,10 +110,11 @@ const BoxBooking = () => {
       return
     }
 
-    if (!availableTimes) {
-      toast.error('This time is not available')
-      return
-    }
+    // Optional: Re-check availability before booking if needed, 
+    // but usually the UI prevents selecting booked slots.
+    // We can skip the explicit "Check Availability" button requirement if the UI is real-time enough,
+    // but keeping it for double-safety is fine.
+    // For now, I'll allow booking if slots are selected.
 
     setIsProcessingBooking(true)
 
@@ -142,13 +123,14 @@ const BoxBooking = () => {
         boxId: id,
         quarterId: selectedQuarter,
         date: formattedDate,
-        startTime: time,
+        startTime: startTime,
         amountPaid: '500',
         duration,
         contactNumber,
       })
       toast.success('🎉 Temporary booking confirmed!')
-      setAvailableTimes(false)
+      setSelectedSlots([]) // Clear selection
+      fetchSlots() // Refresh slots
     } catch (error) {
       console.error('Error booking :', error)
       toast.error(error.response?.data?.message || 'Failed to create a booking')
@@ -246,33 +228,27 @@ const BoxBooking = () => {
                             displayBox={box}
                             selectedDate={selectedDate}
                             setSelectedDate={setSelectedDate}
-                            selectedTime={selectedTime}
-                            handleTimeChange={handleTimeChange}
-                            duration={duration}
-                            setDuration={setDuration}
+                            // Pass new slot props
+                            selectedSlots={selectedSlots}
+                            onSlotSelect={setSelectedSlots}
+                            bookedSlots={bookedSlots}
+                            blockedSlots={blockedSlots}
+                            
                             contactNumber={contactNumber}
                             setContactNumber={setContactNumber}
                             selectedQuarter={selectedQuarter}
                             setSelectedQuarter={setSelectedQuarter}
-                            availableTimes={availableTimes}
-                            setAvailableTimes={setAvailableTimes}
-                            isCheckingAvailability={isCheckingAvailability}
                             isProcessingBooking={isProcessingBooking}
-                            handleCheckAvailability={handleCheckAvailability}
                             handleBooking={handleBooking}
                         />
                     )}
 
                     {activeTab === 'booked' && (
-
                             <BookedSlots boxId={id} />
-                      
                     )}
 
                     {activeTab === 'blocked' && (
-                       
                             <BlockedSlots boxId={id} />
-                       
                     )}
 
                     {activeTab === 'reviews' && (

@@ -107,13 +107,29 @@ export const getBlockedAndBookedSlots = async (req, res) => {
 
     // 2. Get all upcoming bookings for the box
     const bookings = await Booking.find({ box: id })
-    const upcomingBookedSlots = bookings.filter(b => new Date(b.endDateTime) > now)
+    const upcomingBookedSlots = bookings.filter(b => new Date(b.endDateTime) > now);
 
     // 3. Get all upcoming blocked slots for the box
-    const blockedSlots = (await BlockedSlot.find({ boxId: id })).filter(b => {
-      const endBlockedTime = parseDateTime(b.date, b.endTime)
-      return endBlockedTime > now
-    })
+
+
+    // We need to compute datetimes for filtering and response
+    const allBlockedSlots = await BlockedSlot.find({ boxId: id })
+    const upcomingBlockedSlots = allBlockedSlots.map(slot => {
+        const startDateTime = parseDateTime(slot.date, slot.startTime)
+        let endDateTime = parseDateTime(slot.date, slot.endTime)
+        
+        // Handle overnight
+        if (endDateTime <= startDateTime) {
+            endDateTime.setDate(endDateTime.getDate() + 1)
+        }
+        
+        return {
+            ...slot.toObject(),
+            startDateTime,
+            endDateTime
+        }
+    }).filter(b => b.endDateTime > now)
+
 
     // 4. Group booked slots by quarterName
     const bookedMap = {}
@@ -126,21 +142,23 @@ export const getBlockedAndBookedSlots = async (req, res) => {
 
     // 5. Group blocked slots by quarterName
     const blockedMap = {}
-    blockedSlots.forEach(b => {
+    upcomingBlockedSlots.forEach(b => {
       if (!blockedMap[b.quarterName]) {
         blockedMap[b.quarterName] = []
       }
       blockedMap[b.quarterName].push(b)
     })
 
-    // 6. Convert maps to array format
+    // 6. Convert maps to array format with quarterId
     const bookedSlotsResponse = Object.keys(bookedMap).map(quarterName => ({
       quarterName,
+      quarterId: bookedMap[quarterName][0].quarter, // Add quarterId
       slots: bookedMap[quarterName],
     }))
 
     const blockedSlotsResponse = Object.keys(blockedMap).map(quarterName => ({
       quarterName,
+      quarterId: blockedMap[quarterName][0].quarterId, // Add quarterId
       slots: blockedMap[quarterName],
     }))
 

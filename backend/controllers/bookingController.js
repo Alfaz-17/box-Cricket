@@ -10,41 +10,6 @@ import { getIO } from '../lib/soket.js'
 import { validateSlot } from '../lib/slotValidator.js'
 
 
-export const checkSlotAvailability = async (req, res) => {
-  try {
-    const { boxId, quarterId, date, startTime, duration } = req.body;
-
-    if (!boxId || !quarterId || !date || !startTime || !duration) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const now = new Date();
-    const start = parseDateTime(date, startTime);
-    if (start < now) {
-      return res.status(400).json({ message: "Start time cannot be in the past" });
-    }
-
-    const box = await CricketBox.findById(boxId);
-    if (!box) return res.status(404).json({ message: "Box not found" });
-
-    const quarter = box.quarters.find(q => q._id.toString() === quarterId);
-    if (!quarter) return res.status(400).json({ message: "Invalid quarter selected" });
-
-    // ⏱ Shared Slot Validation
-    const { available, error } = await validateSlot({ boxId, quarterId, date, startTime, duration });
-
-    if (!available) return res.json({ available: false, error });
-
-    return res.json({ available: true, message: "Slot is available" });
-
-  } catch (err) {
-    console.error("❌ Slot Availability Error:", err.message);
-    res.status(500).json({ message: err.message || "Server error" });
-  }
-};
-
-
-
 export const createTemporaryBooking = async (req, res) => {
   try {
     const { boxId, quarterId, date, startTime, duration, contactNumber } = req.body;
@@ -126,10 +91,6 @@ export const createTemporaryBooking = async (req, res) => {
     res.status(500).json({ message: "Temporary booking failed" });
   }
 };
-
-
-
-
 
 
 
