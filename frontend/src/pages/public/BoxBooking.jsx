@@ -10,7 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import AuthContext from '../../context/AuthContext'
 import { Button } from '@/components/ui/Button'
 import api from '../../utils/api.js'
-import socket from "../../utils/soket.js"
+import socket from "../../utils/soket.js";
 import AnimatedShaderBackground from '../../components/ui/AnimatedShaderBackground'
 
 // Components
@@ -45,6 +45,8 @@ const BoxBooking = () => {
     socket.emit("join-box", `box-${id}`);
     return () => socket.emit("leave-box", `box-${id}`);
   }, [id]);
+
+
 
   // Fetch Box Details
   useEffect(() => {

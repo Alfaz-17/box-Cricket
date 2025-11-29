@@ -21,7 +21,6 @@ import AuthContext from '../../context/AuthContext'
 import { Button } from '@/components/ui/Button'
 import api from '../../utils/api.js'
 import BoxMap from '../../components/ui/BoxMap.jsx'
-import socket from "../../utils/soket.js"
 
 const BoxDetail = () => {
   const { id } = useParams()
@@ -33,10 +32,7 @@ const BoxDetail = () => {
   const { isAuthenticated } = useContext(AuthContext)
   const navigate = useNavigate();
 
-  useEffect(() => {
-    socket.emit("join-box", `box-${id}`); // 👈 room name match
-    return () => socket.emit("leave-box", `box-${id}`);
-  }, [id]);
+ 
 
   useEffect(() => {
     const fetchBoxDetails = async () => {
