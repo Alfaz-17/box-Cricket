@@ -1,5 +1,6 @@
 import Booking from '../models/Booking.js'
 import CricketBox from '../models/CricketBox.js'
+import moment from 'moment'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -8,6 +9,10 @@ import BlockedSlot from '../models/BlockedSlot.js'
 import { sendMessage } from '../lib/whatsappBot.js'
 import { getIO } from '../lib/soket.js'
 import { validateSlot } from '../lib/slotValidator.js'
+
+
+
+
 
 
 export const createTemporaryBooking = async (req, res) => {
@@ -38,7 +43,9 @@ export const createTemporaryBooking = async (req, res) => {
       return res.status(400).json({ message: error });
     }
 
-    // ✔ Create booking
+    // ✔ Create booking with formatted endTime
+    const formattedEndTime = moment(validatedEnd).format('hh:mm A')
+
     const booking = new Booking({
       user: req.user.name,
       userId: req.user._id,
@@ -47,7 +54,7 @@ export const createTemporaryBooking = async (req, res) => {
       quarterName: quarter.name,
       date,
       startTime,
-      endTime: validatedEnd,
+      endTime: formattedEndTime, // Save as "01:00 PM" instead of Date object
       startDateTime: validatedStart,
       endDateTime: validatedEnd,
       duration,
@@ -91,6 +98,10 @@ export const createTemporaryBooking = async (req, res) => {
     res.status(500).json({ message: "Temporary booking failed" });
   }
 };
+
+
+
+
 
 
 

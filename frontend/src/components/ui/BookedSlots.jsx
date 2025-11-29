@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { Calendar, Clock, UserRound, CalendarX2 } from 'lucide-react'
 import api from '../../utils/api'
-import { formatDate, formatTime } from '../../utils/formatDate'
+import { convertTo12Hour, formatDate, formatEndTime, formatTime } from '../../utils/formatDate'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import socket from '../../utils/soket'
@@ -184,7 +184,7 @@ export default function BookedSlots({ boxId }) {
                       </div>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="w-3 h-3" />
-                        {slot.startTime} - {formatTime(slot.endTime)}
+                        {convertTo12Hour(slot.startTime)} - {formatTime(slot.endTime)}
                       </div>
                     </div>
                     

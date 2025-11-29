@@ -18,22 +18,19 @@ const SlotPicker = ({
   useEffect(() => {
     const generatedSlots = []
     for (let i = 0; i < 24; i++) {
-      const startTime = `${i.toString().padStart(2, '0')}:00`
-      const endTime = `${(i + 1).toString().padStart(2, '0')}:00`
-      
-      // Format for display (e.g., 12:00 AM - 01:00 AM)
+      // Create date objects for formatting
       const date = new Date()
       date.setHours(i, 0, 0, 0)
-      const displayStart = format(date, 'hh:mm a')
+      const displayStart = format(date, 'hh:mm a') // "12:00 PM"
       
       const endDate = new Date()
       endDate.setHours(i + 1, 0, 0, 0)
-      const displayEnd = format(endDate, 'hh:mm a')
+      const displayEnd = format(endDate, 'hh:mm a') // "01:00 PM"
 
       generatedSlots.push({
         id: i,
-        startTime, // "00:00"
-        endTime,   // "01:00"
+        startTime: displayStart, // "12:00 PM" - Matches backend parseDateTime
+        endTime: displayEnd,     // "01:00 PM"
         display: `${displayStart} - ${displayEnd}`,
         rawStart: i
       })

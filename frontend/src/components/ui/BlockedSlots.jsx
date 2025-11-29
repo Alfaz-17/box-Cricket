@@ -108,7 +108,7 @@ export default function BlockedSlots({ boxId }) {
             <div className="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-lg border border-white/5">
                 <Clock className="w-3 h-3 text-destructive" />
                 <span className="text-xs font-mono font-medium text-destructive">
-                    {slot.startTime} - {formatTime(slot.endTime)}
+                    {slot.startTime} - {slot.endTime}
                 </span>
             </div>
         </div>

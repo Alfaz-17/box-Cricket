@@ -6,7 +6,6 @@ import 'react-datepicker/dist/react-datepicker.css'
 import TimePicker from '../../components/ui/TimePicker'
 import api from '../../utils/api'
 import { formatDate } from '../../utils/formatDate'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Label } from '@/components/ui/Label'
@@ -134,23 +133,32 @@ const BlockSlot = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6 flex justify-center">
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 min-h-screen">
+      {/* Header */}
+      <div className="mb-6 sm:mb-8">
+        <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+          Block Time Slots
+        </h1>
+        <p className="text-muted-foreground text-sm md:text-base">Prevent bookings for specific times due to maintenance or other reasons.</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         
         {/* Block Form Section */}
-        <Card className="border-primary/20 shadow-xl bg-card/50 backdrop-blur-sm h-fit">
-          <CardHeader className="border-b border-primary/10 pb-6">
-            <CardTitle style={{ fontFamily: 'Bebas Neue' }} className="text-3xl text-primary tracking-wide flex items-center gap-2">
-              <ShieldAlert className="h-6 w-6" /> Block Time Slot
-            </CardTitle>
-            <CardDescription>
-              Prevent bookings for specific times due to maintenance or other reasons.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
+        <div className="space-y-6">
+          <div className="bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="text-2xl">🚫</span>
+              <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-primary">
+                Block New Slot
+              </h2>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label>Select Box</Label>
+                <Label className="flex items-center gap-2">
+                  <span>🏏</span> Select Box
+                </Label>
                 <Select value={selectedBoxId || ''} onValueChange={handleBoxChange}>
                   <SelectTrigger className="bg-muted/30 border-primary/20">
                     <SelectValue placeholder="Select a box" />
@@ -166,7 +174,9 @@ const BlockSlot = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Select Quarter</Label>
+                <Label className="flex items-center gap-2">
+                  <span>📍</span> Select Quarter
+                </Label>
                 <Select 
                   value={selectedQuarter || ''} 
                   onValueChange={setSelectedQuarter}
@@ -188,7 +198,9 @@ const BlockSlot = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Date</Label>
+                <Label className="flex items-center gap-2">
+                  <span>📅</span> Date
+                </Label>
                 <div className="relative">
                   <DatePicker
                     selected={formData.date}
@@ -203,7 +215,9 @@ const BlockSlot = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Start Time</Label>
+                  <Label className="flex items-center gap-2">
+                    <span>⏰</span> Start Time
+                  </Label>
                   <div className="relative">
                     <TimePicker
                       value={formData.startTime}
@@ -213,7 +227,9 @@ const BlockSlot = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>End Time</Label>
+                  <Label className="flex items-center gap-2">
+                    <span>⏰</span> End Time
+                  </Label>
                   <div className="relative">
                     <TimePicker
                       value={formData.endTime}
@@ -225,7 +241,9 @@ const BlockSlot = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Reason</Label>
+                <Label className="flex items-center gap-2">
+                  <span>📝</span> Reason
+                </Label>
                 <Textarea
                   rows="3"
                   placeholder="e.g. Turf Maintenance, Private Event"
@@ -240,20 +258,19 @@ const BlockSlot = () => {
                 {loading ? <span className="loading loading-spinner loading-sm"></span> : 'Block Time Slot'}
               </Button>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Blocked Slots List Section */}
-        <Card className="border-primary/20 shadow-xl bg-card/50 backdrop-blur-sm h-fit">
-          <CardHeader className="border-b border-primary/10 pb-6">
-            <CardTitle style={{ fontFamily: 'Bebas Neue' }} className="text-3xl text-primary tracking-wide flex items-center gap-2">
-              <CheckCircle2 className="h-6 w-6" /> Active Blocks
-            </CardTitle>
-            <CardDescription>
-              View and manage currently blocked time slots.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
+        <div className="space-y-6">
+          <div className="bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="text-2xl">✅</span>
+              <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-primary">
+                Active Blocks
+              </h2>
+            </div>
+
             {selectedBoxId && (
               <div className="mb-6">
                 <Label className="mb-2 block">Filter by Quarter</Label>
@@ -302,7 +319,7 @@ const BlockSlot = () => {
                         {slotGroup.slots.map((timeSlot, idx) => (
                           <div
                             key={idx}
-                            className="bg-background/50 border border-primary/10 rounded-lg p-3 hover:border-primary/30 transition-colors flex justify-between items-start gap-3"
+                            className="bg-background/50 border border-primary/10 rounded-lg p-3 active:border-primary/30 md:hover:border-primary/30 transition-colors flex justify-between items-start gap-3"
                           >
                             <div className="space-y-1 text-sm">
                               <p className="flex items-center gap-2">
@@ -333,8 +350,8 @@ const BlockSlot = () => {
                   ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Plus, Edit, Trash2, Box as BoxIcon, MapPin, IndianRupee } from 'lucide-react'
+import { Plus, Edit, Trash2, MapPin, IndianRupee, ChevronDown, ChevronUp } from 'lucide-react'
 import api from '../../utils/api'
 import useBoxStore from '../../store/boxStore'
-import { Card, CardContent, CardFooter } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Badge } from '@/components/ui/Badge'
 
 const BoxManagement = () => {
   const [showDeleteInput, setShowDeleteInput] = useState(false)
   const [selectedBoxId, setSelectedBoxId] = useState(null)
   const [ownerCode, setOwnerCode] = useState('')
+  const [expandedBox, setExpandedBox] = useState(null)
 
   const { boxes, loading, fetchBoxes } = useBoxStore()
 
@@ -51,24 +50,28 @@ const BoxManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 min-h-screen">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
         <div>
-            <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-4xl font-bold text-primary tracking-wide">
+            <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary tracking-wide">
             Box Management
             </h1>
-            <p className="text-muted-foreground">Manage your cricket boxes and facilities.</p>
+            <p className="text-muted-foreground text-sm md:text-base">Manage your cricket boxes and facilities.</p>
         </div>
         <Link to="/admin/boxes/create">
-          <Button className="gap-2 shadow-lg hover:shadow-primary/20 transition-all">
+          <Button className="gap-2 w-full sm:w-auto">
             <Plus size={20} /> Add New Box
           </Button>
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-0">
         {boxes.map(box => (
-          <Card key={box._id} className="group overflow-hidden border-primary/20 hover:border-primary/50 transition-all duration-300 bg-card/50 backdrop-blur-sm">
+          <div
+            key={box._id}
+            className="border-b border-primary/10 last:border-b-0 active:bg-muted/20 md:hover:bg-muted/10 transition-colors"
+          >
+            {/* Box Image */}
             <div className="relative h-48 overflow-hidden">
               <img
                 src={
@@ -76,12 +79,14 @@ const BoxManagement = () => {
                   'https://images.pexels.com/photos/5739101/pexels-photo-5739101.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
                 }
                 alt={box.name}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-              <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-[-10px] group-hover:translate-y-0">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              
+              {/* Action buttons - always visible */}
+              <div className="absolute top-3 right-3 flex gap-2">
                 <Link to={`/admin/boxes/edit/${box._id}`}>
-                  <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-white/90 hover:bg-white text-black">
+                  <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-white/90 active:bg-white md:hover:bg-white text-black">
                     <Edit size={14} />
                   </Button>
                 </Link>
@@ -97,6 +102,7 @@ const BoxManagement = () => {
                   <Trash2 size={14} />
                 </Button>
               </div>
+              
               <div className="absolute bottom-3 left-3 right-3">
                 <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-white mb-1 truncate">
                     {box.name}
@@ -108,20 +114,62 @@ const BoxManagement = () => {
               </div>
             </div>
 
-            <CardContent className="p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <Badge variant="outline" className="border-primary/30 bg-primary/5 text-primary">
-                    <BoxIcon size={12} className="mr-1" /> Cricket Box
-                </Badge>
-                <div className="flex items-center font-bold text-lg text-primary">
-                  <IndianRupee size={16} className="mr-1" />
+            {/* Box Details */}
+            <div className="p-4 md:p-6 space-y-3">
+              {/* Price & Type */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>🏏</span>
+                  <span>Cricket Box</span>
+                </div>
+                <div className="flex items-center font-bold text-lg md:text-xl text-primary">
+                  <IndianRupee size={18} className="mr-1" />
                   {box.hourlyRate}/hr
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
+
+              {/* Description */}
+              <p className="text-sm text-muted-foreground line-clamp-2">
                 {box.description || 'No description provided.'}
               </p>
 
+              {/* Toggle Details Button */}
+              <button
+                onClick={() => setExpandedBox(expandedBox === box._id ? null : box._id)}
+                className="flex items-center gap-2 text-sm text-primary active:text-primary/80 md:hover:text-primary/80 transition-colors"
+              >
+                {expandedBox === box._id ? (
+                  <>
+                    <ChevronUp size={16} />
+                    <span>Hide Details</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown size={16} />
+                    <span>View Details</span>
+                  </>
+                )}
+              </button>
+
+              {/* Expanded Details */}
+              {expandedBox === box._id && (
+                <div className="mt-4 pt-4 border-t border-primary/10 space-y-3 text-sm">
+                  {box.features && (
+                    <div>
+                      <span className="text-muted-foreground font-medium">Features:</span>
+                      <p className="mt-1">{box.features}</p>
+                    </div>
+                  )}
+                  {box.numberOfQuarters && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">Quarters:</span>
+                      <span className="font-medium">{box.numberOfQuarters}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Delete Confirmation */}
               {showDeleteInput && selectedBoxId === box._id && (
                 <div className="mt-4 p-4 border border-destructive/50 bg-destructive/5 rounded-xl space-y-3 animate-in fade-in zoom-in-95 duration-200">
                   <label className="text-sm font-medium text-destructive block">
@@ -157,8 +205,8 @@ const BoxManagement = () => {
                   </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
     </div>
