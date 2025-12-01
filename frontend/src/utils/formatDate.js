@@ -11,7 +11,7 @@ export const formatTime = (timeString) => {
     minute: "2-digit",
     hour12: true,
   });
-};
+};;
 
 // Helper to format endTime - handles both Date objects (old format) and strings (new format)
 export const formatEndTime = (endTime) => {
