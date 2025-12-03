@@ -52,12 +52,12 @@ const ContactUs = () => {
       title: 'Location',
       value: 'India',
       link: null,
-      description: 'Serving cricket enthusiasts nationwide',
+      description: 'We provide booking service  for bhavnagar cricket turfs',
     },
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background py-12 px-4">
+    <div className="min-h-screen via-muted/30 to-background py-12 px-4">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

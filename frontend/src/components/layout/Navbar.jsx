@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Bell, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown } from 'lucide-react';
+import { Menu, Bell, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown, Contact2, FileQuestion } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import Sidebar from '../admin/Sidebar';
@@ -101,9 +101,24 @@ const Navbar = () => {
               <NavLink to="/" icon={Home} isActive={isActive('/')}>Home</NavLink>
               
               {isAuthenticated && user?.role === 'user' && (
+                <>
                 <NavLink to="/my-bookings" icon={Calendar} isActive={isActive('/my-bookings')}>
                   My Bookings
                 </NavLink>
+                   <NavLink to="/support" icon={Contact2} >
+                    Conatct us
+                  </NavLink>
+                   <NavLink to="/faq" icon={FileQuestion} >
+                   Faq
+                  </NavLink>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  
+                  </motion.div>
+                  <NavLink to="/settings" icon={Settings} isActive={isActive('/settings')}>
+                    Settings
+                  </NavLink>
+                  </>
+                
               )}
               
               {isAuthenticated && user?.role === 'owner' && (
@@ -123,6 +138,7 @@ const Navbar = () => {
                   <NavLink to="/my-profile" icon={UserCircle} isActive={isActive('/my-profile')}>
                     Profile
                   </NavLink>
+
                 </>
               )}
               
@@ -142,20 +158,28 @@ const Navbar = () => {
                 </motion.div>
               ) : (
                 <div className="flex items-center gap-2 ml-2">
-                  <NavLink to="/login" icon={UserCircle} isActive={isActive('/login')}>
-                    Login
+                 
+                   <NavLink to="/support" icon={Contact2} >
+                    Conatct us
+                  </NavLink>
+                   <NavLink to="/faq" icon={FileQuestion} >
+                   Faq
                   </NavLink>
                   <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  
+                  </motion.div>
+                  <NavLink to="/settings" icon={Settings} isActive={isActive('/settings')}>
+                    Settings
+                  </NavLink>
+                   <NavLink to="/login" icon={UserCircle} isActive={isActive('/login')}>
+                    Login
+                  </NavLink> 
                     <Button 
                       asChild 
                       className="bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 text-primary-foreground shadow-lg shadow-secondary/20"
                     >
                       <Link to="/signup">Sign Up</Link>
                     </Button>
-                  </motion.div>
-                  <NavLink to="/settings" icon={Settings} isActive={isActive('/settings')}>
-                    Settings
-                  </NavLink>
                 </div>
               )}
             </div>

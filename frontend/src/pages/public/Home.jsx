@@ -118,7 +118,7 @@ const Home = () => {
             </h1>
             
             <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto font-medium tracking-wide mb-10 border-l-2 border-secondary pl-6 text-left md:text-center md:border-l-0 md:pl-0">
-              Experience the thrill of pro-level cricket. Book premium turfs with stadium-grade lighting and pitches.
+            Box booking platfrom check your turf slots and book your turf according to your need.
             </p>
 
             {/* Search Bar - Minimalist */}
@@ -155,12 +155,12 @@ const Home = () => {
         transition={{ duration: 0.6 }}
         className="mb-8 sm:mb-12 md:mb-16 px-4 sm:px-0"
       >
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           <StatCard icon={Users} value="500+" label="Active Users" color="from-blue-500 to-cyan-500" />
           <StatCard icon={MapPin} value={filteredBoxes.length} label="Cricket Boxes" color="from-green-500 to-emerald-500" />
           <StatCard icon={Award} value="1000+" label="Bookings Made" color="from-purple-500 to-pink-500" />
           <StatCard icon={TrendingUp} value="98%" label="Satisfaction Rate" color="from-orange-500 to-red-500" />
-        </div>
+        </div> */}
       </motion.section>
 
       {/* Boxes Section - Mobile Optimized */}

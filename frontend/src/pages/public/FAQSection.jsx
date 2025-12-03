@@ -9,7 +9,7 @@ const FAQSection = () => {
     {
       question: 'How do I book a cricket box?',
       answer:
-        "Log in to your account, go to the home page, choose your preferred box, date, and time, then click 'Check Slot'. If the slot is available, click 'Book Now'.",
+        "Log in to your account, go to the home page, choose your preferred box, date, and time, If the slot is available, click 'Book Now'.",
     },
     {
       question: 'Can I cancel my booking?',
@@ -33,7 +33,7 @@ const FAQSection = () => {
     {
       question: 'Refund Policy',
       answer:
-        'Refund eligibility depends on the individual box owner\'s policy and timing of cancellation: (1) Cancellations made 24+ hours before the booking time may be eligible for a full refund minus processing fees. (2) Cancellations made less than 24 hours before may receive partial or no refund. (3) The ₹500 advance payment refund is subject to the box owner\'s approval. (4) Refunds are processed within 5-7 business days to the original payment method. (5) No-shows are not eligible for refunds. (6) In case of facility issues or unavailability, full refunds will be provided. For specific refund queries, please contact us at alfazbilakhiya17@gmail.com or call 6353783332.',
+      'No refunded by us you can call owner of box made offline cancel booking and refund '
     },
   ]
 

@@ -36,6 +36,7 @@ import BlockSlot from './pages/admin/BlockSlot'
 
 import api from './utils/api'
 import socket from './utils/soket'
+import ContactUs from './pages/public/ContactUs'
 
 
 const ProtectedRoute = ({ children, role }) => {
@@ -177,7 +178,7 @@ function App() {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/faq" element={<FAQSection />} />
-
+                   <Route path="/support" element={<ContactUs />} />
                   {/* User Routes */}
                   <Route
                     path="/my-bookings"

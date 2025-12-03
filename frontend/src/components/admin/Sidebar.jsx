@@ -46,6 +46,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/admin/bookings', name: 'Bookings', icon: <Calendar size={20} /> },
     { path: '/admin/block-slot', name: 'Block Time Slots', icon: <Clock size={20} /> },
     { path: '/my-profile', name: 'My Profile', icon: <Users size={20} /> },
+    
     { path: '/settings', name: 'Settings', icon: <Settings size={20} /> },
 
   ];
@@ -65,6 +66,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/login', name: 'Login', icon: <LogIn size={20} /> },
     { path: '/settings', name: 'Settings', icon: <Settings size={20} /> },
     { path: '/faq', name: 'FAQ', icon: <HelpCircle size={20} /> },
+        { path: '/support', name: 'Contact Us', icon: <Contact size={20} /> },
+
   ];
 
   let menuItems = guestMenuItems;
