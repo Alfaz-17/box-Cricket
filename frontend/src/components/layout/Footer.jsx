@@ -66,6 +66,9 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-sm">
               <FooterLink to="/">Home</FooterLink>
+              <FooterLink to="/about-us">About Us</FooterLink>
+              <FooterLink to="/services">Services</FooterLink>
+              <FooterLink to="/pricing">Pricing</FooterLink>
               <FooterLink to="/login">Login</FooterLink>
               <FooterLink to="/signup">Sign Up</FooterLink>
               <FooterLink to="/my-bookings">My Bookings</FooterLink>
@@ -90,13 +93,25 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                <Link to="/terms-and-conditions" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
                   <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
-                  Terms of Service
+                  Terms and Conditions
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                <Link to="/shipping-policy" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
+                  Shipping Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/refund-policy" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
+                  Refund Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
                   <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
                   Privacy Policy
                 </Link>
