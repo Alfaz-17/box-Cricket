@@ -47,6 +47,7 @@ const BoxBooking = () => {
   }, [id]);
 
 
+  
 
   // Fetch Box Details
   useEffect(() => {
@@ -82,7 +83,7 @@ const BoxBooking = () => {
   // Listen for new bookings to refresh slots
   useEffect(() => {
     socket.on("new-booking", data => {
-      console.log("📢 new-booking booking update received:", data)
+      toast.success("New Booking created");
       fetchSlots()
     })
     return () => socket.off("new-booking")
@@ -112,11 +113,7 @@ const BoxBooking = () => {
       return
     }
 
-    // Optional: Re-check availability before booking if needed, 
-    // but usually the UI prevents selecting booked slots.
-    // We can skip the explicit "Check Availability" button requirement if the UI is real-time enough,
-    // but keeping it for double-safety is fine.
-    // For now, I'll allow booking if slots are selected.
+
 
     setIsProcessingBooking(true)
 

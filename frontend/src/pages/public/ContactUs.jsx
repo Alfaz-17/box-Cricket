@@ -52,7 +52,7 @@ const ContactUs = () => {
       title: 'Location',
       value: 'India',
       link: null,
-      description: 'We provide booking service  for bhavnagar cricket turfs',
+      description: 'We provide booking service  for turfs in bhavnagar,Gujrat.',
     },
   ]
 
