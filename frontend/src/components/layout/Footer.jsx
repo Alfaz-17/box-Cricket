@@ -182,7 +182,7 @@ export default function Footer() {
           className="pt-8 border-t border-primary/20"
         >
           {/* Social Media */}
-          <div className="flex justify-center gap-4 mb-6">
+          {/* <div className="flex justify-center gap-4 mb-6">
             <SocialIcon href="#" icon={Facebook} label="Facebook" />
             <SocialIcon
               href="https://www.instagram.com/alfaz_bilakhiya17?igsh=MXBpc2NtMzI5MTZ6aA%3D%3D&utm_source=qr"
@@ -191,7 +191,7 @@ export default function Footer() {
             />
             <SocialIcon href="#" icon={Twitter} label="Twitter" />
             <SocialIcon href="#" icon={Linkedin} label="LinkedIn" />
-          </div>
+          </div> */}
 
           {/* Copyright */}
           <div className="text-center">
