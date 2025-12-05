@@ -15,9 +15,7 @@ import AnimatedShaderBackground from '../../components/ui/AnimatedShaderBackgrou
 
 // Components
 import BookingForm from '../../components/ui/BookingForm'
-import BookedSlots from '../../components/ui/BookedSlots'
-import BlockedSlots from '../../components/ui/BlockedSlots'
-import ReviewsSection from '../../components/ui/ReviewsSection'
+
 
 const BoxBooking = () => {
   const { id } = useParams()
@@ -27,8 +25,7 @@ const BoxBooking = () => {
   const [box, setBox] = useState(null)
   const [loading, setLoading] = useState(true)
   
-  // Navigation State
-  const [activeTab, setActiveTab] = useState('booking')
+
 
   // Booking State
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -148,12 +145,7 @@ const BoxBooking = () => {
 
   if (!box) return <div>Box not found</div>
 
-  const tabs = [
-    { id: 'booking', label: 'Book Slot' },
-    { id: 'booked', label: 'Booked', authRequired: true },
-    { id: 'blocked', label: 'Blocked', authRequired: true },
-    { id: 'reviews', label: 'Reviews', authRequired: true },
-  ]
+
 
   return (
     <div className="min-h-screen relative ">
@@ -183,76 +175,31 @@ const BoxBooking = () => {
             </h1>
             <p className="text-muted-foreground mb-8">Select your preferred slot and options below.</p>
 
-            {/* Segmented Controller */}
-            <div className="flex justify-center mb-8">
-                <div className="flex bg-card/30 backdrop-blur-md p-1 rounded-full border border-primary/20 overflow-x-auto scrollbar-hide max-w-full">
-                    {tabs.map((tab) => {
-                        if (tab.authRequired && !isAuthenticated) return null;
-                        const isActive = activeTab === tab.id;
-                        
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`
-                                    relative px-6 py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-300 whitespace-nowrap
-                                    ${isActive ? 'text-white' : 'text-muted-foreground hover:text-primary'}
-                                `}
-                            >
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="activeSegment"
-                                        className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg"
-                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                    />
-                                )}
-                                <span className="relative z-10">{tab.label}</span>
-                            </button>
-                        )
-                    })}
-                </div>
-            </div>
-
             {/* Content Area */}
             <AnimatePresence mode="wait">
                 <motion.div
-                    key={activeTab}
                     initial={{ opacity: 0, y: 10, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.98 }}
                     transition={{ duration: 0.3 }}
                 >
-                    {activeTab === 'booking' && (
-                        <BookingForm 
-                            displayBox={box}
-                            selectedDate={selectedDate}
-                            setSelectedDate={setSelectedDate}
-                            // Pass new slot props
-                            selectedSlots={selectedSlots}
-                            onSlotSelect={setSelectedSlots}
-                            bookedSlots={bookedSlots}
-                            blockedSlots={blockedSlots}
-                            
-                            contactNumber={contactNumber}
-                            setContactNumber={setContactNumber}
-                            selectedQuarter={selectedQuarter}
-                            setSelectedQuarter={setSelectedQuarter}
-                            isProcessingBooking={isProcessingBooking}
-                            handleBooking={handleBooking}
-                        />
-                    )}
-
-                    {activeTab === 'booked' && (
-                            <BookedSlots boxId={id} />
-                    )}
-
-                    {activeTab === 'blocked' && (
-                            <BlockedSlots boxId={id} />
-                    )}
-
-                    {activeTab === 'reviews' && (
-                            <ReviewsSection boxId={id} />
-                    )}
+                    <BookingForm 
+                        displayBox={box}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                        // Pass new slot props
+                        selectedSlots={selectedSlots}
+                        onSlotSelect={setSelectedSlots}
+                        bookedSlots={bookedSlots}
+                        blockedSlots={blockedSlots}
+                        
+                        contactNumber={contactNumber}
+                        setContactNumber={setContactNumber}
+                        selectedQuarter={selectedQuarter}
+                        setSelectedQuarter={setSelectedQuarter}
+                        isProcessingBooking={isProcessingBooking}
+                        handleBooking={handleBooking}
+                    />
                 </motion.div>
             </AnimatePresence>
         </motion.div>

@@ -32,37 +32,14 @@ const BookingForm = ({
         </h2>
       </div>
 
-      {/* Offline Booking Notice */}
-      <div className="p-4 bg-destructive/5 border-l-2 border-destructive rounded-r-lg">
-        <div className="flex items-start gap-3">
-          <Phone className="w-5 h-5 text-destructive flex-shrink-0 mt-1" />
-          <div className="flex-1">
-            <h3 className="font-bold text-destructive mb-1 text-sm uppercase tracking-wide">Book Offline</h3>
-            <p className="text-sm text-muted-foreground mb-3">
-              Online booking is currently <strong>unavailable</strong>. Please call to reserve.
-            </p>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                asChild
-                variant="outline"
-                className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive h-9 text-sm"
-              >
-                <a href={`tel:${displayBox.mobileNumber}`} className="flex items-center gap-2">
-                  <Phone size={14} />
-                  +91 - {displayBox.mobileNumber || 'N/A'}
-                </a>
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </div>
+
 
       {/* Booking Form Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-primary/10 border-l-2 border-primary py-5  rounded-r-lg">
         {/* Left Column: Date & Details */}
-        <div className="space-y-6">
+        <div className="space-y-6 mx-4 ">
             {/* Box Selection */}
-            <div className="space-y-2">
+            <div className="space-y-2 ">
             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Box</label>
             <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
                 <SelectTrigger className="h-12 rounded-xl border-white/10 bg-white/5 px-4 focus:ring-primary/50 focus:border-primary">
@@ -113,33 +90,27 @@ const BookingForm = ({
                  {/* Action Buttons */}
                 <div className="flex flex-col gap-4">
                     {/* Only show Book Now if slots are selected */}
-                    {selectedSlots.length > 0 && contactNumber && selectedQuarter ? (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            <Button
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
+                        <Button
                             onClick={handleBooking}
-                            className="w-full h-14 bg-gradient-to-r from-primary to-secondary text-black hover:from-primary/90 hover:to-secondary/90 font-bold uppercase tracking-wide shadow-[0_0_20px_rgba(157,255,0,0.3)] text-lg"
+                            className={`w-full h-14 bg-gradient-to-r from-primary to-secondary text-black hover:from-primary/90 hover:to-secondary/90 font-bold uppercase tracking-wide shadow-[0_0_20px_rgba(157,255,0,0.3)] text-lg ${isProcessingBooking ? 'blur-sm' : ''}`}
                             disabled={isProcessingBooking}
-                            >
+                        >
                             {isProcessingBooking ? 'Booking...' : `Book ${selectedSlots.length} Slot${selectedSlots.length > 1 ? 's' : ''}`}
                             <Trophy className="ml-2 w-5 h-5" />
-                            </Button>
-                        </motion.div>
-                    ) : (
-                         <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
-                            <p className="text-muted-foreground text-sm">Select a box, date, and slots to proceed.</p>
-                         </div>
-                    )}
+                        </Button>
+                    </motion.div>
                 </div>
             </div>
         </div>
 
         {/* Right Column: Slot Picker */}
-        <div className="space-y-4">
+        <div className="space-y-4 mx-4 ">
             <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Available Slots</label>
                 {selectedSlots.length > 0 && (
@@ -168,7 +139,31 @@ const BookingForm = ({
             </div>
         </div>
       </div>
-
+    {/* Offline Booking Notice */}
+      <div className="p-4 bg-destructive/5 border-l-2 border-destructive rounded-r-lg">
+        <div className="flex items-start gap-3">
+          <Phone className="w-5 h-5 text-destructive flex-shrink-0 mt-1" />
+          <div className="flex-1">
+            <h3 className="font-bold text-destructive mb-1 text-sm uppercase tracking-wide">Book Offline</h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Online booking is currently <strong>unavailable</strong>. Please call to reserve.
+            </p>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                asChild
+                variant="outline"
+                className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive h-9 text-sm "
+              >
+                <a href={`tel:${displayBox.mobileNumber}`} className="flex items-center gap-2">
+                  <Phone size={14} />
+                  +91 - {displayBox.mobileNumber || 'N/A'}
+                </a>
+              </Button>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+      
       {/* Booking Policy */}
       <div className="pt-6 border-t border-white/5">
         <div className="flex items-start gap-3">
