@@ -61,7 +61,7 @@ const Pricing = () => {
             <h2 className="text-xl font-bold">No Hidden Fees</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-            <strong>Start Booking</strong> believes in transparency. The price you see at checkout is the price you pay. There are no hidden booking fees charged by us.
+            <strong>BookMyBox</strong> believes in transparency. The price you see at checkout is the price you pay. There are no hidden booking fees charged by us.
           </p>
         </div>
 

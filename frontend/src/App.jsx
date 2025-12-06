@@ -38,12 +38,8 @@ import api from './utils/api'
 import socket from './utils/soket'
 import ContactUs from './pages/public/ContactUs'
 import AboutUs from './pages/public/AboutUs'
-import PrivacyPolicy from './pages/public/PrivacyPolicy'
-import RefundPolicy from './pages/public/RefundPolicy'
-import TermsAndConditions from './pages/public/TermsAndConditions'
-import ShippingPolicy from './pages/public/ShippingPolicy'
+import Policies from './pages/public/Policies'
 import Services from './pages/public/Services'
-import Pricing from './pages/public/Pricing'
 
 
 const ProtectedRoute = ({ children, role }) => {
@@ -187,12 +183,8 @@ function App() {
                   <Route path="/faq" element={<FAQSection />} />
                    <Route path="/support" element={<ContactUs />} />
                    <Route path="/about-us" element={<AboutUs />} />
-                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                   <Route path="/refund-policy" element={<RefundPolicy />} />
-                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-                   <Route path="/shipping-policy" element={<ShippingPolicy />} />
+                   <Route path="/policies" element={<Policies />} />
                    <Route path="/services" element={<Services />} />
-                   <Route path="/pricing" element={<Pricing />} />
                   {/* User Routes */}
                   <Route
                     path="/my-bookings"

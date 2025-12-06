@@ -44,7 +44,7 @@ const RefundPolicy = () => {
             <h2 className="text-xl font-bold">Booking Cancellations</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-            Cancellations are subject to the specific terms and conditions of the venue you have booked. Since we act as a booking facilitator, any potential refunds or adjustments must be discussed directly with the venue management. <strong>Student Build Start Booking</strong> is not responsible for processing refunds.
+            Cancellations are subject to the specific terms and conditions of the venue you have booked. Since we act as a booking facilitator, any potential refunds or adjustments must be discussed directly with the venue management. <strong>BookMyBox</strong> is not responsible for processing refunds.
           </p>
         </div>
 

@@ -50,7 +50,7 @@ const ContactUs = () => {
     {
       icon: MapPin,
       title: 'Location',
-      value: 'India',
+      value: 'Kesarbai Masjid Road, Malivalokhancho, Navapara, Bhavnagar - 364001, Gujarat, India',
       link: null,
       description: 'We provide booking service  for turfs in bhavnagar,Gujrat.',
     },
