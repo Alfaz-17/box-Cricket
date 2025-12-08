@@ -35,7 +35,6 @@ import AdminBookings from './pages/admin/AdminBookings'
 import BlockSlot from './pages/admin/BlockSlot'
 
 import api from './utils/api'
-import socket from './utils/soket'
 import ContactUs from './pages/public/ContactUs'
 import AboutUs from './pages/public/AboutUs'
 import Policies from './pages/public/Policies'
@@ -81,31 +80,6 @@ function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [])
-
-  //register user in sockets
-  useEffect(() => {
-    if (!user?._id) return
-
-    if (!socket.connected) {
-      socket.connect()
-    } else {
-      socket.emit('register', user._id) // 🟢 Emit immediately if already connected
-    }
-
-    socket.on('connect', () => {
-      socket.emit('register', user._id) // 🔁 In case it reconnects later
-    })
-
-    socket.on('connect_error', err => {
-      console.error('❗ Socket connect_error:', err)
-    })
-
-    return () => {
-      // don't disconnect if using singleton socket
-    }
-  }, [user])
-
-
 
   useEffect(() => {
     const checkAuth = async () => {

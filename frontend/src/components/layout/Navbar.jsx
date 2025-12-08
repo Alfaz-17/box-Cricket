@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Bell, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown, Contact2, FileQuestion } from 'lucide-react';
+import { Menu, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown, Contact2, FileQuestion } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import Sidebar from '../admin/Sidebar';

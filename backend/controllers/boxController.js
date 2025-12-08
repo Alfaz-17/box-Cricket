@@ -1,8 +1,8 @@
 import CricketBox from '../models/CricketBox.js'
 import { HelpAndSupport } from '../models/Review.js'
-
 import dotenv from 'dotenv'
-dotenv.config()
+dotenv.config();
+
 
 export const createBox = async (req, res) => {
   try {
@@ -74,7 +74,7 @@ export const createBox = async (req, res) => {
       message: err.message || 'Server error during box creation',
     })
   }
-}
+};
 
 export const updateBox = async (req, res) => {
   try {
@@ -161,7 +161,7 @@ export const updateBox = async (req, res) => {
       message: err.message || 'Server error during box update',
     })
   }
-}
+};
 
 export const deleteBox = async (req, res) => {
   try {
@@ -185,7 +185,7 @@ export const deleteBox = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Delete failed' })
   }
-}
+};
 
 export const feedBackAndSupport = async (req, res) => {
   try {
@@ -209,7 +209,7 @@ export const feedBackAndSupport = async (req, res) => {
     console.error('Error in feedBackAndSupport controller:', error)
     return res.status(500).json({ error: 'Internal server error' })
   }
-}
+};
 
 // Get all cricket boxes
 export const getAllBoxes = async (req, res) => {
@@ -219,7 +219,7 @@ export const getAllBoxes = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch boxes' })
   }
-}
+};
 
 export const getBoxDetails = async (req, res) => {
   try {
@@ -229,9 +229,8 @@ export const getBoxDetails = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Failed to get box details' })
   }
-}
+};
 
-//owner
 export const getOwnerBoxes = async (req, res) => {
   try {
     const boxes = await CricketBox.find({ owner: req.user._id })
@@ -239,4 +238,4 @@ export const getOwnerBoxes = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch boxes' })
   }
-}
+};

@@ -21,7 +21,7 @@ const app = express()
 //create socket server
 const server = http.createServer(app)
 
-app.use(generalLimiter)
+app.use(generalLimiter);
 app.use(
   cors({
     origin: [
