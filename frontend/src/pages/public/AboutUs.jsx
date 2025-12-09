@@ -95,7 +95,7 @@ const AboutUs = () => {
         Contact us to get started and make your turf easily bookable for players.
       </p>
 
-      <Link to="/contact-us">
+      <Link to="/support">
         <Button className="h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg uppercase tracking-wider rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all">
           List Your Turf
         </Button>
