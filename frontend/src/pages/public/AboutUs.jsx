@@ -59,49 +59,51 @@ const AboutUs = () => {
         </motion.div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 border border-primary/10 rounded-xl p-8 text-center"
-      >
-        <Info className="w-12 h-12 text-primary mx-auto mb-4" />
-        <h3 className="text-2xl font-bold mb-2">Start Booking</h3>
-        <p className="text-muted-foreground">
-          Proudly developed by individuals for the cricket box booking.
-        </p>
-      </motion.div>
+ 
+     
+  
 
 
       {/* Partner With Us Section - Tailored for Venue Owners */}
-      <motion.section 
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="py-12 relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-50 rounded-2xl" />
-        <div className="relative z-10 text-center space-y-8 p-8 border border-primary/10 rounded-2xl bg-card/30 backdrop-blur-sm">
-          <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-foreground">
-            OWN A <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">TURF?</span>
-          </h2>
-          
-          <div className="max-w-3xl mx-auto">
-            <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Built by Owner, For Owners</h3>
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              We understand the turf business because we are in it. As owner of <span className="font-semibold text-primary">"BookMyBox"</span> in Bhavnagar, we built this platform to solve the very problems you face daily. 
-              Partner with us to streamline your bookings and grow your business with a system that just works.
-            </p>
+    {/* Partner With Us Section - Tailored for Venue Owners */}
+<motion.section 
+  initial={{ opacity: 0, y: 30 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.8 }}
+  className="py-12 relative overflow-hidden"
+>
+  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-50 rounded-2xl" />
+  <div className="relative z-10 text-center space-y-8 p-8 border border-primary/10 rounded-2xl bg-card/30 backdrop-blur-sm">
+    
+    <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-foreground">
+      OWN A <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">TURF?</span>
+    </h2>
+    
+    <div className="max-w-3xl mx-auto">
+      <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Built by Owner, For Owners</h3>
 
-            <Link to="/contact-us">
-              <Button className="h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg uppercase tracking-wider rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all">
-                List Your Turf
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </motion.section>
+      <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
+        We understand the turf business because we are in it. As the owner of <span className="font-semibold text-primary">"BookMyBox"</span> in Bhavnagar, we built this platform to solve the very problems you face daily. 
+        Partner with us to streamline your bookings and grow your business with a system that just works.
+      </p>
+
+      {/* 🔥 Added Professional Message for Bhavnagar Turf Owners */}
+      <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+        If you own a turf in Bhavnagar and want to enable a clean, automated booking facility,
+        we would be happy to onboard your venue to BookMyBox.  
+        Contact us to get started and make your turf easily bookable for players.
+      </p>
+
+      <Link to="/contact-us">
+        <Button className="h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg uppercase tracking-wider rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+          List Your Turf
+        </Button>
+      </Link>
+    </div>
+  </div>
+</motion.section>
+
     </div>
   )
 }
