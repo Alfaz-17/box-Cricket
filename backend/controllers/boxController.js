@@ -105,14 +105,15 @@ export const updateBox = async (req, res) => {
     }
 
     // Update basic fields
-    box.name = name || box.name
-    box.location = location || box.location
-    box.address = address || box.address
+    // Update basic fields
+    box.name = name !== undefined ? name : box.name
+    box.location = location !== undefined ? location : box.location
+    box.address = address !== undefined ? address : box.address
     box.hourlyRate = hourlyRate !== undefined ? Number(hourlyRate) : box.hourlyRate
-    box.mobileNumber = mobileNumber || box.mobileNumber
-    box.description = description || box.description
-    box.image = image || box.image
-    box.images = images || box.images
+    box.mobileNumber = mobileNumber !== undefined ? mobileNumber : box.mobileNumber
+    box.description = description !== undefined ? description : box.description
+    box.image = image !== undefined ? image : box.image
+    box.images = images !== undefined ? images : box.images
 
     if (facilities) {
       box.facilities = facilities.split(',').map(f => f.trim())

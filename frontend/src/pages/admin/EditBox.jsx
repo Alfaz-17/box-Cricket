@@ -49,7 +49,10 @@ const EditBox = () => {
         numberOfQuarters: response.data.quarters?.length,
         image: null,
         images: [],
+        imagePreview: null,
+        imagesPreview: [],
         existingImages: response.data.images || [],
+        customPricing: response.data.customPricing || [],
       })
     } catch (error) {
       toast.error('Failed to fetch box details')
