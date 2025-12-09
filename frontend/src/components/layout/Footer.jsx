@@ -128,7 +128,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start text-muted-foreground group">
                 <MapPin size={16} className="mr-2 mt-0.5 text-primary group-hover:scale-110 transition-transform" />
-                <span>kesarbai masjid road ,malivalokhancho ,navapara Bhavngar-364001 Gujrat, India</span>
+                <span>navapara Bhavngar-364001 Gujrat, India</span>
               </li>
             </ul>
 
