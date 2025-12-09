@@ -31,30 +31,33 @@ const ContactUs = () => {
     }, 3000)
   }
 
-  const contactInfo = [
-    {
-      icon: Mail,
-      title: 'Email',
-      value: 'alfazbilakhiya17@gmail.com',
-      link: 'mailto:alfazbilakhiya17@gmail.com',
-    
-      description: 'Send us an email anytime',
-    },
-    {
-      icon: Phone,
-      title: 'Phone',
-      value: '+91 6353783332',
-      link: 'tel:+916353783332',
-      description: 'Mon-Sat from 8am to 8pm',
-    },
-    {
-      icon: MapPin,
-      title: 'Location',
-      value: 'Kesarbai Masjid Road, Malivalokhancho, Navapara, Bhavnagar - 364001, Gujarat, India',
-      link: null,
-      description: 'We provide booking service  for turfs in bhavnagar,Gujrat.',
-    },
-  ]
+const companyName = "BOOKMYBOX";
+const ownerName = "Alfaz Bilakhiya";
+
+const contactInfo = [
+  {
+    icon: Mail,
+    title: 'Email',
+    value: 'alfazbilakhiya17@gmail.com',
+    link: 'mailto:alfazbilakhiya17@gmail.com',
+    description: `Send us an email anytime — ${companyName}, owned by ${ownerName}`,
+  },
+  {
+    icon: Phone,
+    title: 'Phone',
+    value: '+91 6353783332',
+    link: 'tel:+916353783332',
+    description: `Mon–Sat from 8am to 8pm — Contact ${ownerName}`,
+  },
+  {
+    icon: MapPin,
+    title: 'Location',
+    value: 'navapara, Bhavnagar - 364001, Gujarat, India',
+    link: null,
+    description: `${companyName} provides booking services for turfs in Bhavnagar, Gujarat.`,
+  },
+];
+
 
   return (
     <div className="min-h-screen via-muted/30 to-background py-12 px-4">
