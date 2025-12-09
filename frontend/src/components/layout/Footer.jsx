@@ -71,6 +71,7 @@ export default function Footer() {
               <FooterLink to="/login">Login</FooterLink>
               <FooterLink to="/signup">Sign Up</FooterLink>
               <FooterLink to="/my-bookings">My Bookings</FooterLink>
+              <FooterLink to="/contact-us">List Your Turf</FooterLink>
             </ul>
           </motion.div>
 

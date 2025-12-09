@@ -16,6 +16,8 @@ import {
   Contact,
   BookImageIcon,
   X,
+  Building2,
+  Info,
 } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
 import logoIcon from '../../assets/logo-icon.svg';
@@ -57,16 +59,20 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     { path: '/my-profile', name: 'My Profile', icon: <Users size={20} /> },
     { path: '/settings', name: 'Settings', icon: <Settings size={20} /> },
+    { path: '/about-us', name: 'About Us', icon: <Info size={20} /> },
     { path: '/support', name: 'Contact Us', icon: <Contact size={20} /> },
     { path: '/faq', name: 'FAQ', icon: <HelpCircle size={20} /> },
+    { path: '/contact-us', name: 'List Your Turf', icon: <Building2 size={20} /> },
   ];
 
   const guestMenuItems = [
     { path: '/', name: 'Home', icon: <Home size={20} /> },
     { path: '/login', name: 'Login', icon: <LogIn size={20} /> },
     { path: '/settings', name: 'Settings', icon: <Settings size={20} /> },
+    { path: '/about-us', name: 'About Us', icon: <Info size={20} /> },
     { path: '/faq', name: 'FAQ', icon: <HelpCircle size={20} /> },
         { path: '/support', name: 'Contact Us', icon: <Contact size={20} /> },
+    { path: '/contact-us', name: 'List Your Turf', icon: <Building2 size={20} /> },
 
   ];
 

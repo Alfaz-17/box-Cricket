@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown, Contact2, FileQuestion } from 'lucide-react';
+import { Menu, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown, Contact2, FileQuestion, Building2, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import Sidebar from '../admin/Sidebar';
@@ -105,6 +105,12 @@ const Navbar = () => {
                 <NavLink to="/my-bookings" icon={Calendar} isActive={isActive('/my-bookings')}>
                   My Bookings
                 </NavLink>
+                  <NavLink to="/about-us" icon={Info} isActive={isActive('/about-us')}>
+                    About Us
+                  </NavLink>
+                  <NavLink to="/contact-us" icon={Building2} >
+                    List Your Turf
+                  </NavLink>
                    <NavLink to="/support" icon={Contact2} >
                     Conatct us
                   </NavLink>
@@ -158,7 +164,9 @@ const Navbar = () => {
                 </motion.div>
               ) : (
                 <div className="flex items-center gap-2 ml-2">
-                 
+                  <NavLink to="/about-us" icon={Info} isActive={isActive('/about-us')}>
+                    About Us
+                  </NavLink>
                    <NavLink to="/support" icon={Contact2} >
                     Conatct us
                   </NavLink>
@@ -170,6 +178,9 @@ const Navbar = () => {
                   </motion.div>
                   <NavLink to="/settings" icon={Settings} isActive={isActive('/settings')}>
                     Settings
+                  </NavLink>
+                  <NavLink to="/contact-us" icon={Building2} >
+                    List Your Turf
                   </NavLink>
                    <NavLink to="/login" icon={UserCircle} isActive={isActive('/login')}>
                     Login

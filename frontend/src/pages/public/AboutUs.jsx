@@ -1,6 +1,7 @@
-import React from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Info, Users, Target } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 
 const AboutUs = () => {
   return (
@@ -36,7 +37,7 @@ const AboutUs = () => {
             <h2 className="text-xl font-bold">Who We Are</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-             " Build Start Booking", dedicated to bringing efficiency and ease to the sports community. Our platform is designed to connect cricket enthusiasts with the best local box cricket venues.
+             We are "BookMyBox", but we aren't just developers—we are turf owner too. We built this platform to solve the challenges we faced running our own turf in Bhavnagar, bringing you a system that truly understands the game.
           </p>
         </motion.div>
 
@@ -70,6 +71,37 @@ const AboutUs = () => {
           Proudly developed by individuals for the cricket box booking.
         </p>
       </motion.div>
+
+
+      {/* Partner With Us Section - Tailored for Venue Owners */}
+      <motion.section 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-12 relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-50 rounded-2xl" />
+        <div className="relative z-10 text-center space-y-8 p-8 border border-primary/10 rounded-2xl bg-card/30 backdrop-blur-sm">
+          <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-foreground">
+            OWN A <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">TURF?</span>
+          </h2>
+          
+          <div className="max-w-3xl mx-auto">
+            <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Built by Owner, For Owners</h3>
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              We understand the turf business because we are in it. As owner of <span className="font-semibold text-primary">"BookMyBox"</span> in Bhavnagar, we built this platform to solve the very problems you face daily. 
+              Partner with us to streamline your bookings and grow your business with a system that just works.
+            </p>
+
+            <Link to="/contact-us">
+              <Button className="h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg uppercase tracking-wider rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                List Your Turf
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </motion.section>
     </div>
   )
 }
