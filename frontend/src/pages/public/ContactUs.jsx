@@ -54,7 +54,7 @@ const contactInfo = [
     title: 'Location',
     value: 'navapara, Bhavnagar - 364001, Gujarat, India',
     link: null,
-    description: `${companyName} provides booking services for turfs in Bhavnagar, Gujarat.`,
+    description: `${companyName}  book your slot in cricket box  in Bhavnagar, Gujarat.`,
   },
 ];
 
