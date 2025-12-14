@@ -8,4 +8,4 @@ const AuthContext = createContext({
   logout: () => {},
 })
 
-export default AuthContext
+export default AuthContext;
