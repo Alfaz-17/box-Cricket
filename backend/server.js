@@ -1,6 +1,8 @@
 // server.js
 import express from 'express'
 import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import authRoutes from './routes/authRoutes.js'
 import connectMongoDB from './lib/connectMongoDB.js'
 import cookieParser from 'cookie-parser'
@@ -9,12 +11,15 @@ import bookingRoutes from './routes/bookingRoutes.js'
 import reviewRoutes from './routes/reviewRoutes.js'
 import slotsRoutes from './routes/slotsRoutes.js'
 import analyticsRoutes from './routes/analyticsRoutes.js'
+import voiceRoutes from './routes/voiceRoutes.js'
+
 
 import { startBot } from './lib/whatsappBot.js'
 import http from 'http'
 import cors from 'cors'
 import { initSocket } from './lib/soket.js'
 import { generalLimiter } from './middleware/rateLimiter.js'
+import mime from 'mime'
 dotenv.config()
 const app = express()
 
@@ -36,7 +41,25 @@ app.use(
 app.use(cookieParser())
 app.use(express.json({ limit: '20mb' })) // For JSON requests
 app.use(express.urlencoded({ extended: true, limit: '20mb' })) // For form submissions
-const PORT = process.env.PORT || 5000
+
+// Serve uploaded audio files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "../uploads"), {
+    setHeaders: (res, filePath) => {
+      res.setHeader("Content-Type", mime.getType(filePath));
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET");
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    }
+  })
+);
+
+const PORT = process.env.PORT || 5001
 
 app.use('/api/auth', authRoutes)
 app.use('/api/boxes', boxRoutes)
@@ -44,7 +67,7 @@ app.use('/api/booking', bookingRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/slots', slotsRoutes)
 app.use('/api/analytics', analyticsRoutes)
-
+app.use("/api/voice",voiceRoutes)
 
 //start whatsApp chaybot
 

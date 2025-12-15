@@ -67,8 +67,7 @@ const MyBookings = () => {
 
     return `${hours.toString().padStart(2, '0')}:${minutes}`
   }
-
-  const filteredBookings = bookings.filter(booking => {
+ const filteredBookings = bookings.filter(booking => {
     const fixedTime = convertTo24Hour(booking.startTime)
     const bookingDate = new Date(`${booking.date}T${fixedTime}`)
     const now = new Date()

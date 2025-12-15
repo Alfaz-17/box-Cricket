@@ -18,11 +18,12 @@ import {
   X,
   Building2,
   Info,
+  Sparkles,
 } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
 import logoIcon from '../../assets/logo-icon.svg';
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen, onClose, onVoiceClick }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useContext(AuthContext);

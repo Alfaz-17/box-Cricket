@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown, Contact2, FileQuestion, Building2, Info } from 'lucide-react';
+import { Menu, LogOut, Home, Calendar, Settings, LayoutDashboard, Package, Lock, UserCircle, X, ChevronDown, Contact2, FileQuestion, Building2, Info, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import Sidebar from '../admin/Sidebar';
@@ -9,7 +9,7 @@ import { Button } from '../ui/Button';
 
 import logoIcon from '../../assets/logo-icon.svg';
 
-const Navbar = () => {
+const Navbar = ({ onVoiceClick }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [scrolled, setScrolled] = useState(false);
@@ -141,12 +141,21 @@ const Navbar = () => {
                   <NavLink to="/admin/block-slot" icon={Lock} isActive={isActive('/admin/block-slot')}>
                     Block Slot
                   </NavLink>
-                  <NavLink to="/my-profile" icon={UserCircle} isActive={isActive('/my-profile')}>
-                    Profile
-                  </NavLink>
-
                 </>
               )}
+
+              {/* AI Voice Assistant Button */}
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  onClick={onVoiceClick}
+                  variant="ghost" 
+                  size="sm"
+                  className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 mr-2"
+                >
+                  <Sparkles size={16} className="mr-2" />
+                  <span className="hidden sm:inline">AI Assistant</span>
+                </Button>
+              </motion.div>
               
 
               
@@ -197,6 +206,16 @@ const Navbar = () => {
 
             {/* Mobile Menu Button */}
             <div className="flex lg:hidden items-center gap-3">
+              {/* Mobile AI Button */}
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  onClick={onVoiceClick}
+                  size="icon"
+                  className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
+                >
+                  <Sparkles size={20} />
+                </Button>
+              </motion.div>
 
               
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -216,7 +235,7 @@ const Navbar = () => {
       {/* Add padding to prevent content from being hidden under fixed navbar */}
       <div className="h-16 sm:h-18" />
 
-      {isMobile && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
+      {isMobile && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onVoiceClick={onVoiceClick} />}
     </>
   );
 };
