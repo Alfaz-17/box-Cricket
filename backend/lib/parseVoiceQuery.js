@@ -34,7 +34,7 @@ OUTPUT:
   "date": "YYYY-MM-DD",
   "startTime": "hh:mm AM/PM",
   "duration": number,
-  "language": "hi | gu | en"
+  "language": "hi" // Detect language (hi, gu, or en)
 }
 
 User sentence:
@@ -62,6 +62,15 @@ User sentence:
 
   // 🔁 NORMALIZE FOR YOUR DB SYSTEM
   parsed.startTime = to12HourFormat(parsed.startTime);
+
+  // 🧹 Language Cleanup (AI sometimes returns "hi | gu | en" literally)
+  const validLangs = ["hi", "gu", "en", "ur"];
+  if (!validLangs.includes(parsed.language)) {
+    // If invalid, try to guess or default to English/Hindi
+    if (parsed.language && parsed.language.includes("gu")) parsed.language = "gu";
+    else if (parsed.language && parsed.language.includes("hi")) parsed.language = "hi";
+    else parsed.language = "en";
+  }
 
   return parsed;
 }

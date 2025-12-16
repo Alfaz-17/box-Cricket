@@ -1,24 +1,22 @@
-import { exec } from "child_process";
-import path from "path";
+import Groq from "groq-sdk";
+import fs from "fs";
 
-export const transcribeWithWhisper = (audioPath) => {
-  return new Promise((resolve, reject) => {
-    const pythonScript = path.resolve("whisper/transcribe.py"); // Path to Python script
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY
+});
 
-    const command = `python "${pythonScript}" "${audioPath}"`;
-
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error("Whisper error:", error);
-        return reject(error);
-      }
-
-      try {
-        const result = JSON.parse(stdout);
-        resolve(result.text.trim());
-      } catch (err) {
-        reject("Failed to parse Whisper output");
-      }
+export const transcribeWithWhisper = async (audioPath) => {
+  try {
+    const transcription = await groq.audio.transcriptions.create({
+      file: fs.createReadStream(audioPath),
+      model: "whisper-large-v3",
+      response_format: "json",
+      temperature: 0.0,
     });
-  });
+
+    return transcription.text.trim();
+  } catch (error) {
+    console.error("Groq Whisper error:", error);
+    throw new Error("Voice transcription failed");
+  }
 };

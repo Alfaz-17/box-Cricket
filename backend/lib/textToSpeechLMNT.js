@@ -11,7 +11,41 @@ const VOICES = {
   en: "lily"
 };
 
-export async function textToSpeechLMNT(text, language = "hi") {
+export async function textToSpeechLMNT(text, language = "hi", explicitFileName = null) {
+  // 1️⃣ Special handling for Gujarati (Google TTS for native pronunciation)
+  if (language === "gu") {
+    try {
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=gu&client=tw-ob`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error("Google TTS failed");
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const fileName = explicitFileName || `voice_${Date.now()}.mp3`;
+      await fs.promises.writeFile(`uploads/${fileName}`, buffer);
+      
+      return fileName;
+    } catch (err) {
+      console.error("Google TTS Error:", err);
+      // Fallback to Hindi-LMNT if Google fails? Or just throw? 
+      // Let's fallback to Hindi LMNT logic below if this fails, or strict fail.
+      // Strict fail is better than bad accent for now, but let's just let it fall through or throw.
+      throw err; 
+    }
+  }
+
+  // 2️⃣ LMNT for everything else (Hi, En, Ur->Hi)
+  // Map unsupported languages to Hindi (or closest equivalent)
+  const langMap = {
+    ur: "hi", 
+    // gu removed from here since handled above
+  };
+  const safeLang = langMap[language] || language;
+
   const response = await fetch("https://api.lmnt.com/v1/ai/speech", {
     method: "POST",
     headers: {
@@ -21,7 +55,7 @@ export async function textToSpeechLMNT(text, language = "hi") {
     body: JSON.stringify({
       text,
       voice: VOICES[language] || VOICES.hi,
-      language: language,
+      language: safeLang,
       format: "mp3"
     })
   });
@@ -39,8 +73,8 @@ export async function textToSpeechLMNT(text, language = "hi") {
   const audioBase64 = jsonResponse.audio;
   const audioBuffer = Buffer.from(audioBase64, 'base64');
 
-  const fileName = `voice_${Date.now()}.mp3`;
-  fs.writeFileSync(`uploads/${fileName}`, audioBuffer);
+  const fileName = explicitFileName || `voice_${Date.now()}.mp3`;
+  await fs.promises.writeFile(`uploads/${fileName}`, audioBuffer);
 
   return fileName;
 }

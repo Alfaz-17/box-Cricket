@@ -20,8 +20,13 @@ import cors from 'cors'
 import { initSocket } from './lib/soket.js'
 import { generalLimiter } from './middleware/rateLimiter.js'
 import mime from 'mime'
+import { startCleanupJob } from './cron/cleanupVoiceFiles.js'
+
 dotenv.config()
 const app = express()
+
+// Start the cleanup job immediately
+startCleanupJob();
 
 //create socket server
 const server = http.createServer(app)
@@ -46,6 +51,30 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' })) // For form submi
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+app.get("/uploads/voice_:id.mp3", async (req, res, next) => {
+  const filePath = path.join(__dirname, "../uploads", `voice_${req.params.id}.mp3`);
+  
+  // fs module needed for exists logic
+  const fs = await import('fs');
+
+  let attempts = 0;
+  const maxAttempts = 50; // 5 seconds (50 * 100ms)
+
+  const checkFile = () => {
+    if (fs.existsSync(filePath)) {
+      next(); // File exists, let express.static serve it
+    } else {
+      attempts++;
+      if (attempts >= maxAttempts) {
+        return res.status(404).send("Audio generation timed out");
+      }
+      setTimeout(checkFile, 100); // Wait 100ms and check again
+    }
+  };
+
+  checkFile();
+});
 
 app.use(
   "/uploads",
