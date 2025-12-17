@@ -1,92 +1,183 @@
+import Groq from "groq-sdk";
 import moment from "moment";
+import dotenv from "dotenv";
+dotenv.config();
 
-function speakableDate(date, language) {
-  if (moment(date).isSame(moment(), "day")) {
-    if (language === "en") return "today";
-    if (language === "gu") return "આજે";
-    return "आज";
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+function speakableDate(dateStr, lang) {
+  const date = moment(dateStr);
+  const today = moment();
+  const tomorrow = moment().add(1, 'days');
+
+  if (date.isSame(today, 'day')) {
+    if (lang === 'hi') return "आज";
+    if (lang === 'gu') return "આજે";
+    return "today";
   }
-  return date;
+  if (date.isSame(tomorrow, 'day')) {
+    if (lang === 'hi') return "कल";
+    if (lang === 'gu') return "આવતીકાલે";
+    return "tomorrow";
+  }
+  return date.format("D MMMM");
 }
 
-function speakableTime(timeStr, language) {
-  // Input: "04:00 PM" or "10:30 AM"
-  // parsed by moment or just string manipulation
-  let [time, modifier] = timeStr.split(" ");
-  let [hours, minutes] = time.split(":");
-  hours = parseInt(hours, 10); // remove leading zero
-
-  // Minute handling
-  const minutePart = minutes === "00" ? "" : `:${minutes}`;
-
-  if (language === "hi") {
-    // Hindi mapping
-    let period = "";
-    if (modifier === "AM") {
-      if (hours >= 4 && hours < 12) period = "सुबह"; // Morning
-      else if (hours === 12) period = "दोपहर"; // Noon
-      else period = "रात"; // Late night/early morning
-    } else { // PM
-      if (hours >= 12 && hours < 4) period = "दोपहर"; // Afternoon
-      else if (hours >= 4 && hours < 8) period = "शाम"; // Evening
-      else period = "रात"; // Night
-    }
-    return `${period} ${hours}${minutePart} बजे`;
-  }
-
-  if (language === "gu") {
-    // Gujarati mapping
-    let period = "";
-    if (modifier === "AM") {
-      if (hours >= 4 && hours < 12) period = "સવારે";
-      else if (hours === 12) period = "બપોરે";
-      else period = "રાત્રે";
-    } else { // PM
-      if (hours >= 12 && hours < 4) period = "બપોરે";
-      else if (hours >= 4 && hours < 8) period = "સાંજે";
-      else period = "રાત્રે";
-    }
-    return `${period} ${hours}${minutePart} વાગ્યે`;
-  }
-
-  // English fallback: "7 PM" instead of "07:00 PM"
-  return `${hours}${minutePart} ${modifier}`;
-}
-
-export function buildVoiceResponse({ parsed, result }) {
-  const { language, startTime, duration, date } = parsed;
-
-  const effectiveLang = (language === 'ur') ? 'hi' : language;
-
-  if (!result.available) {
-    return responses[effectiveLang].notAvailable;
-  }
-
-  // Extract unique Box Names (from quarters) and clean them ("Box - 1" -> "Box 1")
-  const uniqueBoxes = [...new Set(result.slots.map(s => s.quarterName.replace(/-/g, "").replace(/\s+/g, " ").trim()))];
+function speakableTime(timeStr, lang) {
+  // Input is "10:00 PM" (12-hour format)
+  const time = moment(timeStr, ["h:mm A", "hh:mm A"]);
+  const h = time.hour(); // 0-23
+  const m = time.minutes();
   
-  // Get Venue Name (assuming all slots are from the same venue query context, or just take first one)
-  const venueName = result.slots[0]?.boxName || "Stadium";
+  // Format based on language
+  // Hindi/Urdu
+  if (lang === 'hi' || lang === 'ur') {
+    let period = "सुबह"; // Morning (0-11)
+    if (h >= 12) {
+      if (h === 12 || h < 16) period = "दोपहर"; // Afternoon (12-3 PM)
+      else if (h < 19) period = "शाम"; // Evening (4-6 PM)
+      else period = "रात"; // Night (7+ PM)
+    } else {
+      if (h < 4) period = "रात"; // Late night logic
+    }
+    
+    const displayH = h % 12 || 12;
+    return `${period} ${displayH} बजे`;
+  }
 
-  const boxString = uniqueBoxes.join(
-    effectiveLang === "en"
-      ? " and "
-      : effectiveLang === "hi"
-      ? " और "
-      : " અને "
-  );
+  // Gujarati
+  if (lang === 'gu') {
+    let period = "સવારે"; 
+    if (h >= 12) {
+      if (h === 12 || h < 16) period = "બપોરે";
+      else if (h < 19) period = "સાંજે";
+      else period = "રાત્રે";
+    } else {
+       if (h < 4) period = "રાત્રે";
+    }
 
-  const fullLocationString = `${venueName} ${boxString}`;
+    const displayH = h % 12 || 12;
+    return `${period} ${displayH} વાગ્યે`;
+  }
 
-  const spokenDate = speakableDate(date, effectiveLang);
-  const spokenTime = speakableTime(startTime, effectiveLang);
+  // English fallback
+  return time.format("h:mm A");
+}
 
-  return responses[effectiveLang].available({
-    date: spokenDate,
-    startTime: spokenTime,
-    duration,
-    boxString: fullLocationString
-  });
+/**
+ * Calculate end time based on start time and duration
+ */
+function calculateEndTime(startTime, duration) {
+  const start = moment(startTime, ["h:mm A", "hh:mm A"]);
+  const end = start.add(duration, 'hours');
+  return end.format("hh:mm A");
+}
+
+/**
+ * Generate follow-up question when information is incomplete
+ */
+function generateFollowUpQuestion(parsed) {
+  const lang = parsed.language || 'en';
+  
+  // Missing date
+  if (!parsed.date) {
+    if (lang === 'hi') return "कब के लिए देखना है? आज या कल?";
+    if (lang === 'gu') return "ક્યારે માટે જોવું છે? આજે કે આવતીકાલે?";
+    return "When would you like to book? Today or tomorrow?";
+  }
+  
+  // Missing time (but have date)
+  if (!parsed.startTime) {
+    if (lang === 'hi') return "किस समय चाहिए?";
+    if (lang === 'gu') return "કયા સમયે જોઈએ છે?";
+    return "What time would you like?";
+  }
+
+  // Missing duration (but have date and time)
+  if (!parsed.duration) {
+    if (lang === 'hi') return "कितने घंटे के लिए चाहिए?";
+    if (lang === 'gu') return "કેટલા કલાક માટે જોઈએ છે?";
+    return "For how many hours?";
+  }
+  
+  // Shouldn't reach here, but fallback
+  if (lang === 'hi') return "कृपया पूरी जानकारी दें।";
+  if (lang === 'gu') return "કૃપા કરીને સંપૂર્ણ માહિતી આપો.";
+  return "Please provide complete information.";
+}
+
+export async function buildVoiceResponse({ parsed, result }) {
+  const lang = parsed.language || 'en';
+  
+  // 🔍 CHECK IF WE NEED MORE INFORMATION
+  if (parsed.needsMoreInfo) {
+    return generateFollowUpQuestion(parsed);
+  }
+  
+  // ✅ We have all info, proceed with slot availability response
+  const isAvailable = result.available;
+  const requestedDate = speakableDate(parsed.date, lang);
+  const requestedTime = speakableTime(parsed.startTime, lang);
+  const endTime = calculateEndTime(parsed.startTime, parsed.duration);
+  const requestedEndTime = speakableTime(endTime, lang);
+  
+  // Extract box names if available
+  let availabilityInfo = "";
+  if (isAvailable && result.slots && result.slots.length > 0) {
+    const uniqueBoxes = [...new Set(result.slots.map(s => s.quarterName.replace(/-/g, "").replace(/\\s+/g, " ").trim()))];
+    availabilityInfo = uniqueBoxes.join(", ");
+  }
+
+  // Construct System Prompt for the AI
+  const systemPrompt = `
+    You are a polite and helpful cricket box booking assistant named 'BookMyBox AI'.
+    Your goal is to inform the user about slot availability in a SHORT, SIMPLE, and NATURAL way.
+
+    CONTEXT:
+    - User Language: ${lang} (hi=Hindi, gu=Gujarati, en=English, ur=Urdu)
+    - Available Box Names: ${availabilityInfo} (e.g., "Box 1, Box 2")
+    - Requested Time: ${requestedTime} to ${requestedEndTime}
+    - Status: ${isAvailable ? "AVAILABLE" : "NOT AVAILABLE"}
+
+    INSTRUCTIONS:
+    1. Reply ONLY in ${lang}.
+    2. Start with a direct answer (e.g., "Yes!" or "हाँ!").
+    3. Clearly say WHICH boxes are free (e.g., "Box 1 aur Box 2 dono khaali hain").
+    4. Mention the time range as "${requestedTime} se ${requestedEndTime}" (from start to end).
+    5. Keep it under 20 words if possible. No complex sentences.
+    6. Say "Box" (not "Kosh" or anything translated).
+    7. Use "se" (from) to connect start and end times in Hindi/Gujarati.
+  `;
+
+  try {
+    const completion = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: "Generate the voice response now." }
+      ],
+      model: "llama-3.1-8b-instant",
+      temperature: 0.7,
+      max_tokens: 100,
+    });
+
+    const aiResponse = completion.choices[0]?.message?.content?.trim();
+    if (aiResponse) return aiResponse;
+    throw new Error("Empty AI response");
+
+  } catch (error) {
+    console.error("AI Generation Failed, falling back to template:", error);
+    
+    // Fallback Template Logic (Simplified)
+    if (isAvailable) {
+      if (lang === 'hi') return `हाँ, ${requestedDate} को ${requestedTime} से ${requestedEndTime} तक ${availabilityInfo} उपलब्ध है।`;
+      if (lang === 'gu') return `હા, ${requestedDate} ${requestedTime} થી ${requestedEndTime} સુધી ${availabilityInfo} ઉપલબ્ધ છે.`;
+      return `Yes, ${availabilityInfo} is available on ${requestedDate} from ${requestedTime} to ${requestedEndTime}.`;
+    } else {
+      if (lang === 'hi') return `माफ़ कीजिये, ${requestedDate} को ${requestedTime} से ${requestedEndTime} तक कोई स्लॉट खाली नहीं है।`;
+      if (lang === 'gu') return `માફ કરશો, ${requestedDate} ${requestedTime} થી ${requestedEndTime} સુધી સ્લોટ ઉપલબ્ધ નથી.`;
+      return `Sorry, slots are not available on ${requestedDate} from ${requestedTime} to ${requestedEndTime}.`;
+    }
+  }
 }
 
 const responses = {
@@ -110,3 +201,5 @@ const responses = {
 };
 
 responses.ur = responses.hi;
+
+
