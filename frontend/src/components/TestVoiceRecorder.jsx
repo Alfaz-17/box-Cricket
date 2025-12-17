@@ -43,7 +43,10 @@ const TestVoiceRecorder = () => {
 
           try {
             await audioRef.current.play();
-            setWelcomePlayed(true);
+            if (!welcomePlayed) {
+  welcomePlayed();
+  setWelcomePlayed(true);
+}
           } catch (modals) {
             console.log("Autoplay blocked usually - user interaction needed");
           }
@@ -85,7 +88,8 @@ const TestVoiceRecorder = () => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("audio", blob, "voice.webm");
+const extension = blob.type.includes("mp4") ? "mp4" : "webm";
+formData.append("audio", blob, `voice.${extension}`);
     if (sessionId) {
       formData.append("sessionId", sessionId);
     }
@@ -135,31 +139,51 @@ const TestVoiceRecorder = () => {
     }
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      chunksRef.current = [];
+const startRecording = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100
+      }
+    });
 
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) chunksRef.current.push(event.data);
-      };
-
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        // 🚀 Auto-send immediately
-        sendToBackend(blob);
-      };
-
-      mediaRecorderRef.current.start();
-      setRecording(true);
-    } catch (err) {
-      setConversationHistory(prev => [
-        ...prev,
-        { type: 'error', text: 'Microphone Access Denied', timestamp: Date.now() }
-      ]);
+    let mimeType = "audio/webm";
+    if (!window.MediaRecorder.isTypeSupported(mimeType)) {
+      mimeType = "audio/mp4"; // ✅ iOS / mobile safe
     }
-  };
+
+    mediaRecorderRef.current = new MediaRecorder(stream, { mimeType });
+    chunksRef.current = [];
+
+    mediaRecorderRef.current.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) {
+        chunksRef.current.push(e.data);
+      }
+    };
+
+    mediaRecorderRef.current.onstop = () => {
+      if (!chunksRef.current.length) {
+        console.error("❌ No audio recorded");
+        return;
+      }
+
+      const blob = new Blob(chunksRef.current, { type: mimeType });
+      sendToBackend(blob);
+    };
+
+    mediaRecorderRef.current.start();
+    setRecording(true);
+
+  } catch (err) {
+    setConversationHistory(prev => [
+      ...prev,
+      { type: 'error', text: 'Microphone access denied', timestamp: Date.now() }
+    ]);
+  }
+};
+
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && recording) {
