@@ -79,56 +79,12 @@ export async function startBot() {
       // Handle common greetings or "Mota Bhai" specific calls
       const lowerText = text.toLowerCase()
       if (lowerText === 'hi' || lowerText === 'hello' || lowerText.includes('mota bhai')) {
-        const welcome = "नमस्ते मोटा भाई! मैं आपकी स्लॉट चेक करने में मदद कर सकता हूँ। बस आप तारीख और समय बता दीजिए।"
+        const welcome = "नमस्ते मोटा भाई! मैं आपकी क्या मदद कर सकता हूँ?"
         await sendMessage(number, welcome)
         return
       }
 
-      try {
-        // 🆔 Use phone number as Session ID
-        const { getSession, updateSession } = await import('./conversationSession.js')
-        const { parseVoiceQuery } = await import('./parseVoiceQuery.js')
-        const { findAvailableSlots } = await import('./findAvailableSlots.js')
-        const { buildVoiceResponse } = await import('./buildVoiceResponse.js')
-
-        const conversationContext = getSession(number)
-        
-        // 1️⃣ Parse Intent (Reusable logic)
-        const parsed = await parseVoiceQuery(text, conversationContext)
-        console.log(`🤖 Parsed for WhatsApp (${number}):`, parsed)
-
-        // 💾 Update session
-        updateSession(number, {
-          date: parsed.date,
-          startTime: parsed.startTime,
-          duration: parsed.duration,
-          language: parsed.language
-        })
-
-        if (parsed.intent === 'check_slot' || parsed.intent === 'book_slot') {
-          let replyText = ""
-          
-          if (parsed.needsMoreInfo) {
-             // 2a Ask follow up
-             replyText = await buildVoiceResponse({ parsed, result: null })
-          } else {
-             // 2b Check Slots
-             const result = await findAvailableSlots({
-                date: parsed.date,
-                startTime: parsed.startTime,
-                duration: parsed.duration
-             })
-             // 3 Build Response
-             replyText = await buildVoiceResponse({ parsed, result })
-          }
-
-          // 4 Send back to user
-          await sendMessage(number, replyText)
-        }
-
-      } catch (error) {
-        console.error('❌ WhatsApp AI Error:', error)
-      }
+      // Slot checking functionality has been removed as per request.
     })
 
   } catch (err) {
