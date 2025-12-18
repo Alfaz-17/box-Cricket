@@ -33,7 +33,7 @@ const __dirname = path.dirname(__filename);
 
 export const voiceLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // User set to 2 for testing
+  max: 40, // User set to 2 for testing
   handler: (req, res, next, options) => {
     const errorMsg = "आपने इस घंटे के लिए अपनी 10 वॉयस रिक्वेस्ट का उपयोग कर लिया है। कृपया बाद में प्रयास करें।";
     const audioFileName = "voice_limit_hindi.mp3";
@@ -41,9 +41,11 @@ export const voiceLimiter = rateLimit({
 
     // ⚡ OPTIMIZATION: Check if static file already exists
     if (!fs.existsSync(filePath)) {
-      // Create it ONLY if missing
-      textToSpeechLMNT(errorMsg, "hi", audioFileName)
-        .catch(err => console.error("Rate Limit TTS Failed:", err));
+      // Use murf for consistency
+      import('../lib/textToSpeechMurf.js').then(({ textToSpeechMurf }) => {
+         textToSpeechMurf(errorMsg, "hi", audioFileName)
+           .catch(err => console.error("Rate Limit TTS Failed:", err));
+      });
     }
 
     res.status(429).json({

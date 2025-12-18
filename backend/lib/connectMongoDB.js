@@ -4,10 +4,15 @@ import dotenv from 'dotenv'
 dotenv.config()
 const connectMongoDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI)
-    console.log('mongodb connected')
+    // Disable buffering so queries fail fast if connection isn't ready
+    mongoose.set('bufferCommands', false);
+    
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000, // Wait 5s before failing
+    })
+    console.log('✅ MongoDB connected successfully')
   } catch (error) {
-    console.log('mongodb connection error')
+    console.error('❌ MongoDB connection error:', error.message)
   }
 }
 

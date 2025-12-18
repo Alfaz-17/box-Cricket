@@ -101,11 +101,11 @@ app.use("/api/voice",voiceRoutes)
 //start whatsApp chaybot
 
 
-console.log(process.env.PORT)
+// Connect to MongoDB
+await connectMongoDB();
+
 server.listen(PORT, () => {
   console.log('server is runnning on port', PORT)
-
-  connectMongoDB()
 });
 
 initSocket(server)

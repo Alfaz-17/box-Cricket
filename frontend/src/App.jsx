@@ -165,7 +165,7 @@ function App() {
                     >
                       <X size={20} />
                     </button>
-                    <TestVoiceRecorder />
+                    <TestVoiceRecorder onClose={() => setIsVoiceOpen(false)} />
                   </motion.div>
                 </motion.div>
               )}

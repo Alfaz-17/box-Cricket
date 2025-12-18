@@ -5,7 +5,26 @@ import { getSession, updateSession, generateSessionId } from "../lib/conversatio
 
 import moment from "moment";
 import { buildVoiceResponse } from "../lib/buildVoiceResponse.js";
-import { textToSpeechLMNT } from "../lib/textToSpeechLMNT.js";
+import { textToSpeechMurf } from "../lib/textToSpeechMurf.js";
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 🗑️ Helper for delayed deletion (to allow client to fetch)
+const autoDeleteFile = (filename, delay = 10000) => {
+  setTimeout(() => {
+    const filePath = path.join(__dirname, '../../uploads', filename);
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath, (err) => {
+        if (err) console.error(`Failed to auto-delete ${filename}:`, err);
+        else console.log(`🗑️ Auto-deleted voice response: ${filename}`);
+      });
+    }
+  }, delay);
+};
 
 function finalizeParsed(parsed) {
   // Don't set default date if we're still gathering info
@@ -78,10 +97,14 @@ export const voiceCheckSlot = async (req, res) => {
       // Generate follow-up question
       const replyText = await buildVoiceResponse({ parsed, result: null });
       
-      // 5️⃣ TTS (Async / Fire & Forget)
+      // 5️⃣ TTS (Murf)
       const audioFileName = `voice_${Date.now()}.mp3`;
-      textToSpeechLMNT(replyText, parsed.language, audioFileName)
-        .catch(err => console.error("Async TTS Failed:", err));
+      try {
+        await textToSpeechMurf(replyText, parsed.language, audioFileName);
+        autoDeleteFile(audioFileName); // Clean up after 60s
+      } catch (err) {
+        console.error("TTS Failed:", err);
+      }
 
       // 6️⃣ Respond with follow-up question
       return res.json({
@@ -125,11 +148,15 @@ export const voiceCheckSlot = async (req, res) => {
       language: parsed.language
     };
 
-    // 5️⃣ TTS (Async / Fire & Forget)
+    // 5️⃣ TTS (Murf)
     const audioFileName = `voice_${Date.now()}.mp3`;
     
-    textToSpeechLMNT(replyText, parsed.language, audioFileName)
-      .catch(err => console.error("Async TTS Failed:", err));
+    try {
+      await textToSpeechMurf(replyText, parsed.language, audioFileName);
+      autoDeleteFile(audioFileName); // Clean up after 60s
+    } catch (err) {
+      console.error("TTS Failed:", err);
+    }
 
     // 6️⃣ Respond with slot availability
     return res.json({
@@ -148,13 +175,14 @@ export const voiceCheckSlot = async (req, res) => {
     // 🛑 Graceful Error Handling (Spoken)
     try {
       const errorMsg = "Sorry, I couldn't understand that. Please try again.";
-      // Default to English or Hindi for errors based on a guess, or just English
-      const audioFile = await textToSpeechLMNT(errorMsg, "en");
+      const audioFileName = `voice_err_${Date.now()}.mp3`;
+      await textToSpeechMurf(errorMsg, "en", audioFileName);
+      autoDeleteFile(audioFileName); // Clean up
       
       return res.json({
         voiceText: "Error processing request",
         replyText: errorMsg,
-        audioUrl: `/uploads/${audioFile}`,
+        audioUrl: `/uploads/${audioFileName}`,
         isError: true
       });
     } catch (ttsErr) {
@@ -165,7 +193,6 @@ export const voiceCheckSlot = async (req, res) => {
     // 🧹 Instant Cleanup: Delete the uploaded USER voice file
     if (req.file && req.file.path) {
       try {
-        const fs = await import('fs');
         await fs.promises.unlink(req.file.path);
         console.log("Deleted temp user upload:", req.file.filename);
       } catch (dErr) {
@@ -180,11 +207,15 @@ export const voiceCheckSlot = async (req, res) => {
 // 🎙️ Welcome Message Endpoint
 export const getWelcomeMessage = async (req, res) => {
   try {
-    const welcomeText = "नमस्ते! मैं आपकी स्लॉट चेक करने में मदद कर सकता हूं। कृपया मुझे तारीख और समय बताएं।";
-    const audioFileName = `welcome_${Date.now()}.mp3`;
-    
-    // Generate TTS for welcome message
-    await textToSpeechLMNT(welcomeText, "hi", audioFileName);
+    const welcomeText = "मोटा भाई, मैं आपकी स्लॉट चेक करने में मदद कर सकता हूँ। बस आप तारीख और समय बता दीजिए।";
+    const audioFileName = "welcome_mota_bhai_v2.mp3"; // Incremented version to force rebuild
+    const filePath = path.join(__dirname, '../../uploads', audioFileName);
+
+    // Reuse existing file to save time/cost
+    if (!fs.existsSync(filePath)) {
+      console.log("🎙️ Generating New Mota Bhai Welcome Message...");
+      await textToSpeechMurf(welcomeText, "hi", audioFileName);
+    }
     
     return res.json({
       replyText: welcomeText,
