@@ -63,29 +63,7 @@ export async function startBot() {
       await saveCreds() // save to MongoDB silently
     })
 
-    // 🤖 LISTEN FOR MESSAGES
-    sock.ev.on('messages.upsert', async ({ messages, type }) => {
-      if (type !== 'notify') return
-      const msg = messages[0]
-      if (!msg.message || msg.key.fromMe) return
 
-      const jid = msg.key.remoteJid
-      const number = jid.split('@')[0]
-      const text = msg.message.conversation || msg.message.extendedTextMessage?.text
-      
-      if (!text) return
-      console.log(`📩 New message from ${number}: ${text}`)
-
-      // Handle common greetings or "Mota Bhai" specific calls
-      const lowerText = text.toLowerCase()
-      if (lowerText === 'hi' || lowerText === 'hello' || lowerText.includes('mota bhai')) {
-        const welcome = "नमस्ते मोटा भाई! मैं आपकी क्या मदद कर सकता हूँ?"
-        await sendMessage(number, welcome)
-        return
-      }
-
-      // Slot checking functionality has been removed as per request.
-    })
 
   } catch (err) {
     console.error('❌ Failed to start WhatsApp bot:', err)

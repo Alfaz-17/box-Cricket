@@ -53,6 +53,13 @@ const SlotPicker = ({
     slotEnd.setHours(slot.id + 1, 0, 0, 0)
 
     return group.slots.some(booking => {
+       // Only count as booked if paid and confirmed
+       const isPaidAndConfirmed = 
+         booking.status === 'confirmed' && 
+         (booking.paymentStatus === 'paid' || booking.isOffline);
+         
+       if (!isPaidAndConfirmed) return false;
+
        // Use startDateTime/endDateTime for robust overlap check
        const bStart = new Date(booking.startDateTime)
        const bEnd = new Date(booking.endDateTime)
@@ -129,7 +136,7 @@ const SlotPicker = ({
               ${selected 
                 ? 'bg-primary/20 border-primary shadow-[0_0_15px_rgba(157,255,0,0.3)]' 
                 : disabled
-                  ? 'bg-muted/20 border-white/5 opacity-60 cursor-not-allowed'
+                  ? 'bg-muted/20 border-white/5 opacity-60 cursor-not-allowed pointer-events-none'
                   : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
               }
             `}

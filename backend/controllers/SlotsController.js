@@ -128,7 +128,7 @@ export const getBlockedAndBookedSlots = async (req, res) => {
         { paymentStatus: 'paid' },
         { isOffline: true }
       ]
-    }).select('date startTime endTime duration quarter quarterName startDateTime endDateTime')
+    }).select('date startTime endTime duration quarter quarterName startDateTime endDateTime status paymentStatus isOffline')
     
     const upcomingBookedSlots = bookings.filter(b => new Date(b.endDateTime) > now);
 
