@@ -39,7 +39,8 @@ export const findAvailableSlots = async ({ date, startTime, duration }) => {
         quarter: quarter._id,
         startDateTime: { $lt: end },
         endDateTime: { $gt: start },
-        status: "confirmed"
+        status: "confirmed",
+        $or: [{ paymentStatus: 'paid' }, { isOffline: true }],
       });
 
       if (conflict) continue;

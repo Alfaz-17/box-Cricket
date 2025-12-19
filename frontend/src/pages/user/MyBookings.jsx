@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Calendar, Clock, MapPin, CheckCircle, AlertCircle, XCircle, Download, Eye } from 'lucide-react'
+import { Calendar, Clock, MapPin, CheckCircle, Download, Eye } from 'lucide-react'
 import { Card, CardContent } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
 import api from '../../utils/api'
 import { jsPDF } from 'jspdf'
 import { motion } from 'framer-motion'
-import { formatTime, formatEndTime } from '../../utils/formatDate'
+import { formatTime, formatEndTime, formatBookingDate } from '../../utils/formatDate'
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([])
@@ -30,26 +30,7 @@ const MyBookings = () => {
     fetchBookings()
   }, [])
 
-  const cancelBooking = async id => {
-    if (!confirm('Are you sure you want to cancel this booking?')) return
-
-    try {
-      const response = await api.post(`/booking/cancel/${id}`)
-
-      if (response.status !== 200) {
-        throw new Error(response.data.message || 'Failed to cancel booking')
-      }
-
-      setBookings(prev =>
-        prev.map(booking => (booking._id === id ? { ...booking, status: 'cancelled' } : booking))
-      )
-
-      toast.success('Booking cancelled successfully')
-    } catch (error) {
-      console.error('Error cancelling booking:', error)
-      toast.error(error.response?.data?.message || error.message || 'Failed to cancel booking')
-    }
-  }
+  // Users can no longer cancel bookings
 
   function convertTo24Hour(timeStr) {
     const [time, modifier] = timeStr.trim().split(' ')
@@ -73,11 +54,9 @@ const MyBookings = () => {
     const now = new Date()
 
     if (activeTab === 'upcoming') {
-      return bookingDate > now && booking.status !== 'cancelled'
-    } else if (activeTab === 'past') {
-      return bookingDate < now && booking.status !== 'cancelled'
+      return bookingDate > now
     } else {
-      return booking.status === 'cancelled'
+      return bookingDate < now
     }
   })
 
@@ -89,7 +68,7 @@ const MyBookings = () => {
         </h1>
         
         <div className="bg-muted/30 p-1 rounded-xl flex gap-1 w-full sm:w-auto overflow-x-auto">
-          {['upcoming', 'past', 'cancelled'].map((tab) => (
+          {['upcoming', 'past'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -143,8 +122,6 @@ const MyBookings = () => {
             >
               <BookingCard
                 booking={booking}
-                onCancel={() => cancelBooking(booking._id)}
-                showCancelButton={activeTab === 'upcoming'}
               />
             </motion.div>
           ))}
@@ -154,7 +131,7 @@ const MyBookings = () => {
   )
 }
 
-const BookingCard = ({ booking, onCancel, showCancelButton }) => {
+const BookingCard = ({ booking }) => {
   const getStatusBadge = status => {
     if (status === 'confirmed') {
       return (
@@ -258,7 +235,7 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
                 <Calendar size={16} className="sm:w-5 sm:h-5 mr-2 sm:mr-3 text-primary flex-shrink-0" />
                 <div className="min-w-0">
                     <p className="text-xs text-muted-foreground font-semibold uppercase">Date</p>
-                    <p className="font-medium text-sm sm:text-base truncate">{booking.date}</p>
+                    <p className="font-medium text-sm sm:text-base truncate">{formatBookingDate(booking.date)}</p>
                 </div>
               </div>
               <div className="flex items-center p-2.5 sm:p-3 bg-muted/30 rounded-lg border border-primary/5">
@@ -294,12 +271,6 @@ const BookingCard = ({ booking, onCancel, showCancelButton }) => {
               >
                 <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Receipt
               </Button>
-
-              {showCancelButton && booking.status === 'confirmed' && (
-                <Button variant="destructive" size="sm" onClick={onCancel} className="w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10">
-                  Cancel
-                </Button>
-              )}
             </div>
           </div>
         </div>

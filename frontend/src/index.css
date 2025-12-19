@@ -127,3 +127,7 @@
     transform: translateY(-10px);
   }
 }
+
+.datepicker-popper-high-z {
+  z-index: 1000 !important;
+}

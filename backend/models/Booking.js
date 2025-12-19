@@ -22,16 +22,18 @@ const bookingSchema = new mongoose.Schema(
     amountPaid: { type: Number, required: true, default: 500 },
     paymentStatus: {
       type: String,
-      enum: ['pending', 'paid', 'failed'],
+      enum: ['pending', 'paid', 'failed', 'processing'],
     },
-    cashfreePaymentId: { type: String },
+    sabpaisaTxnId: { type: String }, // Client transaction ID sent to SabPaisa
+    sabpaisaPaymentId: { type: String }, // Payment ID returned by SabPaisa
+    sabpaisaResponse: { type: String }, // Full decrypted response for debugging
     contactNumber: { type: String },
     confirmedAt: { type: Date },
     cancelledAt: { type: Date },
     status: {
       type: String,
-      enum: ['completed', 'confirmed', 'cancelled'],
-      default: 'confirmed',
+      enum: ['pending', 'completed', 'confirmed', 'cancelled'],
+      default: 'pending',
     },
     completedAt: { type: Date },
     notes: { type: String },

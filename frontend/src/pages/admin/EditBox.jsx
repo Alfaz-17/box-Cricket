@@ -15,6 +15,7 @@ const EditBox = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [newPricing, setNewPricing] = useState({ duration: '', price: '' })
+  const [newWeekendPricing, setNewWeekendPricing] = useState({ duration: '', price: '' })
 
   const [formData, setFormData] = useState({
     name: '',
@@ -32,6 +33,8 @@ const EditBox = () => {
     imagesPreview: [],
     existingImages: [],
     customPricing: [],
+    weekendHourlyRate: '',
+    weekendCustomPricing: [],
   })
 
   useEffect(() => {
@@ -53,6 +56,8 @@ const EditBox = () => {
         imagesPreview: [],
         existingImages: response.data.images || [],
         customPricing: response.data.customPricing || [],
+        weekendHourlyRate: response.data.weekendHourlyRate || '',
+        weekendCustomPricing: response.data.weekendCustomPricing || [],
       })
     } catch (error) {
       toast.error('Failed to fetch box details')
@@ -114,6 +119,8 @@ const EditBox = () => {
         image: uploadedImageURL,
         images: allImages,
         customPricing: formData.customPricing,
+        weekendHourlyRate: formData.weekendHourlyRate,
+        weekendCustomPricing: formData.weekendCustomPricing,
       }
 
       const response = await api.put(`/boxes/update/${id}`, payload)
@@ -253,6 +260,23 @@ const EditBox = () => {
               </div>
             </div>
             <div className="space-y-2">
+              <Label htmlFor="weekendHourlyRate">Weekend Hourly Rate (₹) <span className="text-xs text-muted-foreground">(Sat-Sun)</span></Label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="weekendHourlyRate"
+                  type="number"
+                  name="weekendHourlyRate"
+                  value={formData.weekendHourlyRate}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  className="pl-9 bg-muted/30 border-primary/20 focus:border-primary"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="numberOfQuarters">Number of Quarters</Label>
               <Select 
                 value={formData.numberOfQuarters?.toString()} 
@@ -324,6 +348,70 @@ const EditBox = () => {
                     <button
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, customPricing: prev.customPricing.filter((_, i) => i !== idx) }))}
+                      className="text-destructive active:text-destructive/80 md:hover:text-destructive/80"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Custom Weekend Pricing */}
+          <div className="space-y-3 p-4 bg-muted/20 rounded-xl border border-primary/10">
+            <Label className="text-primary">Weekend Custom Pricing <span className="text-xs text-muted-foreground">(Optional)</span></Label>
+            <div className="flex gap-3 items-end">
+              <div className="space-y-1 flex-1">
+                <Label htmlFor="weekendDuration" className="text-xs text-muted-foreground">Duration (hrs)</Label>
+                <Input
+                  id="weekendDuration"
+                  type="number"
+                  value={newWeekendPricing.duration}
+                  onChange={e => setNewWeekendPricing({ ...newWeekendPricing, duration: e.target.value })}
+                  min="1"
+                  className="h-9 bg-background"
+                />
+              </div>
+              <div className="space-y-1 flex-1">
+                <Label htmlFor="weekendPrice" className="text-xs text-muted-foreground">Price (₹)</Label>
+                <Input
+                  id="weekendPrice"
+                  type="number"
+                  value={newWeekendPricing.price}
+                  onChange={e => setNewWeekendPricing({ ...newWeekendPricing, price: e.target.value })}
+                  min="1"
+                  className="h-9 bg-background"
+                />
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  if (newWeekendPricing.duration && newWeekendPricing.price && !formData.weekendCustomPricing.find(item => item.duration === Number(newWeekendPricing.duration))) {
+                    setFormData(prev => ({
+                      ...prev,
+                      weekendCustomPricing: [...prev.weekendCustomPricing, { duration: Number(newWeekendPricing.duration), price: Number(newWeekendPricing.price) }],
+                    }))
+                    setNewWeekendPricing({ duration: '', price: '' })
+                  } else {
+                    toast.error('Invalid or duplicate entry')
+                  }
+                }}
+                className="h-9"
+              >
+                <Plus size={16} /> Add
+              </Button>
+            </div>
+
+            {formData.weekendCustomPricing.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.weekendCustomPricing.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-background border border-primary/20 px-3 py-1 rounded-full text-sm">
+                    <span>{item.duration} hrs - ₹{item.price}</span>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, weekendCustomPricing: prev.weekendCustomPricing.filter((_, i) => i !== idx) }))}
                       className="text-destructive active:text-destructive/80 md:hover:text-destructive/80"
                     >
                       <X size={14} />

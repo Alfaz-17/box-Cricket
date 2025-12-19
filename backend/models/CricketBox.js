@@ -34,6 +34,7 @@ const cricketBoxSchema = new mongoose.Schema({
   location: { type: String, required: true },
   address: { type: String }, // Optional but mock data has it
   hourlyRate: { type: Number, required: true },
+  weekendHourlyRate: { type: Number }, // Rate for Sat-Sun
 
   mobileNumber: {
     type: String,
@@ -51,6 +52,12 @@ const cricketBoxSchema = new mongoose.Schema({
     {
       duration: { type: Number, required: true }, // in hours
       price: { type: Number, required: true }, // in rupees
+    },
+  ],
+  weekendCustomPricing: [
+    {
+      duration: { type: Number, required: true },
+      price: { type: Number, required: true },
     },
   ],
 

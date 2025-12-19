@@ -274,6 +274,11 @@ const BoxDetail = () => {
                 ₹{displayBox.hourlyRate}
                 <span className="text-lg font-normal text-muted-foreground">/hour</span>
               </div>
+              {displayBox.weekendHourlyRate && (
+                <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-[-5px]">
+                  Weekend: ₹{displayBox.weekendHourlyRate}/hr
+                </div>
+              )}
             </div>
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -291,27 +296,7 @@ const BoxDetail = () => {
           </div>
         </motion.div>
 
-        {/* Key Details Grid Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8"
-        >
-          <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl font-bold text-primary mb-6">
-            Key Details
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <KeyDetailItem icon={Trophy} label="Price/Hour" value={`₹${displayBox.hourlyRate}`} />
-            <KeyDetailItem icon={Clock} label="Weekdays" value={displayBox.openingHours.weekdays} />
-            <KeyDetailItem
-              icon={Calendar}
-              label="Weekends"
-              value={displayBox.openingHours.weekends}
-            />
-            <KeyDetailItem icon={Users} label="Capacity" value="10+ Players" />
-          </div>
-        </motion.section>
+       
 
         {/* Available Boxes Section */}
         <motion.section
@@ -348,8 +333,11 @@ const BoxDetail = () => {
           </div>
         </motion.section>
 
+
+
+
         {/* Custom Pricing */}
-        {Array.isArray(displayBox.customPricing) && displayBox.customPricing.length > 0 && (
+        {((Array.isArray(displayBox.customPricing) && displayBox.customPricing.length > 0) || (Array.isArray(displayBox.weekendCustomPricing) && displayBox.weekendCustomPricing.length > 0)) && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -360,43 +348,60 @@ const BoxDetail = () => {
               style={{ fontFamily: 'Bebas Neue' }}
               className="text-3xl font-bold text-primary mb-6"
             >
-              Custom Pricing
+              Special Pricing Bundles
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {displayBox.customPricing.map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  className="p-6 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl border border-primary/20 hover:border-primary/40 transition-all duration-300 shadow-md hover:shadow-xl"
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div
-                        className="text-3xl font-bold text-primary"
-                        style={{ fontFamily: 'Bebas Neue' }}
-                      >
-                        {item.duration} Hour{item.duration > 1 ? 's' : ''}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Duration</div>
-                    </div>
-                    <div className="text-right">
-                      <div
-                        className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent"
-                        style={{ fontFamily: 'Bebas Neue' }}
-                      >
-                        ₹{item.price}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Total</div>
-                    </div>
+            
+            <div className="space-y-8">
+              {/* Weekday Bundles */}
+              {Array.isArray(displayBox.customPricing) && displayBox.customPricing.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold text-muted-foreground uppercase tracking-wider mb-4 border-l-4 border-primary pl-3">Weekday Deals <span className="text-xs font-normal normal-case">(Mon-Fri)</span></h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {displayBox.customPricing.map((item, index) => (
+                      <PricingCard key={index} item={item} index={index} />
+                    ))}
                   </div>
-                </motion.div>
-              ))}
+                </div>
+              )}
+
+              {/* Weekend Bundles */}
+              {Array.isArray(displayBox.weekendCustomPricing) && displayBox.weekendCustomPricing.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold text-muted-foreground uppercase tracking-wider mb-4 border-l-4 border-secondary pl-3">Weekend Specials <span className="text-xs font-normal normal-case">(Sat-Sun)</span></h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {displayBox.weekendCustomPricing.map((item, index) => (
+                      <PricingCard key={index} item={item} index={index} variant="weekend" />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </motion.section>
         )}
+
+ {/* Key Details Grid Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-8"
+        >
+          <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl font-bold text-primary mb-6">
+            Key Details
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <KeyDetailItem icon={Trophy} label="Weekday Rate" value={`₹${displayBox.hourlyRate}/hr`} />
+            <KeyDetailItem icon={Award} label="Weekend Rate" value={displayBox.weekendHourlyRate ? `₹${displayBox.weekendHourlyRate}/hr` : `₹${displayBox.hourlyRate}/hr`} />
+            <KeyDetailItem icon={Clock} label="Weekdays" value={displayBox.openingHours.weekdays} />
+            <KeyDetailItem
+              icon={Calendar}
+              label="Weekends"
+              value={displayBox.openingHours.weekends}
+            />
+            <KeyDetailItem icon={Users} label="Capacity" value="10+ Players" />
+          </div>
+        </motion.section>
+
 
         {/* Facilities Section */}
         <motion.section
@@ -483,6 +488,37 @@ const KeyDetailItem = ({ icon: Icon, label, value }) => (
     <span className="text-sm text-muted-foreground mb-1">{label}</span>
     <span className="font-bold text-lg text-foreground text-center">{value}</span>
   </div>
+)
+
+const PricingCard = ({ item, index, variant = 'weekday' }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ delay: index * 0.1 }}
+    whileHover={{ scale: 1.05, y: -5 }}
+    className={`p-6 bg-gradient-to-br ${variant === 'weekday' ? 'from-primary/10 to-transparent' : 'from-secondary/10 to-transparent'} rounded-xl border border-white/5 hover:border-primary/40 transition-all duration-300 shadow-md hover:shadow-xl`}
+  >
+    <div className="flex justify-between items-center">
+      <div>
+        <div
+          className={`text-3xl font-bold ${variant === 'weekday' ? 'text-primary' : 'text-secondary'}`}
+          style={{ fontFamily: 'Bebas Neue' }}
+        >
+          {item.duration} Hour{item.duration > 1 ? 's' : ''}
+        </div>
+        <div className="text-sm text-muted-foreground uppercase tracking-tighter font-semibold">Duration</div>
+      </div>
+      <div className="text-right">
+        <div
+          className="text-3xl font-bold bg-gradient-to-r from-green-500 to-emerald-400 bg-clip-text text-transparent"
+          style={{ fontFamily: 'Bebas Neue' }}
+        >
+          ₹{item.price}
+        </div>
+        <div className="text-sm text-muted-foreground uppercase tracking-tighter font-semibold">Total Price</div>
+      </div>
+    </div>
+  </motion.div>
 )
 
 export default BoxDetail

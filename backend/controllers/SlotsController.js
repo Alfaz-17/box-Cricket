@@ -2,6 +2,7 @@ import BlockedSlot from '../models/BlockedSlot.js'
 import CricketBox from '../models/CricketBox.js'
 import { parseDateTime } from '../lib/parseDateTime.js'
 import Booking from '../models/Booking.js'
+import { getIO } from '../lib/soket.js'
 
 export const blockTimeSlot = async (req, res) => {
   try {
@@ -41,6 +42,7 @@ export const blockTimeSlot = async (req, res) => {
       box: box._id,
       quarter: quarterId,
       status: "confirmed",
+      $or: [{ paymentStatus: 'paid' }, { isOffline: true }],
       startDateTime: { $lt: endDateTime },
       endDateTime: { $gt: startDateTime }
     });
@@ -83,6 +85,19 @@ export const blockTimeSlot = async (req, res) => {
       reason
     });
 
+    // 8️⃣ Emit real-time update
+    const io = getIO();
+    if (io) {
+      io.to(`box-${box._id}`).emit("slot-blocked", {
+        boxId: box._id,
+        quarterId,
+        quarterName,
+        date,
+        startTime,
+        endTime
+      });
+    }
+
     return res.json({
       message: `Time slot blocked successfully in "${quarterName}".`
     });
@@ -105,8 +120,16 @@ export const getBlockedAndBookedSlots = async (req, res) => {
 
     const now = new Date()
 
-    // 2. Get all upcoming bookings for the box
-    const bookings = await Booking.find({ box: id })
+    // 2. Get all upcoming confirmed and paid bookings for the box
+    const bookings = await Booking.find({ 
+      box: id,
+      status: 'confirmed',
+      $or: [
+        { paymentStatus: 'paid' },
+        { isOffline: true }
+      ]
+    }).select('date startTime endTime duration quarter quarterName startDateTime endDateTime')
+    
     const upcomingBookedSlots = bookings.filter(b => new Date(b.endDateTime) > now);
 
     // 3. Get all upcoming blocked slots for the box
@@ -189,6 +212,16 @@ export const unblockTimeSlot = async (req, res) => {
 
     if (!deletedSlot) {
       return res.status(404).json({ message: 'Blocked slot not found or unauthorized' })
+    }
+
+    // 3. Emit real-time update
+    const io = getIO();
+    if (io) {
+      io.to(`box-${box._id}`).emit("slot-unblocked", {
+        boxId: box._id,
+        slotId: deletedSlot._id,
+        quarterId: deletedSlot.quarterId
+      });
     }
 
     res.json({ message: 'Blocked slot removed successfully' })

@@ -1,5 +1,6 @@
 import React from 'react'
-import { Phone, Info, CheckCircle2, ArrowRight, Trophy } from 'lucide-react'
+import { Phone, Info, CheckCircle2, ArrowRight, Trophy, ExternalLink } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -22,6 +23,7 @@ const BookingForm = ({
   setSelectedQuarter,
   isProcessingBooking,
   handleBooking,
+  isOwner = false,
 }) => {
   return (
     <div className="space-y-8">
@@ -63,7 +65,6 @@ const BookingForm = ({
                     selected={selectedDate}
                     onChange={date => {
                     setSelectedDate(date)
-                    setAvailableTimes(false)
                     }}
                     minDate={new Date()}
                     className="flex h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm focus:border-primary focus:outline-none transition-colors placeholder:text-muted-foreground/50"
@@ -86,7 +87,50 @@ const BookingForm = ({
             </div>
 
             {/* Summary / Actions */}
-            <div className="pt-4">
+            <div className="pt-4 space-y-4">
+                 {/* Price Summary */}
+                 {selectedSlots.length > 0 && (
+                   <div className="bg-white/5 rounded-xl p-4 border border-white/5 space-y-3">
+                     <div className="flex justify-between items-center text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                       <span>{isOwner ? "Booking Amount" : "Advance Payment"}</span>
+                       <span className="text-primary normal-case">
+                         {isOwner ? "Full Amount (Offline)" : "₹300 Advance Required"}
+                       </span>
+                     </div>
+                     <div className="flex justify-between items-baseline">
+                        <div className="text-3xl font-bold text-white" style={{ fontFamily: 'Bebas Neue' }}>
+                          ₹{isOwner ? (() => {
+                            const d = new Date(selectedDate);
+                            const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                            const duration = selectedSlots.length;
+                            const baseRate = isWeekend && displayBox.weekendHourlyRate ? displayBox.weekendHourlyRate : displayBox.hourlyRate;
+                            const customArray = isWeekend && displayBox.weekendCustomPricing?.length > 0 ? displayBox.weekendCustomPricing : displayBox.customPricing;
+                            
+                            const customPrice = customArray?.find(p => p.duration === duration);
+                            return customPrice ? customPrice.price : baseRate * duration;
+                          })() : 300}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {selectedSlots.length} Hour{selectedSlots.length > 1 ? 's' : ''} Selected
+                        </div>
+                     </div>
+                     {!isOwner && (
+                       <div className="pt-2 border-t border-white/5 space-y-2">
+                         <p className="text-[10px] text-muted-foreground italic">
+                           *Remaining balance to be paid at the venue based on box pricing.
+                         </p>
+                         <Link 
+                           to={`/box/${displayBox._id}`} 
+                           className="flex items-center gap-1 text-xs text-primary hover:underline group w-fit"
+                         >
+                           <ExternalLink size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                           Check Box Pricing Details
+                         </Link>
+                       </div>
+                     )}
+                   </div>
+                 )}
+
                  {/* Action Buttons */}
                 <div className="flex flex-col gap-4">
                     {/* Only show Book Now if slots are selected */}
@@ -99,9 +143,9 @@ const BookingForm = ({
                         <Button
                             onClick={handleBooking}
                             className={`w-full h-14 bg-gradient-to-r from-primary to-secondary text-black hover:from-primary/90 hover:to-secondary/90 font-bold uppercase tracking-wide shadow-[0_0_20px_rgba(157,255,0,0.3)] text-lg ${isProcessingBooking ? 'blur-sm' : ''}`}
-                            disabled={isProcessingBooking}
+                            disabled={isProcessingBooking || selectedSlots.length === 0}
                         >
-                            {isProcessingBooking ? 'Booking...' : `Book ${selectedSlots.length} Slot${selectedSlots.length > 1 ? 's' : ''}`}
+                            {isProcessingBooking ? 'Booking...' : (isOwner ? 'Confirm Offline Booking' : 'Confirm & Pay ₹300 Advance')}
                             <Trophy className="ml-2 w-5 h-5" />
                         </Button>
                     </motion.div>

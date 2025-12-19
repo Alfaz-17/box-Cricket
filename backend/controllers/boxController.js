@@ -18,6 +18,8 @@ export const createBox = async (req, res) => {
       facilities,
       features,
       customPricing,
+      weekendHourlyRate,
+      weekendCustomPricing,
       image,
       images,
       numberOfQuarters,
@@ -54,6 +56,8 @@ export const createBox = async (req, res) => {
       facilities: facilities ? facilities.split(',').map(f => f.trim()) : [],
       features: features ? features.split(',').map(f => f.trim()) : [],
       customPricing: Array.isArray(customPricing) ? customPricing : [], // ✅ ADD THIS
+      weekendHourlyRate: weekendHourlyRate !== undefined ? Number(weekendHourlyRate) : hourlyRate,
+      weekendCustomPricing: Array.isArray(weekendCustomPricing) ? weekendCustomPricing : [],
 
       owner,
       rating: 0,
@@ -91,6 +95,8 @@ export const updateBox = async (req, res) => {
       image,
       images,
       customPricing,
+      weekendHourlyRate,
+      weekendCustomPricing,
       numberOfQuarters, // NEW
     } = req.body
 
@@ -104,12 +110,17 @@ export const updateBox = async (req, res) => {
       box.customPricing = customPricing
     }
 
+    if (weekendCustomPricing) {
+      box.weekendCustomPricing = weekendCustomPricing
+    }
+
     // Update basic fields
     // Update basic fields
     box.name = name !== undefined ? name : box.name
     box.location = location !== undefined ? location : box.location
     box.address = address !== undefined ? address : box.address
     box.hourlyRate = hourlyRate !== undefined ? Number(hourlyRate) : box.hourlyRate
+    box.weekendHourlyRate = weekendHourlyRate !== undefined ? Number(weekendHourlyRate) : box.weekendHourlyRate
     box.mobileNumber = mobileNumber !== undefined ? mobileNumber : box.mobileNumber
     box.description = description !== undefined ? description : box.description
     box.image = image !== undefined ? image : box.image

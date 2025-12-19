@@ -46,6 +46,21 @@ export const createTemporaryBooking = async (req, res) => {
     // ✔ Create booking with formatted endTime
     const formattedEndTime = moment(validatedEnd).format('hh:mm A')
 
+    // 💰 Calculate Amount Based on Day and Duration
+    const bookingDate = new Date(date);
+    const isWeekend = bookingDate.getDay() === 0 || bookingDate.getDay() === 6; // 0=Sun, 6=Sat
+
+    let hourlyRate = isWeekend && box.weekendHourlyRate ? box.weekendHourlyRate : box.hourlyRate;
+    let pricingArray = isWeekend && box.weekendCustomPricing?.length > 0 
+      ? box.weekendCustomPricing 
+      : box.customPricing;
+
+    // Check for custom duration-based price
+    const customPriceEntry = pricingArray.find(p => p.duration === Number(duration));
+    const calculatedAmount = customPriceEntry ? customPriceEntry.price : hourlyRate * Number(duration);
+
+    const isOwner = req.user.role === 'owner' && box.owner?.toString() === req.user._id.toString();
+
     const booking = new Booking({
       user: req.user.name,
       userId: req.user._id,
@@ -54,16 +69,18 @@ export const createTemporaryBooking = async (req, res) => {
       quarterName: quarter.name,
       date,
       startTime,
-      endTime: formattedEndTime, // Save as "01:00 PM" instead of Date object
+      endTime: formattedEndTime,
       startDateTime: validatedStart,
       endDateTime: validatedEnd,
       duration,
-      amountPaid: 0,
+      amountPaid: 1, // Fixed ₹300 advance for online, full for offline
       contactNumber,
-      paymentStatus: "pending",
-      isOffline: true,
-      method: "temporary",
+      paymentStatus: isOwner ? "paid" : "pending",
+      status: isOwner ? "confirmed" : "pending",
+      isOffline: isOwner,
+      method: isOwner ? "offline" : "sabpaisa",
       bookedBy: req.user._id,
+      confirmedAt: isOwner ? new Date() : undefined,
     });
 
     await booking.save();
@@ -80,16 +97,20 @@ export const createTemporaryBooking = async (req, res) => {
       bookedByName: req.user.name,
     });
 
-    await sendMessage(`91${contactNumber}`, ` Your Booking is Confirm`);
-
+    // Return booking details for payment initiation
     res.status(200).json({
-      message: "Temporary booking created successfully",
+      success: true,
+      message: isOwner ? "Booking confirmed (Offline)" : "Booking created. Please complete payment.",
       bookingId: booking._id,
+      amount: booking.amountPaid,
       date,
-      from: startTime,
+      startTime,
+      endTime: formattedEndTime,
       duration,
+      boxName: box.name,
+      quarterName: quarter.name,
+      isOffline: isOwner,
     });
-
 
 
 
@@ -158,6 +179,7 @@ export const getAvailableBoxes = async (req, res) => {
           startDateTime: { $lt: end },
           endDateTime: { $gt: start },
           status: 'confirmed',
+          $or: [{ paymentStatus: 'paid' }, { isOffline: true }],
         })
 
         if (overlappingBookings.length > 0) continue
@@ -175,7 +197,16 @@ export const getAvailableBoxes = async (req, res) => {
       }
     }
 
-    return res.json(availableBoxes)
+    const response = availableBoxes.map(box => ({
+      _id: box._id,
+      name: box.name,
+      location: box.location,
+      image: box.image,
+      mobileNumber: box.mobileNumber,
+      quarters: box.quarters, // Includes pricePerHour etc
+    }))
+
+    return res.json(response)
   } catch (err) {
     console.error('❌ Error in general availability:', err)
     res.status(500).json({ message: err.message || 'Server error' })
@@ -184,26 +215,6 @@ export const getAvailableBoxes = async (req, res) => {
 
 
 
-export const getPaymentStatus = async (req, res) => {
-  try {
-    const { bookingId } = req.params
-
-    const booking = await Booking.findById(bookingId)
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' })
-    }
-
-    return res.status(200).json({
-      bookingId: booking._id,
-      paymentStatus: booking.paymentStatus, // 'pending' | 'paid'
-      amountPaid: booking.amountPaid || 0,
-      method: booking.method,
-    })
-  } catch (err) {
-    console.error('❌ Error fetching payment status:', err.message)
-    return res.status(500).json({ message: 'Server error' })
-  }
-}
 
 export const getMyBookingRecipt = async (req, res) => {
   try {
@@ -226,21 +237,26 @@ export const getMyBookingRecipt = async (req, res) => {
       contactNumber: booking.contactNumber,
       quarterName: booking.quarterName,
     })
-  } catch {
+  } catch (err) {
     console.error('❌ Error fetching booking receipt:', err.message)
     return res.status(500).json({ message: 'Server error' })
   }
 }
 
 export const getMyBookings = async (req, res) => {
-  const bookings = await Booking.find({ userId: req.user._id }).populate('box')
+  const filter = {
+    userId: req.user._id,
+    status: { $in: ['confirmed', 'completed'] },
+    $or: [{ paymentStatus: 'paid' }, { isOffline: true }],
+  }
+
+  const bookings = await Booking.find(filter).populate('box')
 
   const now = new Date()
   // Find bookings that should be marked as completed
   const updates = bookings.map(async booking => {
     if (
       booking.endDateTime < now &&
-      booking.status !== 'cancelled' &&
       booking.status !== 'completed'
     ) {
       booking.status = 'completed'
@@ -250,38 +266,46 @@ export const getMyBookings = async (req, res) => {
 
   await Promise.all(updates)
 
-  const updatedBookings = await Booking.find({ userId: req.user._id }).populate('box')
+  const updatedBookings = await Booking.find(filter).populate('box')
   res.json(updatedBookings)
 }
 
 export const cancelBooking = async (req, res) => {
   try {
     const bookingId = req.params.id
-    const booking = await Booking.findById(bookingId)
+    const { ownerCode } = req.body
+    
+    // Validate owner code
+    const code = process.env.OWNER_CODE
+    if (!ownerCode || ownerCode !== code) {
+      return res.status(403).json({ message: 'Invalid or missing owner code' })
+    }
+
+    const booking = await Booking.findById(bookingId).populate('box')
 
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' })
     }
 
-    // Check if user owns the booking (optional, if auth is used)
-    if (booking.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: 'Unauthorized' })
-    }
-
-    const now = new Date()
-    const timeDiff = booking.startDateTime.getTime() - now.getTime() // in milliseconds
-    const hoursDiff = timeDiff / (1000 * 60 * 60)
-
-    if (hoursDiff < 24) {
-      return res.status(400).json({
-        message: 'Cannot cancel booking within 24 hours of start time',
+    // 🔥 Restrict to Owner only
+    // Check if the current user is the owner of the box
+    if (booking.box.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ 
+        message: 'Unauthorized. Only the box owner can cancel bookings.' 
       })
     }
 
+    // Update status to cancelled
+    // This automatically frees up the slot because getBlockedAndBookedSlots 
+    // filters for status: 'confirmed' or 'completed'
     booking.status = 'cancelled'
+    booking.cancelledAt = new Date()
     await booking.save()
 
-    res.status(200).json({ message: 'Booking cancelled successfully', booking })
+    res.status(200).json({ 
+      message: 'Booking cancelled successfully. Slot is now available.', 
+      booking 
+    })
   } catch (err) {
     console.error('❌ Error cancelling booking:', err.message)
     res.status(500).json({ message: 'Server error' })
@@ -294,12 +318,16 @@ export const getRecenetBooking = async (req, res) => {
     const box = await CricketBox.findOne({ owner: req.user._id })
     if (!box) return res.status(404).json({ message: 'No box found' })
 
-    const recenetBookings = await Booking.find({ box: box._id })
+    const recentBookings = await Booking.find({
+      box: box._id,
+      status: { $in: ['confirmed', 'completed'] },
+      $or: [{ paymentStatus: 'paid' }, { isOffline: true }],
+    })
       .sort({ createdAt: -1 }) // Sort by newest first
       .limit(5) // Limit to latest 5
       .populate('user box')
 
-    res.json(recenetBookings)
+    res.json(recentBookings)
   } catch (error) {
     res.status(500).json({ message: 'Failed to get Booking' })
     console.log('error in recentBooking Controller', error)
@@ -311,14 +339,17 @@ export const getOwnersBookings = async (req, res) => {
     const box = await CricketBox.findOne({ owner: req.user._id })
     if (!box) return res.status(404).json({ message: 'No box found' })
 
-    const recenetBookings = await Booking.find({ box: box._id })
+    const ownerBookings = await Booking.find({
+      box: box._id,
+      status: { $in: ['confirmed', 'completed'] },
+      $or: [{ paymentStatus: 'paid' }, { isOffline: true }],
+    })
       .sort({ createdAt: -1 }) // Sort by newest first
-      .limit(5) // Limit to latest 5
       .populate('user box')
 
-    res.json(recenetBookings)
+    res.json(ownerBookings)
   } catch (error) {
     res.status(500).json({ message: 'Failed to get Booking' })
-    console.log('error in recentBooking Controller', error)
+    console.log('error in getOwnersBookings Controller', error)
   }
 }

@@ -3,35 +3,62 @@ export const formatDate = dateString => {
   return new Date(dateString).toLocaleDateString('en-US', options)
 }
 
+export const formatBookingDate = (dateString) => {
+  const date = new Date(dateString)
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  
+  return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`
+}
+
 export const formatTime = (timeString) => {
-  const d = new Date(timeString);
+  if (!timeString) return ''
+  
+  // If it's already a 12h formatted string (e.g. "09:00 AM"), return as-is
+  if (typeof timeString === 'string' && (timeString.includes('AM') || timeString.includes('PM'))) {
+    return timeString
+  }
+
+  // Handle HH:mm or HH:mm:ss strings by converting to 12h
+  if (typeof timeString === 'string' && timeString.includes(':')) {
+    return convertTo12Hour(timeString)
+  }
+
+  // Handle Date objects or timestamp strings
+  const d = new Date(timeString)
+  if (isNaN(d.getTime())) return timeString
+
   return d.toLocaleTimeString("en-US", {
-    timeZone: "Asia/Kolkata", // remove if you don't want IST conversion
+    timeZone: "Asia/Kolkata",
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  });;
-};;
+  })
+}
 
-// Helper to format endTime - handles both Date objects (old format) and strings (new format)
 export const formatEndTime = (endTime) => {
-  if (!endTime) return '';
-  
-  // If it's already a formatted string (e.g., "05:00 PM"), return as-is
-  if (typeof endTime === 'string' && endTime.includes('M')) {
-    return endTime;
-  }
-  
-  // Otherwise, it's a Date object or date string, format it
-  return formatTime(endTime);
-};
-
+  return formatTime(endTime)
+}
 
 export function convertTo12Hour(time) {
-  let [hour, minute] = time.split(':').map(Number);
+  if (!time) return ''
+  
+  // If it's already a 12h formatted string, return as-is
+  if (typeof time === 'string' && (time.includes('AM') || time.includes('PM'))) {
+    return time
+  }
 
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  hour = hour % 12 || 12; // convert 0 -> 12, 13 -> 1 etc.
+  try {
+    const parts = time.split(':')
+    let hour = parseInt(parts[0], 10)
+    let minute = parseInt(parts[1], 10)
 
-  return `${hour}:${minute.toString().padStart(2,'0')} ${ampm}`;
+    if (isNaN(hour) || isNaN(minute)) return time
+
+    const ampm = hour >= 12 ? 'PM' : 'AM'
+    hour = hour % 12 || 12
+    return `${hour}:${minute.toString().padStart(2, '0')} ${ampm}`
+  } catch (e) {
+    return time
+  }
 }

@@ -6,21 +6,26 @@ export const getDasboardSummary = async (req, res) => {
     const boxes = await CricketBox.find({ owner: req.user._id })
     const boxIds = boxes.map(box => box._id)
 
-    const bookings = await Booking.find({ box: { $in: boxIds } })
-
-    const totalBookings = await Booking.countDocuments({
+    const filter = {
       box: { $in: boxIds },
-    })
+      status: { $in: ['confirmed', 'completed'] },
+      $or: [{ paymentStatus: 'paid' }, { isOffline: true }],
+    }
+
+    const bookings = await Booking.find(filter)
+
+    const totalBookings = await Booking.countDocuments(filter)
     const totalRevenue = bookings.reduce((sum, b) => sum + (b.amountPaid || 0), 0)
     const totalBoxes = boxes.length
 
     const userIds = new Set(bookings.map(b => b.user.toString()))
     const totalUsers = userIds.size
 
-    const bookingChange = 12
-    const revenueChange = 8
-    const boxChange = 2
-    const userChange = 24
+    // These could be dynamic in the future based on date ranges
+    const bookingChange = 0
+    const revenueChange = 0
+    const boxChange = 0
+    const userChange = 0
 
     res.json({
       totalBookings,

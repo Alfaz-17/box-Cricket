@@ -8,7 +8,7 @@ export const generalLimiter = rateLimit({
 
 export const bookingLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max:20, //  requests per hour
+  max:44, //  requests per hour
   message: {
     success: false,
     message: 'Too many booking attempts. Please try again  after 1 hour.',

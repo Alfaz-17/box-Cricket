@@ -15,7 +15,7 @@ import {
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
-import { formatTime, formatEndTime, convertTo12Hour } from '../../utils/formatDate'
+import { formatTime, formatEndTime, convertTo12Hour, formatBookingDate } from '../../utils/formatDate'
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false)
@@ -88,13 +88,7 @@ const Dashboard = () => {
     }
   }
 
-  const formatBookingDate = (dateString) => {
-    const date = new Date(dateString)
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
-    return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}`
-  }
+  // Removed local formatBookingDate
 
   const formatTimeRange = (startTime, endTime) => {
     const start = startTime.replace(':00', '').replace(' ', '')
@@ -106,7 +100,7 @@ const Dashboard = () => {
     switch (status) {
       case 'confirmed':
         return '🟢'
-      case 'complete':
+      case 'completed':
         return '🔵'
       case 'cancelled':
         return '🔴'
@@ -119,7 +113,7 @@ const Dashboard = () => {
     switch (status) {
       case 'confirmed':
         return 'text-green-600'
-      case 'complete':
+      case 'completed':
         return 'text-blue-600'
       case 'cancelled':
         return 'text-red-600'

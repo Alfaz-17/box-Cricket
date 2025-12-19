@@ -122,9 +122,16 @@ const BoxManagement = () => {
                   <span>🏏</span>
                   <span>Cricket Box</span>
                 </div>
-                <div className="flex items-center font-bold text-lg md:text-xl text-primary">
-                  <IndianRupee size={18} className="mr-1" />
-                  {box.hourlyRate}/hr
+                <div className="flex flex-col items-end">
+                  <div className="flex items-center font-bold text-lg md:text-xl text-primary">
+                    <IndianRupee size={18} className="mr-1" />
+                    {box.hourlyRate}/hr
+                  </div>
+                  {box.weekendHourlyRate && (
+                    <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
+                      Weekend: ₹{box.weekendHourlyRate}
+                    </div>
+                  )}
                 </div>
               </div>
 

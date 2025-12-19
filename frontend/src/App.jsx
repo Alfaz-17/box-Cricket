@@ -29,6 +29,10 @@ import SettingsPage from './pages/public/SettingsPage'
 import FAQSection from './pages/public/FAQSection'
 import FeedbackSupport from './pages/user/FeedbackSupport '
 
+// Payment pages
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentFailure from './pages/PaymentFailure'
+
 // Admin pages
 import Dashboard from './pages/admin/Dashboard'
 import BoxManagement from './pages/admin/BoxManagement'
@@ -191,6 +195,11 @@ function App() {
                    <Route path="/about-us" element={<AboutUs />} />
                    <Route path="/policies" element={<Policies />} />
                    <Route path="/services" element={<Services />} />
+                  
+                  {/* Payment Routes */}
+                  <Route path="/payment/success" element={<PaymentSuccess />} />
+                  <Route path="/payment/failure" element={<PaymentFailure />} />
+                  
                   {/* User Routes */}
                   <Route
                     path="/my-bookings"

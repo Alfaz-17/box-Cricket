@@ -24,13 +24,14 @@ export const validateSlot = async ({ boxId, quarterId, date, startTime, duration
     return { available: false, error: "Slot is blocked by admin for this quarter" };
   }
 
-  // 🔁 Check overlapping confirmed bookings
+  // 🔁 Check overlapping confirmed and paid bookings
   const overlappingBookings = await Booking.find({
     box: boxId,
     quarter: quarterId,
     startDateTime: { $lt: end },
     endDateTime: { $gt: start },
     status: "confirmed",
+    $or: [{ paymentStatus: 'paid' }, { isOffline: true }],
   });
 
   if (overlappingBookings.length > 0) {
