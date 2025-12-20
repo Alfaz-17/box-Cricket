@@ -142,8 +142,7 @@ function App() {
         <div className="relative min-h-screen overflow-hidden">
           {/* Global Celestial Sphere Background */}
           {/* Global Animated Shader Background */}
-          <AnimatedShaderBackground />
-          
+        
           {/* Content Wrapper */}
           <div className="relative z-10 flex flex-col min-h-screen bg-transparent text-foreground transition-colors duration-300">
             <Navbar onVoiceClick={() => setIsVoiceOpen(true)} />
