@@ -276,6 +276,8 @@ const BoxBooking = () => {
                 isProcessingBooking={isProcessingBooking}
                 handleBooking={handleBooking}
                 isOwner={isAuthenticated && user?.role === 'owner' && box?.owner === user?._id}
+                boxId={id}
+                onSlotsUpdate={fetchSlots}
               />
             </motion.div>
           </AnimatePresence>

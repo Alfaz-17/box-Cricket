@@ -94,7 +94,9 @@ export const blockTimeSlot = async (req, res) => {
         quarterName,
         date,
         startTime,
-        endTime
+        endTime,
+        startDateTime: startDateTime,
+        endDateTime: endDateTime
       });
     }
 

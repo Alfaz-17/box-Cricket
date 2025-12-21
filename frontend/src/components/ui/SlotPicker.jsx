@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Lock, Ban } from 'lucide-react'
+import { Check, Lock, Ban, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils' // Assuming you have a cn utility, if not I'll use template literals
 import { format } from 'date-fns'
+import socket from '@/utils/soket.js'
+import { toast } from 'react-hot-toast'
 
 const SlotPicker = ({
   selectedDate,
@@ -10,7 +12,9 @@ const SlotPicker = ({
   blockedSlots = [],
   selectedQuarter,
   onSlotSelect,
-  selectedSlots = []
+  selectedSlots = [],
+  boxId, // Add boxId prop for WebSocket room
+  onSlotsUpdate // Add callback to refresh slots from parent
 }) => {
   const [slots, setSlots] = useState([])
 
@@ -79,14 +83,78 @@ const SlotPicker = ({
     slotEnd.setHours(slot.id + 1, 0, 0, 0)
 
     return group.slots.some(block => {
-       const bStart = new Date(block.startDateTime)
-       const bEnd = new Date(block.endDateTime)
+       let bStart = new Date(block.startDateTime)
+       let bEnd = new Date(block.endDateTime)
+       
+       // 🔥 Handle overnight blocking (e.g. 11PM → 2AM)
+       // If end is before or equal to start, it spans to next day
+       if (bEnd <= bStart) {
+         bEnd = new Date(bEnd)
+         bEnd.setDate(bEnd.getDate() + 1)
+       }
+       
        return bStart < slotEnd && bEnd > slotStart
     })
   }
 
+  // Check if slot is in the past
+  const isPastSlot = (slot) => {
+    if (!selectedDate) return false
+    
+    const now = new Date() // Current time: 2025-12-21T11:26:25+05:30
+    const slotStart = new Date(selectedDate)
+    slotStart.setHours(slot.id, 0, 0, 0)
+    
+    return slotStart < now
+  }
+
+  // WebSocket listeners for real-time updates
+  useEffect(() => {
+    if (!boxId) return
+
+    // Join the box room
+    socket.emit("join-box", `box-${boxId}`)
+
+    // Listen for new bookings
+    const handleNewBooking = (data) => {
+      console.log('🔔 New booking received:', data)
+      if (onSlotsUpdate) {
+        onSlotsUpdate() // Refresh slots from parent
+      }
+    }
+
+    // Listen for blocked slots
+    const handleSlotBlocked = (data) => {
+      console.log('🔔 Slot blocked:', data)
+      if (onSlotsUpdate) {
+        onSlotsUpdate()
+      }
+    }
+
+    // Listen for unblocked slots
+    const handleSlotUnblocked = (data) => {
+      console.log('🔔 Slot unblocked:', data)
+      if (onSlotsUpdate) {
+        onSlotsUpdate()
+      }
+    }
+
+    socket.on("new-booking", handleNewBooking)
+    socket.on("slot-blocked", handleSlotBlocked)
+    socket.on("slot-unblocked", handleSlotUnblocked)
+
+    // Cleanup
+    return () => {
+      socket.off("new-booking", handleNewBooking)
+      socket.off("slot-blocked", handleSlotBlocked)
+      socket.off("slot-unblocked", handleSlotUnblocked)
+      socket.emit("leave-box", `box-${boxId}`)
+    }
+  }, [boxId, onSlotsUpdate])
+
   const handleSlotClick = (slot) => {
-    if (isSlotBooked(slot) || isSlotBlocked(slot)) return
+    // Prevent clicking on booked, blocked, or past slots
+    if (isSlotBooked(slot) || isSlotBlocked(slot) || isPastSlot(slot)) return
 
     // Toggle selection logic
     // If slot is already selected, deselect it
@@ -121,8 +189,9 @@ const SlotPicker = ({
       {slots.map((slot) => {
         const booked = isSlotBooked(slot)
         const blocked = isSlotBlocked(slot)
+        const isPast = isPastSlot(slot)
         const selected = selectedSlots.some(s => s.id === slot.id)
-        const disabled = booked || blocked
+        const disabled = booked || blocked || isPast
 
         return (
           <motion.button
@@ -154,6 +223,7 @@ const SlotPicker = ({
                 {selected && <Check size={14} strokeWidth={3} />}
                 {booked && <Lock size={12} className="text-white/30" />}
                 {blocked && <Ban size={12} className="text-destructive/50" />}
+                {isPast && !booked && !blocked && <Clock size={12} className="text-white/20" />}
               </div>
               
               <span className={`
@@ -166,7 +236,7 @@ const SlotPicker = ({
 
             {disabled && (
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/50 px-2 py-1 rounded bg-black/20">
-                {booked ? 'Booked' : 'Blocked'}
+                {booked ? 'Booked' : blocked ? 'Blocked' : 'Past'}
               </span>
             )}
           </motion.button>

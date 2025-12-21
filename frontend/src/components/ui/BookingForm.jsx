@@ -24,6 +24,8 @@ const BookingForm = ({
   isProcessingBooking,
   handleBooking,
   isOwner = false,
+  boxId, // Add boxId prop
+  onSlotsUpdate, // Add callback for slot updates
 }) => {
   return (
     <div className="space-y-8">
@@ -173,6 +175,8 @@ const BookingForm = ({
                         selectedQuarter={selectedQuarter}
                         onSlotSelect={onSlotSelect}
                         selectedSlots={selectedSlots}
+                        boxId={boxId}
+                        onSlotsUpdate={onSlotsUpdate}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/10 rounded-xl bg-white/5 text-muted-foreground">

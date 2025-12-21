@@ -22,12 +22,14 @@ import { initSocket } from './lib/soket.js'
 import { generalLimiter } from './middleware/rateLimiter.js'
 import mime from 'mime'
 import { startCleanupJob } from './cron/cleanupVoiceFiles.js'
+import { startPendingBookingCleanup } from './cron/cleanupPendingBookings.js'
 
 dotenv.config()
 const app = express()
 
-// Start the cleanup job immediately
+// Start the cleanup jobs immediately
 startCleanupJob();
+startPendingBookingCleanup();
 
 //create socket server
 const server = http.createServer(app)
