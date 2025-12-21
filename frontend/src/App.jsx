@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import toast, { Toaster } from 'react-hot-toast'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
+import { HelmetProvider } from 'react-helmet-async'
 import AuthContext from './context/AuthContext'
 
 // Layout components
@@ -136,9 +137,10 @@ function App() {
   }
 
   return (
-    <AuthContext.Provider value={authContextValue}>
-      <Router>
-        <ScrollToTop />
+    <HelmetProvider>
+      <AuthContext.Provider value={authContextValue}>
+        <Router>
+          <ScrollToTop />
         <div className="relative min-h-screen overflow-hidden">
           {/* Global Celestial Sphere Background */}
           {/* Global Animated Shader Background */}
@@ -287,6 +289,7 @@ function App() {
         </div>
       </Router>
     </AuthContext.Provider>
+    </HelmetProvider>
   )
 }
 

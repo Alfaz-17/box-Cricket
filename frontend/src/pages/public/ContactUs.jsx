@@ -52,7 +52,9 @@ const contactInfo = [
   {
     icon: MapPin,
     title: 'Location',
-    value: 'Malivalo Khancho, Masjid Road, Navapara, Bhavnagar - 364001, Gujarat, India',
+    // value: 'Malivalo Khancho, Masjid Road, Navapara, Bhavnagar - 364001, Gujarat, India',
+  value: 'Bhavnagar - 364001, Gujarat, India',
+
     link: null,
     description: `${companyName}  book your slot in cricket box  in Bhavnagar, Gujarat.`,
   },

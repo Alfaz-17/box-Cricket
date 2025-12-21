@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /owner
+Disallow: /login
+Disallow: /signup
+Disallow: /api
+Disallow: /my-bookings
+Disallow: /my-profile
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl delay for politeness
+Crawl-delay: 1

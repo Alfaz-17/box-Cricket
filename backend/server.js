@@ -13,6 +13,7 @@ import slotsRoutes from './routes/slotsRoutes.js'
 import analyticsRoutes from './routes/analyticsRoutes.js'
 import voiceRoutes from './routes/voiceRoutes.js'
 import paymentRoutes from './routes/paymentRoutes.js'
+import sitemapRouter from './routes/sitemap.js'
 
 
 import { startBot } from './lib/whatsappBot.js'
@@ -101,6 +102,7 @@ app.use('/api/slots', slotsRoutes)
 app.use('/api/analytics', analyticsRoutes)
 app.use("/api/voice",voiceRoutes)
 app.use('/api/payment', paymentRoutes)
+app.use('/', sitemapRouter) // Sitemap route
 
 //start whatsApp chaybot
 

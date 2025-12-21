@@ -172,13 +172,14 @@ const BookingCard = ({ booking }) => {
       const doc = new jsPDF()
       const pageWidth = doc.internal.pageSize.width
       
-      // Brand colors matching logo (Olive Green & Lime Yellow)
+      // Brand colors matching logo with better contrast
       const primaryGreen = [77, 99, 46]      // Olive Green
       const limeYellow = [139, 156, 54]      // Lime Yellow
-      const lightBg = [236, 240, 241]
+      const lightBg = [248, 249, 250]        // Very Light Gray
       const white = [255, 255, 255]
       const successGreen = [46, 204, 113]
-      const darkText = [44, 62, 80]
+      const darkText = [33, 37, 41]          // Almost Black - Better contrast
+      const mediumGray = [108, 117, 125]     // Medium Gray for labels
       
       // Professional header with logo
       doc.setFillColor(...primaryGreen)
@@ -366,18 +367,18 @@ const BookingCard = ({ booking }) => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="flex items-center p-2.5 sm:p-3 bg-muted/30 rounded-lg border border-primary/5">
-                <Calendar size={16} className="sm:w-5 sm:h-5 mr-2 sm:mr-3 text-primary flex-shrink-0" />
+              <div className="flex items-center p-3 sm:p-4 bg-primary/5 rounded-xl border border-primary/10 hover:border-primary/20 transition-colors">
+                <Calendar size={18} className="sm:w-6 sm:h-6 mr-3 text-primary flex-shrink-0" />
                 <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground font-semibold uppercase">Date</p>
-                    <p className="font-medium text-sm sm:text-base truncate">{formatBookingDate(booking.date)}</p>
+                    <p className="text-[10px] sm:text-xs text-foreground/60 font-bold uppercase tracking-wider mb-0.5">Booking Date</p>
+                    <p className="font-bold text-sm sm:text-base text-foreground truncate">{formatBookingDate(booking.date)}</p>
                 </div>
               </div>
-              <div className="flex items-center p-2.5 sm:p-3 bg-muted/30 rounded-lg border border-primary/5">
-                <Clock size={16} className="sm:w-5 sm:h-5 mr-2 sm:mr-3 text-primary flex-shrink-0" />
+              <div className="flex items-center p-3 sm:p-4 bg-primary/5 rounded-xl border border-primary/10 hover:border-primary/20 transition-colors">
+                <Clock size={18} className="sm:w-6 sm:h-6 mr-3 text-primary flex-shrink-0" />
                 <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground font-semibold uppercase">Time</p>
-                    <p className="font-medium text-sm sm:text-base truncate">
+                    <p className="text-[10px] sm:text-xs text-foreground/60 font-bold uppercase tracking-wider mb-0.5">Time Slot</p>
+                    <p className="font-bold text-sm sm:text-base text-foreground truncate">
                         {booking.startTime} - {formatEndTime(booking.endTime)}
                     </p>
                 </div>
@@ -385,10 +386,10 @@ const BookingCard = ({ booking }) => {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-primary/10">
-            <div className="font-bold text-base sm:text-lg">
-              <span className="text-muted-foreground text-xs sm:text-sm font-normal mr-2">Total Paid:</span>
-              <span className="text-primary">₹{booking.amountPaid}</span>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 pt-4 sm:pt-5 border-t-2 border-primary/10">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xs sm:text-sm font-semibold text-foreground/60 uppercase tracking-wide">Total Amount:</span>
+              <span className="text-xl sm:text-2xl font-bold text-primary">₹{booking.amountPaid}</span>
             </div>
             
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">

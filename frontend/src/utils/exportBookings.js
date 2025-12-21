@@ -8,8 +8,9 @@ const COLORS = {
   secondary: [139, 156, 54],    // Lime Yellow - HSL(69 69% 38%)
   accent: [180, 199, 110],      // Bright Lime - HSL(70 56% 64%)
   success: [46, 204, 113],      // Success Green
-  text: [44, 62, 80],           // Dark Text
-  lightBg: [236, 240, 241],     // Light Gray
+  text: [33, 37, 41],           // Almost Black - Better contrast
+  textLight: [108, 117, 125],   // Medium Gray for secondary text
+  lightBg: [248, 249, 250],     // Very Light Gray
   white: [255, 255, 255],
   darkGray: [52, 73, 94]
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { Helmet } from 'react-helmet-async'
 import {
   MapPin,
   Clock,
@@ -25,6 +26,7 @@ import BoxMap from '../../components/ui/BoxMap.jsx'
 const BoxDetail = () => {
   const { id } = useParams()
   const [box, setBox] = useState('')
+  const [seo, setSeo] = useState(null)
   const [loading, setLoading] = useState(true)
   const [averageRating, setAverageRating] = useState('')
   const [totalReviews, setTotalReviews] = useState('')
@@ -38,7 +40,9 @@ const BoxDetail = () => {
     const fetchBoxDetails = async () => {
       try {
         const response = await api.get(`/boxes/public/${id}`)
-        setBox(response.data)
+        const data = response.data
+        setBox(data)
+        setSeo(data.seo) // Set SEO data
       } catch (error) {
         console.error('Error fetching box details:', error)
         toast.error('Failed to load cricket box details')
@@ -166,6 +170,39 @@ const BoxDetail = () => {
 
   return (
     <div className="min-h-screen">
+      {/* SEO Meta Tags */}
+      <Helmet>
+        <title>{seo?.seo?.metaTitle || `${displayBox.name} | Cricket Box Booking`}</title>
+        <meta name="description" content={seo?.seo?.metaDescription || displayBox.description} />
+        <meta name="keywords" content={seo?.seo?.keywords?.join(', ') || 'cricket box, bhavnagar, cricket turf'} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={seo?.seo?.metaTitle || displayBox.name} />
+        <meta property="og:description" content={seo?.seo?.metaDescription || displayBox.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={displayBox.images?.[0] || displayBox.image} />
+        
+        {/* Schema.org JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SportsActivityLocation",
+            "name": displayBox.name,
+            "description": seo?.seo?.metaDescription || displayBox.description,
+            "image": displayBox.images || [],
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": displayBox.address,
+              "addressLocality": "Bhavnagar",
+              "addressRegion": "Gujarat",
+              "addressCountry": "IN"
+            },
+            "priceRange": "₹₹",
+            "openingHours": "Mo-Su 06:00-23:00"
+          })}
+        </script>
+      </Helmet>
+
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Banner/Slideshow Section */}
         <motion.div
@@ -475,6 +512,63 @@ const BoxDetail = () => {
             </p>
           </div>
         </motion.section>
+
+        {/* SEO Content Section */}
+        {seo?.seo?.seoParagraphs && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="mb-8"
+          >
+            <h2
+              style={{ fontFamily: 'Bebas Neue' }}
+              className="text-3xl font-bold text-primary mb-6"
+            >
+              About {displayBox.name}
+            </h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed">
+              {seo.seo.seoParagraphs.map((para, idx) => (
+                <p key={idx} className="text-lg">
+                  {para}
+                </p>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* FAQ Section */}
+        {seo?.seo?.faq && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="mb-8"
+          >
+            <h2
+              style={{ fontFamily: 'Bebas Neue' }}
+              className="text-3xl font-bold text-primary mb-6"
+            >
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-4">
+              {seo.seo.faq.map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="p-6 bg-card rounded-xl border border-border hover:border-primary/40 transition-all duration-300"
+                >
+                  <h3 className="text-lg font-bold text-foreground mb-2">
+                    {item.question}
+                  </h3>
+                  <p className="text-muted-foreground">{item.answer}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
       </div>
     </div>
   )

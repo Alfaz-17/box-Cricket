@@ -1,5 +1,6 @@
 import CricketBox from '../models/CricketBox.js'
 import { HelpAndSupport } from '../models/Review.js'
+import { generateSEOContent } from '../utils/seoGenerator.js'
 import dotenv from 'dotenv'
 dotenv.config();
 
@@ -237,7 +238,14 @@ export const getBoxDetails = async (req, res) => {
   try {
     const box = await CricketBox.findById(req.params.id).select('-blockedSlots')
     if (!box) return res.status(404).json({ message: 'Box not found' })
-    res.json(box)
+    
+    // Generate SEO content
+    const seoContent = generateSEOContent(box)
+    
+    res.json({
+      ...box.toObject(),
+      seo: seoContent
+    })
   } catch (err) {
     res.status(500).json({ message: 'Failed to get box details' })
   }

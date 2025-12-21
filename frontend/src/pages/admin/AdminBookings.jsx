@@ -291,7 +291,7 @@ const AdminBookings = () => {
                       >
                         {convertTo12Hour(booking.startTime)} - {formatTime(booking.endTime)}
                       </div>
-                      <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-70">
+                      <div className="text-[10px] font-bold text-foreground/70 uppercase tracking-widest mt-1">
                          {booking.duration} HOUR{booking.duration > 1 ? 'S' : ''} SESSION
                       </div>
                     </div>
@@ -308,7 +308,7 @@ const AdminBookings = () => {
                          <span className="text-sm md:text-base font-black truncate text-foreground tracking-tight leading-none">{booking.user}</span>
                          <a 
                            href={`tel:${booking.contactNumber}`} 
-                           className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 font-bold mt-1.5 tracking-tight"
+                           className="text-xs text-foreground/70 hover:text-primary transition-colors flex items-center gap-1.5 font-bold mt-1.5 tracking-tight"
                          >
                            <div className="w-4 h-4 rounded-full bg-muted flex items-center justify-center shrink-0">
                              <Phone size={8} /> 
@@ -324,7 +324,7 @@ const AdminBookings = () => {
                          <MapPin size={18} />
                        </div>
                        <div className="flex flex-col">
-                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em] mb-1 opacity-60">FACILITY SLOTS</span>
+                         <span className="text-[10px] font-black text-foreground/60 uppercase tracking-[0.15em] mb-1">FACILITY SPACE</span>
                          <div className="flex items-center gap-2">
                            <span className="text-xs md:text-sm font-black text-foreground uppercase tracking-wider bg-primary/10 px-3 py-1 rounded-xl border border-primary/10 shadow-sm leading-none">
                              {booking.quarterName || 'MAIN BOX'}
