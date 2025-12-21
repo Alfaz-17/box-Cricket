@@ -1,5 +1,4 @@
 
-2. make pd of hiistory of booking 
 3. make seo ready website
 4. make ui better also redireting page,successsfull and failur  payment page
 5. chage content of website
@@ -8,7 +7,7 @@
 
 
 Done:
-
 1. make proper booked slots 
+2. make pd of hiistory of booking 
 
 

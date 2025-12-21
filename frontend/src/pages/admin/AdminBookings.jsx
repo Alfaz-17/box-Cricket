@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { Calendar, Clock, MapPin, User, Search, Phone, Filter, ChevronDown, ChevronUp } from 'lucide-react'
+import { Calendar, Clock, MapPin, User, Search, Phone, Filter, ChevronDown, ChevronUp, FileDown, FileSpreadsheet } from 'lucide-react'
 import api from '../../utils/api'
 import { formatDate, formatTime, formatEndTime, convertTo12Hour, formatBookingDate } from '../../utils/formatDate'
 import { Input } from '@/components/ui/Input'
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { X } from 'lucide-react'
+import { exportToExcel, exportToPDF } from '../../utils/exportBookings'
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([])
@@ -18,6 +19,7 @@ const AdminBookings = () => {
   const [selectedQuarter, setSelectedQuarter] = useState('all')
   const [dateFilter, setDateFilter] = useState(null)
   const [expandedBooking, setExpandedBooking] = useState(null)
+  const [boxName, setBoxName] = useState('Cricket Box')
 
   useEffect(() => {
     fetchBookings()
@@ -29,11 +31,45 @@ const AdminBookings = () => {
       const response = await api.get('/booking/owner-bookings')
       const data = response.data
       setBookings(data)
+      // Get box name from first booking
+      if (data.length > 0 && data[0].box) {
+        setBoxName(data[0].box.name)
+      }
     } catch (error) {
       toast.error('Failed to fetch bookings')
       console.error(error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Handle Excel export
+  const handleExportExcel = () => {
+    if (filteredBookings.length === 0) {
+      toast.error('No bookings to export')
+      return
+    }
+    try {
+      exportToExcel(filteredBookings, boxName)
+      toast.success('Excel file downloaded successfully!')
+    } catch (error) {
+      toast.error('Failed to export Excel file')
+      console.error(error)
+    }
+  }
+
+  // Handle PDF export
+  const handleExportPDF = () => {
+    if (filteredBookings.length === 0) {
+      toast.error('No bookings to export')
+      return
+    }
+    try {
+      exportToPDF(filteredBookings, boxName)
+      toast.success('PDF file downloaded successfully!')
+    } catch (error) {
+      toast.error('Failed to export PDF file')
+      console.error(error)
     }
   }
 
@@ -122,6 +158,26 @@ const AdminBookings = () => {
             Booking Management
           </h1>
           <p className="text-muted-foreground text-sm md:text-base">View and manage all your turf bookings.</p>
+        </div>
+        
+        {/* Export Buttons */}
+        <div className="flex gap-2">
+          <Button
+            onClick={handleExportExcel}
+            className="h-10 px-4 bg-green-600 hover:bg-green-700 text-white font-bold uppercase tracking-wide text-xs rounded-xl shadow-lg transition-all"
+            disabled={filteredBookings.length === 0}
+          >
+            <FileSpreadsheet size={16} className="mr-2" />
+            Export Excel
+          </Button>
+          <Button
+            onClick={handleExportPDF}
+            className="h-10 px-4 bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wide text-xs rounded-xl shadow-lg transition-all"
+            disabled={filteredBookings.length === 0}
+          >
+            <FileDown size={16} className="mr-2" />
+            Export PDF
+          </Button>
         </div>
       </div>
 
