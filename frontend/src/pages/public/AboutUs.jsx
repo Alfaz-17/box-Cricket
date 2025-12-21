@@ -37,7 +37,7 @@ const AboutUs = () => {
             <h2 className="text-xl font-bold">Who We Are</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-             We are "BookMyBox", but we aren't just developers—we are turf owner too. We built this platform to solve the challenges we faced running our own turf in Bhavnagar, bringing you a system that truly understands the game.
+            We are a cricket box booking platform serving Bhavnagar, Gujarat. Our service makes it easy for cricket enthusiasts, students, local teams, and corporate groups to book quality cricket boxes online. We provide a seamless booking experience for cricket turfs across Bhavnagar with instant confirmation and flexible hourly slots.
           </p>
         </motion.div>
 
@@ -53,8 +53,15 @@ const AboutUs = () => {
             </div>
             <h2 className="text-xl font-bold">Our Mission</h2>
           </div>
+          <p className="text-muted-foreground leading-relaxed mb-4">
+            Our mission is to simplify cricket box bookings in Bhavnagar. We connect cricket players with quality cricket turfs, making it easy to book slots online anytime, anywhere. Whether you're a student practicing for matches, a local team preparing for tournaments, or a corporate group planning team-building activities, we've got you covered.
+          </p>
           <p className="text-muted-foreground leading-relaxed">
-            Our goal is to provide a seamless booking experience, allowing you to focus on the game rather than the logistics. We believe in the power of sports to bring people together.
+            Have questions or need assistance? Visit our{' '}
+            <Link to="/support" className="text-primary hover:text-primary/80 font-semibold underline">
+              Contact & Support
+            </Link>{' '}
+            page to get in touch with us.
           </p>
         </motion.div>
       </div>
@@ -81,18 +88,38 @@ const AboutUs = () => {
     </h2>
     
     <div className="max-w-3xl mx-auto">
-      <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Built by Owner, For Owners</h3>
+      <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Professional Booking Solutions for Turf Owners</h3>
 
-      <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
-        We understand the turf business because we are in it. As the owner of <span className="font-semibold text-primary">"BookMyBox"</span> in Bhavnagar, we built this platform to solve the very problems you face daily. 
-        Partner with us to streamline your bookings and grow your business with a system that just works.
-      </p>
+      <div className="text-left max-w-2xl mx-auto mb-6">
+        <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
+          We provide a complete online booking platform for cricket turf owners in Bhavnagar:
+        </p>
+        <ul className="space-y-3 text-muted-foreground">
+          <li className="flex items-start gap-3">
+            <span className="text-primary mt-1">✓</span>
+            <span>Manage bookings efficiently and reduce manual work</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-primary mt-1">✓</span>
+            <span>Increase your venue's visibility across Bhavnagar</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-primary mt-1">✓</span>
+            <span>Automated slot management with real-time availability</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-primary mt-1">✓</span>
+            <span>Instant booking confirmations for customers</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-primary mt-1">✓</span>
+            <span>Integrated payment processing and customer management</span>
+          </li>
+        </ul>
+      </div>
 
-      {/* 🔥 Added Professional Message for Bhavnagar Turf Owners */}
       <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-        If you own a turf in Bhavnagar and want to enable a clean, automated booking facility,
-        we would be happy to onboard your venue to BookMyBox.  
-        Contact us to get started and make your turf easily bookable for players.
+        Own a cricket turf in Bhavnagar? Contact us to list your venue and reach more cricket enthusiasts with our professional booking platform.
       </p>
 
       <Link to="/support">

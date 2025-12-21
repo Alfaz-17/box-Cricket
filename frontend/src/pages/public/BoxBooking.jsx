@@ -227,32 +227,105 @@ const BoxBooking = () => {
   }
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background */}
-      <AnimatedShaderBackground />
+    <div className="min-h-screen relative bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)',
+          backgroundSize: '40px 40px'
+        }} />
+      </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
-        {/* Header / Back Button */}
-        <div className="flex items-center justify-between mb-6">
+      <div className="container mx-auto px-4 py-6 max-w-7xl relative z-10">
+        {/* Back Button */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-6"
+        >
           <Button
             variant="ghost"
             onClick={() => navigate(`/box/${id}`)}
-            className="hover:bg-primary/20 group"
+            className="hover:bg-primary/10 group transition-all duration-300"
           >
-            <ChevronLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Box Details
+            <ChevronLeft className="mr-2 h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+            <span className="font-medium">Back to Box Details</span>
           </Button>
-        </div>
+        </motion.div>
 
+        {/* Enhanced Header Card with Box Info */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 rounded-2xl p-6 md:p-8 shadow-lg backdrop-blur-sm"
         >
-          <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-4xl font-bold text-primary mb-2">
-            Book {box.name}
-          </h1>
-          <p className="text-muted-foreground mb-8">Select your preferred slot and options below.</p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Left: Box Name and Location */}
+            <div className="flex-1">
+              <h1 
+                style={{ fontFamily: 'Bebas Neue' }} 
+                className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2"
+              >
+                Book {box.name}
+              </h1>
+              <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="font-medium">{box.location}, Bhavnagar</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Pricing Info */}
+            <div className="bg-card/50 backdrop-blur-md rounded-xl px-6 py-4 shadow-md">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">Starting From</p>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-3xl md:text-4xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+                    ₹{box.hourlyRate}
+                  </span>
+                  <span className="text-muted-foreground">/hour</span>
+                </div>
+                {box.weekendHourlyRate && box.weekendHourlyRate !== box.hourlyRate && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Weekend: ₹{box.weekendHourlyRate}/hr
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Subtitle */}
+          <div className="mt-4 pt-4 border-t border-primary/10">
+            <p className="text-muted-foreground text-center md:text-left">
+              Select your preferred date, time slot, and box to complete your booking
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Booking Form Section - Borderless */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-lg"
+        >
+          <div className="mb-6">
+            <h2 
+              style={{ fontFamily: 'Bebas Neue' }} 
+              className="text-2xl md:text-3xl font-bold text-primary mb-2"
+            >
+              Booking Details
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Fill in the details below to reserve your slot
+            </p>
+          </div>
 
           <AnimatePresence mode="wait">
             <motion.div
