@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Mic, X, Loader2, Volume2, AudioWaveform, ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import api, { BASE_URL } from "../utils/api";
 
 // 🎨 BRAND ALIGNED PALETTE (from index.css & tailwind.config)
 // Using CSS variables to ensure strict theme matching
@@ -126,8 +127,8 @@ const TestVoiceRecorder = ({ onClose }) => {
     
     try {
       setStatus("processing");
-      const res = await fetch("http://localhost:5001/api/voice/welcome");
-      const data = await res.json();
+      const res = await api.get("/voice/welcome");
+      const data = res.data;
       
       // Double check if user started speaking while we were fetching
       if (hasInteractedRef.current) {
@@ -216,12 +217,8 @@ const TestVoiceRecorder = ({ onClose }) => {
     if (sessionId) formData.append("sessionId", sessionId);
 
     try {
-      const response = await fetch("http://localhost:5001/api/voice/check-slot", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
+      const response = await api.post("/voice/check-slot", formData);
+      const data = response.data;
       if (data.sessionId) setSessionId(data.sessionId);
 
       if (data.voiceText) {
@@ -249,7 +246,7 @@ const TestVoiceRecorder = ({ onClose }) => {
     
     if (audioUrl) {
       setStatus("speaking");
-      const audio = new Audio(`http://localhost:5001${audioUrl}`);
+      const audio = new Audio(`${BASE_URL}${audioUrl}`);
       audioRef.current = audio;
       
       audio.play().catch(e => console.error("Audio Playback Error:", e));

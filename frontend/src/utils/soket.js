@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client'
+import { BASE_URL } from './api'
 
-const socket = io(import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.2:5001', {
+const socket = io(BASE_URL, {
   transports: ['websocket'], // ✅ force WebSocket (optional, avoids XHR)
 })
 export default socket

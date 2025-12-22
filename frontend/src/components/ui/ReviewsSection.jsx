@@ -33,12 +33,9 @@ const ReviewsSection = ({ boxId }) => {
     setLoading(true)
     setErrorMsg('')
     try {
-      await axios.post(
-        `http://localhost:5001/api/reviews/create/${boxId}`,
-        { rating, comment },
-        {
-          withCredentials: true,
-        }
+      await api.post(
+        `/reviews/create/${boxId}`,
+        { rating, comment }
       )
       setRating(0)
       setComment('')

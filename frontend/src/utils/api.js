@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://172.20.10.2:5001';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/api` : 'http://172.20.10.2:5001/api',
+  baseURL: `${BASE_URL}/api`,
 })
 
 // ✅ Automatically attach token from localStorage
