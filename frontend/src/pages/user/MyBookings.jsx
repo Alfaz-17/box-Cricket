@@ -63,7 +63,7 @@ const MyBookings = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
-        <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary font-display tracking-tight">
           My Bookings
         </h1>
         
@@ -94,7 +94,7 @@ const MyBookings = () => {
             <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4 sm:mb-6">
               <Calendar size={24} className="sm:w-8 sm:h-8 text-primary" />
             </div>
-            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-xl sm:text-2xl font-medium mb-2">
+            <h3 className="text-xl sm:text-2xl font-medium mb-2 font-display tracking-tight">
               No {activeTab} bookings found
             </h3>
             <p className="text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-base">
@@ -351,8 +351,7 @@ const BookingCard = ({ booking }) => {
             <div className="flex justify-between items-start mb-3 sm:mb-4">
               <div className="flex-1 min-w-0">
                 <h3
-                  style={{ fontFamily: 'Bebas Neue' }}
-                  className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1"
+                  className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 font-display tracking-tight"
                 >
                   {booking.box.name}
                 </h3>

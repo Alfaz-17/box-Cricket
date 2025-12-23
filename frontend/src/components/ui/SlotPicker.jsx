@@ -184,64 +184,100 @@ const SlotPicker = ({
     }
   }
 
+  const [activeSegment, setActiveSegment] = useState('Morning')
+
+  const segments = {
+    Morning: { range: [6, 12], label: '6am - 12pm' },
+    Afternoon: { range: [12, 17], label: '12pm - 5pm' },
+    Evening: { range: [17, 21], label: '5pm - 9pm' },
+    Night: { range: [21, 24], label: '9pm - 12am' },
+    Early: { range: [0, 6], label: '12am - 6am' },
+  }
+
+  const filteredSlots = slots.filter(slot => {
+    const [start, end] = segments[activeSegment].range
+    return slot.rawStart >= start && slot.rawStart < end
+  })
+
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {slots.map((slot) => {
-        const booked = isSlotBooked(slot)
-        const blocked = isSlotBlocked(slot)
-        const isPast = isPastSlot(slot)
-        const selected = selectedSlots.some(s => s.id === slot.id)
-        const disabled = booked || blocked || isPast
-
-        return (
-          <motion.button
-            key={slot.id}
-            whileHover={!disabled ? { scale: 1.01, x: 2 } : {}}
-            whileTap={!disabled ? { scale: 0.99 } : {}}
-            onClick={() => handleSlotClick(slot)}
-            disabled={disabled}
-            className={`
-              relative flex items-center justify-between p-4 rounded-xl border transition-all duration-200 w-full group
-              ${selected 
-                ? 'bg-primary/20 border-primary shadow-[0_0_15px_rgba(157,255,0,0.3)]' 
-                : disabled
-                  ? 'bg-muted/20 border-white/5 opacity-60 cursor-not-allowed pointer-events-none'
-                  : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-              }
-            `}
-          >
-            <div className="flex items-center gap-4">
-              <div className={`
-                w-5 h-5 rounded-md border flex items-center justify-center transition-colors
-                ${selected 
-                  ? 'bg-primary border-primary text-black' 
-                  : disabled
-                    ? 'border-white/10 bg-white/5'
-                    : 'border-white/30 group-hover:border-primary/50'
-                }
-              `}>
-                {selected && <Check size={14} strokeWidth={3} />}
-                {booked && <Lock size={12} className="text-white/30" />}
-                {blocked && <Ban size={12} className="text-destructive/50" />}
-                {isPast && !booked && !blocked && <Clock size={12} className="text-white/20" />}
-              </div>
-              
-              <span className={`
-                font-medium text-lg tracking-wide
-                ${selected ? 'text-primary' : disabled ? 'text-muted-foreground line-through' : 'text-foreground'}
-              `} style={{ fontFamily: 'Bebas Neue' }}>
-                {slot.display}
-              </span>
-            </div>
-
-            {disabled && (
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/50 px-2 py-1 rounded bg-black/20">
-                {booked ? 'Booked' : blocked ? 'Blocked' : 'Past'}
-              </span>
+    <div className="space-y-6">
+      {/* Segment Tabs */}
+      <div className="flex overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide gap-2">
+        {Object.keys(segments).map((segment) => (
+          <button
+            key={segment}
+            onClick={() => setActiveSegment(segment)}
+            className={cn(
+              "px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border",
+              activeSegment === segment 
+                ? "bg-secondary text-secondary-foreground border-secondary shadow-lg shadow-secondary/20" 
+                : "bg-muted/10 border-border/40 text-muted-foreground hover:bg-muted/20"
             )}
-          </motion.button>
-        )
-      })}
+          >
+            {segment}
+            <span className="block text-[8px] opacity-60 font-medium mt-0.5">{segments[segment].label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Grid of Slots */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {filteredSlots.map((slot) => {
+          const booked = isSlotBooked(slot)
+          const blocked = isSlotBlocked(slot)
+          const isPast = isPastSlot(slot)
+          const selected = selectedSlots.some(s => s.id === slot.id)
+          const disabled = booked || blocked || isPast
+
+          return (
+            <motion.button
+              key={slot.id}
+              whileHover={!disabled ? { scale: 1.01, x: 2 } : {}}
+              whileTap={!disabled ? { scale: 0.99 } : {}}
+              onClick={() => handleSlotClick(slot)}
+              disabled={disabled}
+              className={cn(
+                "relative flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 w-full group overflow-hidden",
+                selected 
+                  ? "bg-secondary text-secondary-foreground border-secondary shadow-[0_0_20px_rgba(143,163,30,0.3)]" 
+                  : disabled
+                    ? "bg-muted/5 border-border/10 opacity-60 cursor-not-allowed grayscale"
+                    : "bg-background/40 hover:bg-background/60 border-border/40 hover:border-secondary/50"
+              )}
+            >
+              <div className="flex items-center gap-4">
+                <div className={cn(
+                  "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                  selected ? "bg-white/20" : "bg-muted/10 group-hover:bg-secondary/10"
+                )}>
+                  {selected && <Check size={20} strokeWidth={3} />}
+                  {booked && <Lock size={16} className="text-muted-foreground" />}
+                  {blocked && <Ban size={16} className="text-destructive/50" />}
+                  {!disabled && !selected && <Clock size={18} className="text-secondary/60" />}
+                </div>
+                
+                <div className="text-left">
+                  <span className={cn(
+                    "block font-bold text-lg leading-tight font-display tracking-tight",
+                    selected ? "text-secondary-foreground" : disabled ? "text-muted-foreground" : "text-foreground"
+                  )}>
+                    {slot.display}
+                  </span>
+                  <span className="text-[10px] uppercase font-bold tracking-tighter opacity-70">
+                    {booked ? 'Occupied' : blocked ? 'Maintenance' : isPast ? 'Expired' : 'Available'}
+                  </span>
+                </div>
+              </div>
+
+              {!disabled && !selected && (
+                <div className="w-8 h-8 rounded-full bg-secondary/0 group-hover:bg-secondary/10 flex items-center justify-center transition-all">
+                  <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-secondary" />
+                </div>
+              )}
+            </motion.button>
+          )
+        })}
+      </div>
     </div>
   )
 }

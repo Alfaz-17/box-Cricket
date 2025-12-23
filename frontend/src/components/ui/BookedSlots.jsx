@@ -107,7 +107,7 @@ export default function BookedSlots({ boxId }) {
     <div className="space-y-6 h-full flex flex-col">
       {/* Header & Filters */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5 shrink-0">
-        <h2 className="text-xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+        <h2 className="text-xl font-bold text-primary font-display tracking-tight">
           Booked Slots
         </h2>
         

@@ -257,8 +257,7 @@ const BoxBooking = () => {
           >
             {/* Box Name */}
             <h1 
-              style={{ fontFamily: 'Bebas Neue' }} 
-              className="text-4xl lg:text-5xl font-bold text-foreground tracking-tight leading-none"
+              className="text-4xl lg:text-5xl font-bold text-foreground tracking-tight leading-none font-display"
             >
               {box.name}
             </h1>

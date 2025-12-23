@@ -146,7 +146,7 @@ const EditBox = () => {
     <div className="max-w-6xl mx-auto p-4 sm:p-6 min-h-screen">
       {/* Header */}
       <div className="pb-6 border-b border-primary/10 mb-6">
-        <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary tracking-wide mb-2">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary tracking-tight mb-2 font-display">
           Edit Cricket Box
         </h1>
         <p className="text-muted-foreground text-sm md:text-base">
@@ -158,7 +158,7 @@ const EditBox = () => {
         {/* Rest of the form content stays the same, just update the final buttons */}
         {/* Basic Info Section */}
         <div className="space-y-4 bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-          <h3 className="text-lg font-semibold flex items-center gap-2 text-primary">
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-primary font-outfit">
             <List size={18} /> Basic Information
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -206,7 +206,7 @@ const EditBox = () => {
 
         {/* Location Section */}
         <div className="space-y-4 bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-          <h3 className="text-lg font-semibold flex items-center gap-2 text-primary">
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-primary font-outfit">
             <MapPin size={18} /> Location Details
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,7 +237,7 @@ const EditBox = () => {
 
         {/* Pricing & Features Section */}
         <div className="space-y-4 bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-          <h3 className="text-lg font-semibold flex items-center gap-2 text-primary">
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-primary font-outfit">
             <DollarSign size={18} /> Pricing & Features
           </h3>
           
@@ -438,7 +438,7 @@ const EditBox = () => {
 
         {/* Images Section */}
         <div className="space-y-4 bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-          <h3 className="text-lg font-semibold flex items-center gap-2 text-primary">
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-primary font-outfit">
             <ImageIcon size={18} /> Images
           </h3>
           

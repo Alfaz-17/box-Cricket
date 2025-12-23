@@ -28,7 +28,7 @@ import MyBookings from './pages/user/MyBookings'
 import Profile from './pages/user/Profile'
 import SettingsPage from './pages/public/SettingsPage'
 import FAQSection from './pages/public/FAQSection'
-import FeedbackSupport from './pages/user/FeedbackSupport '
+import FeedbackSupport from './pages/user/FeedbackSupport'
 
 // Payment pages
 import PaymentSuccess from './pages/PaymentSuccess'

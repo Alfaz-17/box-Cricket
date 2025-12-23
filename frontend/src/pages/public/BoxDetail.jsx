@@ -278,8 +278,7 @@ const BoxDetail = () => {
           {/* Left: Title, Rating, Location */}
           <div className="flex-1 w-full lg:w-auto">
             <h1
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-4xl md:text-5xl font-bold text-primary mb-4"
+              className="text-4xl md:text-5xl font-bold text-primary mb-4 font-display tracking-tight"
             >
               {displayBox.name}
             </h1>
@@ -307,9 +306,9 @@ const BoxDetail = () => {
           {/* Right: Book Now CTA */}
           <div className="flex flex-col items-start lg:items-end gap-3 w-full lg:w-auto">
             <div className="text-left lg:text-right">
-              <div className="text-4xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+              <div className="text-4xl font-bold text-primary font-display tracking-tight">
                 ₹{displayBox.hourlyRate}
-                <span className="text-lg font-normal text-muted-foreground">/hour</span>
+                <span className="text-base font-medium text-muted-foreground font-jakarta ml-1">/hour</span>
               </div>
               {displayBox.weekendHourlyRate && (
                 <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-[-5px]">
@@ -343,8 +342,7 @@ const BoxDetail = () => {
           className="mb-8"
         >
           <h2
-            style={{ fontFamily: 'Bebas Neue' }}
-            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2"
+            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2 font-display tracking-tight"
           >
             <Target className="w-8 h-8" />
             Available Boxes
@@ -358,8 +356,7 @@ const BoxDetail = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.1, y: -2 }}
-                  className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300"
-                  style={{ fontFamily: 'Bebas Neue' }}
+                  className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 font-display tracking-wide"
                 >
                   {quarter.name}
                 </motion.span>
@@ -382,8 +379,7 @@ const BoxDetail = () => {
             className="mb-8"
           >
             <h2
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-3xl font-bold text-primary mb-6"
+              className="text-3xl font-bold text-primary mb-6 font-display tracking-tight"
             >
               Special Pricing Bundles
             </h2>
@@ -448,8 +444,7 @@ const BoxDetail = () => {
           className="mb-8"
         >
           <h2
-            style={{ fontFamily: 'Bebas Neue' }}
-            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2"
+            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2 font-display tracking-tight"
           >
             <Award className="w-8 h-8" />
             Facilities & Amenities
@@ -481,8 +476,7 @@ const BoxDetail = () => {
           className="mb-8"
         >
           <h2
-            style={{ fontFamily: 'Bebas Neue' }}
-            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2"
+            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2 font-display tracking-tight"
           >
             <MapPin className="w-8 h-8" />
             Location
@@ -522,8 +516,7 @@ const BoxDetail = () => {
             className="mb-8"
           >
             <h2
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-3xl font-bold text-primary mb-6"
+              className="text-3xl font-bold text-primary mb-6 font-display tracking-tight"
             >
               About {displayBox.name}
             </h2>
@@ -546,8 +539,7 @@ const BoxDetail = () => {
             className="mb-8"
           >
             <h2
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-3xl font-bold text-primary mb-6"
+              className="text-3xl font-bold text-primary mb-6 font-display tracking-tight"
             >
               Frequently Asked Questions
             </h2>
@@ -595,8 +587,7 @@ const PricingCard = ({ item, index, variant = 'weekday' }) => (
     <div className="flex justify-between items-center">
       <div>
         <div
-          className={`text-3xl font-bold ${variant === 'weekday' ? 'text-primary' : 'text-secondary'}`}
-          style={{ fontFamily: 'Bebas Neue' }}
+          className={`text-3xl font-bold ${variant === 'weekday' ? 'text-primary' : 'text-secondary'} font-display tracking-tight`}
         >
           {item.duration} Hour{item.duration > 1 ? 's' : ''}
         </div>

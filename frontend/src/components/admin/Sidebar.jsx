@@ -106,7 +106,7 @@ const Sidebar = ({ isOpen, onClose, onVoiceClick }) => {
                     <img className="h-full w-full object-contain" src={logoIcon} alt="BookMyBox" />
                 </div>
                 <div className="flex flex-col">
-                    <span style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-primary tracking-wide leading-none">
+                    <span className="text-2xl font-bold text-primary tracking-tight leading-none font-display">
                         BookMyBox
                     </span>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">

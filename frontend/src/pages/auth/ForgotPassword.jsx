@@ -68,7 +68,7 @@ const ForgotPassword = () => {
       {/* Left side for desktop branding */}
       <div className="hidden md:flex w-1/2 bg-primary text-white items-center justify-center flex-col p-10">
         <img src="/src/assets/logo-icon.svg" alt="BookMyBox Logo" className="h-40 w-40 mb-4" />
-        <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-5xl font-bold mb-2">
+        <h1 className="text-5xl font-bold mb-2 font-display tracking-tight">
           Book My Box
         </h1>
         <p className="text-lg opacity-80 text-center">
@@ -80,12 +80,11 @@ const ForgotPassword = () => {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 md:px-20">
         <div className="max-w-md w-full mx-auto">
           <h1
-            style={{ fontFamily: 'Bebas Neue' }}
-            className="text-3xl font-bold mb-2 text-center md:text-left"
+            className="text-3xl font-bold mb-2 text-center md:text-left font-display tracking-tight"
           >
             Forgot Password
           </h1>
-          <p className="text-sm text-gray-600 mb-6 text-center md:text-left">
+密          <p className="text-sm text-gray-600 mb-6 text-center md:text-left">
             Reset your password in 3 simple steps.
           </p>
 

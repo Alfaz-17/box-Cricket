@@ -136,7 +136,7 @@ const BlockSlot = () => {
     <div className="max-w-6xl mx-auto p-4 sm:p-6 min-h-screen">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary font-display tracking-tight">
           Block Time Slots
         </h1>
         <p className="text-muted-foreground text-sm md:text-base">Prevent bookings for specific times due to maintenance or other reasons.</p>
@@ -149,7 +149,7 @@ const BlockSlot = () => {
           <div className="bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
             <div className="flex items-center gap-2 mb-6">
               <span className="text-2xl">🚫</span>
-              <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-primary">
+              <h2 className="text-2xl font-bold text-primary font-display tracking-tight">
                 Block New Slot
               </h2>
             </div>
@@ -266,7 +266,7 @@ const BlockSlot = () => {
           <div className="bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
             <div className="flex items-center gap-2 mb-6">
               <span className="text-2xl">✅</span>
-              <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold text-primary">
+              <h2 className="text-2xl font-bold text-primary font-display tracking-tight">
                 Active Blocks
               </h2>
             </div>

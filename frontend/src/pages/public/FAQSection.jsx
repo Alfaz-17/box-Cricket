@@ -44,8 +44,7 @@ const FAQSection = () => {
           <HelpCircle className="w-8 h-8 text-primary" />
         </div>
         <h2
-          style={{ fontFamily: 'Bebas Neue' }}
-          className="text-4xl md:text-5xl font-bold text-foreground mb-2"
+          className="text-4xl md:text-5xl font-bold text-foreground mb-2 font-display tracking-tight"
         >
           Frequently Asked Questions
         </h2>

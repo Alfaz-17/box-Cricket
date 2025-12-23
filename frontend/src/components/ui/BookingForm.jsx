@@ -33,7 +33,7 @@ const BookingForm = ({
       {/* Section 1: Booking Form */}
       <div className="space-y-6">
         <div className="pb-4 border-b border-border/40">
-          <h2 className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Bebas Neue' }}>
+          <h2 className="text-2xl font-bold text-foreground font-display tracking-tight">
             Booking Details
           </h2>
         </div>
@@ -104,10 +104,10 @@ const BookingForm = ({
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-3xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+                  <p className="text-3xl font-bold text-primary font-display tracking-tight">
                     {selectedSlots.length}
                   </p>
-                  <p className="text-xs text-muted-foreground">hour{selectedSlots.length > 1 ? 's' : ''}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest font-jakarta">hour{selectedSlots.length > 1 ? 's' : ''}</p>
                 </div>
               </div>
             </div>
@@ -148,7 +148,7 @@ const BookingForm = ({
       <div className="space-y-6">
         <div className="pb-4 border-b border-border/40">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Bebas Neue' }}>
+            <h2 className="text-2xl font-bold text-foreground font-display tracking-tight">
               Select Time Slots
             </h2>
             {selectedSlots.length > 0 && (
@@ -178,9 +178,11 @@ const BookingForm = ({
               onSlotsUpdate={onSlotsUpdate}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-border/40 rounded-lg bg-muted/20">
-              <Info className="w-10 h-10 mb-3 text-muted-foreground/50" />
-              <p className="text-sm text-muted-foreground">Select a box to view slots</p>
+            <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed border-border/40 rounded-3xl bg-muted/5">
+              <div className="bg-primary/10 p-4 rounded-full mb-4">
+                <Info className="w-8 h-8 text-primary" />
+              </div>
+              <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest text-center">Select a box to view available time slots</p>
             </div>
           )}
         </div>
@@ -195,10 +197,10 @@ const BookingForm = ({
               </p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+              <p className="text-2xl font-bold text-primary font-display tracking-tight">
                 {selectedSlots.length}
               </p>
-              <p className="text-xs text-muted-foreground">hour{selectedSlots.length > 1 ? 's' : ''}</p>
+              <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest font-jakarta">hour{selectedSlots.length > 1 ? 's' : ''}</p>
             </div>
           </div>
         )}
@@ -208,7 +210,7 @@ const BookingForm = ({
       {selectedSlots.length > 0 && (
         <div className="space-y-6">
           <div className="pb-4 border-b border-border/40">
-            <h2 className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Bebas Neue' }}>
+            <h2 className="text-2xl font-bold text-foreground font-display tracking-tight">
               Payment Summary
             </h2>
           </div>
@@ -225,7 +227,7 @@ const BookingForm = ({
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-4xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+                <p className="text-4xl font-bold text-primary font-display tracking-tight text-right leading-none">
                   ₹{isOwner ? (() => {
                     const d = new Date(selectedDate);
                     const isWeekend = d.getDay() === 0 || d.getDay() === 6;
@@ -249,7 +251,7 @@ const BookingForm = ({
       )}
 
       {/* Section 4: Help & Policies */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-border/40">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-border/40 mb-12 lg:mb-0">
         {/* Call Option */}
         <div className="space-y-3">
           <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">
@@ -289,6 +291,46 @@ const BookingForm = ({
           </ul>
         </div>
       </div>
+
+      {/* Sticky Bottom CTA - Mobile Optimized */}
+      <AnimatePresence>
+        {selectedSlots.length > 0 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-16 left-0 right-0 z-40 lg:hidden px-4 pb-4 pt-2 bg-gradient-to-t from-background via-background to-transparent"
+          >
+            <div className="bg-card/95 backdrop-blur-xl border border-secondary/30 rounded-2xl p-4 shadow-2xl flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-black text-secondary" style={{ fontFamily: 'Bebas Neue' }}>
+                    ₹{isOwner ? (() => {
+                      const d = new Date(selectedDate);
+                      const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                      const duration = selectedSlots.length;
+                      const baseRate = isWeekend && displayBox.weekendHourlyRate ? displayBox.weekendHourlyRate : displayBox.hourlyRate;
+                      const customArray = isWeekend && displayBox.weekendCustomPricing?.length > 0 ? displayBox.weekendCustomPricing : displayBox.customPricing;
+                      const customPrice = customArray?.find(p => p.duration === duration);
+                      return customPrice ? customPrice.price : baseRate * duration;
+                    })() : 300}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Total</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground line-clamp-1">{selectedSlots.length} slot{selectedSlots.length > 1 ? 's' : ''} • {selectedSlots[0].startTime}</p>
+              </div>
+              
+              <Button
+                onClick={handleBooking}
+                disabled={isProcessingBooking || !contactNumber || !selectedQuarter}
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold uppercase tracking-wider px-6 h-12 rounded-xl shadow-lg shadow-secondary/20 flex-shrink-0"
+              >
+                {isProcessingBooking ? '...' : (isOwner ? 'Confirm' : 'Pay & Book')}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

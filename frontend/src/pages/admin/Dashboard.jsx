@@ -135,7 +135,7 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary font-display tracking-tight">
             Dashboard Overview
           </h1>
           <p className="text-muted-foreground text-sm md:text-base">Welcome back, Admin. Here's what's happening today.</p>
@@ -160,7 +160,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground font-medium mb-1">{stat.title}</p>
-                <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl font-bold tracking-wide">
+                <h3 className="text-3xl font-bold tracking-tight font-display">
                   {stat.value}
                 </h3>
               </div>
@@ -172,7 +172,7 @@ const Dashboard = () => {
       {/* Recent Bookings */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl md:text-3xl font-bold text-primary">
+          <h2 className="text-2xl md:text-3xl font-bold text-primary font-display tracking-tight">
             Recent Bookings
           </h2>
           <Link to="/admin/bookings">

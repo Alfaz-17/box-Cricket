@@ -79,11 +79,31 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a, input, select, textarea {
+    @apply select-none;
+  }
+
+  input, select, textarea {
+    @apply select-text;
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    @apply font-bold tracking-tight;
+  }
+
+  .font-display {
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 0.05em;
   }
@@ -91,6 +111,14 @@
   .font-sport {
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 0.05em;
+  }
+
+  .font-jakarta {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .font-outfit {
+    font-family: 'Outfit', sans-serif;
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */

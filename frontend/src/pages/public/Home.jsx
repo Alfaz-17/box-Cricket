@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Clock, Calendar, Filter, TrendingUp, Users, Award, Star, ArrowRight, Zap, Smartphone } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Search, MapPin, Clock, Calendar, Filter, TrendingUp, Users, Award, Star, ArrowRight, Zap, Smartphone, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '../../lib/utils'
 
 import api from '../../utils/api'
 
@@ -11,8 +12,10 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
+import { BoxCardSkeleton } from '@/components/ui/SkeletonLoader'
 
 const Home = () => {
+  const [allBoxes, setAllBoxes] = useState([])
   const [filteredBoxes, setFilteredBoxes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -57,7 +60,10 @@ const Home = () => {
 
   const fetchBoxes = async () => {
     try {
+      setIsLoading(true)
       const response = await api.get('/boxes/public')
+      console.log('Fetched boxes:', response.data)
+      setAllBoxes(response.data)
       setFilteredBoxes(response.data)
     } catch (error) {
       console.error('Error fetching boxes:', error)
@@ -69,6 +75,30 @@ const Home = () => {
   useEffect(() => {
     fetchBoxes()
   }, [])
+
+  useEffect(() => {
+    const query = searchQuery.toLowerCase().trim()
+    if (!query) {
+      setFilteredBoxes(allBoxes)
+      return
+    }
+
+    const filtered = allBoxes.filter(box => {
+      const nameMatch = box.name?.toLowerCase().includes(query)
+      const locationMatch = box.location?.toLowerCase().includes(query)
+      const addressMatch = box.address?.toLowerCase().includes(query)
+      return nameMatch || locationMatch || addressMatch
+    })
+    setFilteredBoxes(filtered)
+  }, [searchQuery, allBoxes])
+
+  const handleSearch = () => {
+    // Only used for scrolling now
+    const resultsPanel = document.getElementById('available-boxes')
+    if (resultsPanel) {
+      resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
   const handleFilterChange = e => {
     const { name, value } = e.target
@@ -112,36 +142,55 @@ const Home = () => {
             </motion.div>
 
             {/* Main Heading */}
-            <h1 className="text-7xl sm:text-8xl md:text-9xl font-black italic text-white tracking-tighter leading-[0.85] mb-8 drop-shadow-2xl transform -skew-x-6">
-              <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">SMASH</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-secondary via-accent to-secondary animate-gradient bg-300%">LIMITS</span>
+            <h1 className="text-6xl sm:text-7xl md:text-8xl font-black italic text-white tracking-tighter leading-[0.85] mb-8 drop-shadow-2xl transform -skew-x-6 uppercase font-display">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">Cricket Box</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-secondary via-accent to-secondary animate-gradient bg-300%">in Bhavnagar</span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto font-medium tracking-wide mb-10 border-l-2 border-secondary pl-6 text-left md:text-center md:border-l-0 md:pl-0">
-            Box booking platfrom check your turf slots and book your turf according to your need.
+            <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto font-medium tracking-tight mb-10 border-l-2 border-secondary pl-6 text-left md:text-center md:border-l-0 md:pl-0 font-jakarta">
+              The ultimate destination for cricket enthusiasts in Bhavnagar. Discover premium turfs, check real-time availability, and book your power play in seconds.
             </p>
 
-            {/* Search Bar - Minimalist */}
+            {/* App-Style Search Pill */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
-              className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4"
+              className="max-w-2xl mx-auto"
             >
-              <div className="relative flex-1 group">
-                <div className="absolute inset-0 bg-white/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 z-10" />
-                <Input
-                  type="text"
-                  placeholder="Find your turf..."
-                  className="pl-14 h-14 w-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder:text-white/40 focus:ring-2 focus:ring-secondary/50 focus:border-secondary rounded-full text-lg shadow-lg transition-all"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                />
+              <div 
+                className="relative flex items-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-2 shadow-2xl hover:border-secondary/50 transition-all group"
+              >
+                <div className="flex-1 flex items-center pl-4">
+                  <Search className="h-5 w-5 text-secondary mr-3 flex-shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Search for turfs (e.g. Bhavnagar)..."
+                    className="w-full bg-transparent border-none text-white placeholder:text-white/40 focus:ring-0 text-sm sm:text-base outline-none"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="p-1 hover:bg-white/10 rounded-full transition-colors mr-2"
+                    >
+                      <X className="h-4 w-4 text-white/60" />
+                    </button>
+                  )}
+                </div>
+                <div className="h-8 w-[1px] bg-white/10 mx-2" />
+               
+                <Button 
+                  onClick={handleSearch}
+                  className="bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full px-6 py-3 font-bold uppercase tracking-wider text-sm shadow-[0_0_20px_rgba(143,163,30,0.4)]"
+                >
+                  <span className="hidden sm:inline mr-2">Search</span>
+                  <Search size={18} className="sm:hidden" />
+                </Button>
               </div>
-              <Button className="h-14 px-10 bg-secondary hover:bg-secondary/90 text-primary-foreground font-bold text-lg uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(143,163,30,0.4)] hover:shadow-[0_0_30px_rgba(143,163,30,0.6)] hover:scale-105 transition-all">
-                Find Your Turf
-              </Button>
+
+             
             </motion.div>
 
             {/* Download App CTA */}
@@ -181,7 +230,7 @@ const Home = () => {
       </motion.section>
 
       {/* Boxes Section - Mobile Optimized */}
-      <section className="px-4 sm:px-0">
+      <section id="available-boxes" className="px-4 sm:px-0">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -200,15 +249,9 @@ const Home = () => {
         </motion.div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="rounded-xl border bg-card shadow-lg animate-pulse h-96 p-4">
-                <div className="w-full h-48 bg-muted rounded-lg mb-4" />
-                <div className="h-6 bg-muted rounded w-3/4 mb-3" />
-                <div className="h-4 bg-muted rounded w-1/2 mb-4" />
-                <div className="h-4 bg-muted rounded w-5/6 mb-2" />
-                <div className="h-4 bg-muted rounded w-full" />
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <BoxCardSkeleton key={i} />
             ))}
           </div>
         ) : filteredBoxes.length > 0 ? (
@@ -296,7 +339,7 @@ const StatCard = ({ icon: Icon, value, label, color }) => {
     >
       <div className={`absolute top-0 right-0 w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 bg-gradient-to-br ${color} opacity-10 rounded-bl-full`} />
       <Icon className={`h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 mb-2 sm:mb-4 bg-gradient-to-br ${color} bg-clip-text text-transparent`} strokeWidth={1.5} />
-      <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-0.5 sm:mb-1" style={{ fontFamily: 'Bebas Neue' }}>{value}</div>
+      <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-0.5 sm:mb-1 font-display tracking-tight">{value}</div>
       <div className="text-xs sm:text-sm text-muted-foreground font-medium">{label}</div>
     </motion.div>
   )
@@ -336,12 +379,12 @@ const BoxCard = ({ box, index }) => {
       whileHover={{ y: -10 }}
       className="group"
     >
-      <Card className="overflow-hidden border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-2xl h-full">
+      <Card className="overflow-hidden border-border/40 bg-card/50 backdrop-blur-sm hover:border-primary/40 transition-all duration-300 hover:shadow-2xl h-full rounded-2xl">
         {/* Image Container with Overlay */}
-        <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
+        <div className="relative h-56 overflow-hidden">
           <motion.img
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.4 }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.6 }}
             src={
               box.image ||
               'https://images.pexels.com/photos/3628912/pexels-photo-3628912.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
@@ -351,43 +394,41 @@ const BoxCard = ({ box, index }) => {
           />
           
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
           
-          {/* Price Badge */}
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            className="absolute top-3 sm:top-4 right-3 sm:right-4 backdrop-blur-md bg-primary/90 text-primary-foreground px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold shadow-lg border border-white/20 text-sm sm:text-base"
-          >
-            ₹{box.hourlyRate}/hr
-          </motion.div>
-
           {/* Rating Badge */}
-          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 backdrop-blur-md bg-white/20 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full flex items-center gap-1 border border-white/30">
-            <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-white font-semibold text-xs sm:text-sm">4.0</span>
+          <div className="absolute top-4 left-4 backdrop-blur-md bg-black/40 px-2.5 py-1.5 rounded-full flex items-center gap-1 border border-white/10">
+            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+            <span className="text-white font-bold text-xs">4.8</span>
           </div>
         </div>
 
-        <CardContent className="p-4 sm:p-5 md:p-6">
-          <h3 className="text-xl sm:text-2xl font-bold text-primary mb-2 sm:mb-3 group-hover:text-secondary transition-colors line-clamp-1">
-            {box.name}
-          </h3>
-
-          <div className="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm">
-            <div className="flex items-center text-muted-foreground">
-              <MapPin size={14} className="mr-1 sm:mr-1.5 text-primary flex-shrink-0" />
-              <span className="truncate">{box.location}</span>
+        <CardContent className="p-5 flex flex-col h-[calc(100%-14rem)]">
+          <div className="flex justify-between items-start gap-4 mb-2">
+            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
+              {box.name}
+            </h3>
+            <div className="flex flex-col items-end">
+              <span className="text-2xl font-black text-secondary leading-none font-display tracking-tight">
+                ₹{box.hourlyRate}
+              </span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Per Hour</span>
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm line-clamp-2 mb-4 sm:mb-6 text-muted-foreground leading-relaxed">
+          <div className="flex items-center text-muted-foreground text-xs mb-4">
+            <MapPin size={12} className="mr-1.5 text-primary flex-shrink-0" />
+            <span className="truncate">{box.location}</span>
+          </div>
+
+          <p className="text-xs text-muted-foreground/80 line-clamp-2 mb-6 leading-relaxed flex-grow">
             {box.description}
           </p>
 
-          <Link to={`/box/${box._id}`} className="block">
-            <Button className="w-full h-10 sm:h-11 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all shadow-md group-hover:shadow-lg text-sm sm:text-base">
+          <Link to={`/box/${box._id}`} className="block mt-auto">
+            <Button className="w-full h-11 bg-gradient-to-r from-primary/80 to-secondary hover:from-primary hover:to-secondary text-secondary-foreground font-bold uppercase tracking-wider text-xs rounded-xl shadow-lg transition-all group-hover:scale-[1.02]">
               View Details
-              <ArrowRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
         </CardContent>

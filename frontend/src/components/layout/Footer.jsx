@@ -35,8 +35,7 @@ export default function Footer() {
                 <img className="h-12 w-12" src={logoIcon} alt="BookMyBox Logo" />
               </motion.div>
               <h1
-                style={{ fontFamily: 'Bebas Neue' }}
-                className="ml-2 text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
+                className="ml-2 text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent font-display tracking-tight"
               >
                 BookMyBox
               </h1>
@@ -61,7 +60,7 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-xl font-bold mb-4 text-primary">
+            <h3 className="text-xl font-bold mb-4 text-primary font-display tracking-tight">
               Quick Links
             </h3>
             <ul className="space-y-3 text-sm">
@@ -95,10 +94,10 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-xl font-bold mb-4 text-primary">
+            <h3 className="text-xl font-bold mb-4 text-primary font-display tracking-tight">
               Support
             </h3>
-            <ul className="space-y-3 text-sm">
+#SAME%            <ul className="space-y-3 text-sm">
               <li>
                 <Link to="/policies" className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
                   <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 group-hover:scale-150 transition-transform" />
@@ -121,7 +120,7 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-xl font-bold mb-4 text-primary">
+            <h3 className="text-xl font-bold mb-4 text-primary font-display tracking-tight">
               Contact Us
             </h3>
             <ul className="space-y-3 text-sm mb-6">
@@ -211,7 +210,7 @@ const StatBadge = ({ icon: Icon, value, label }) => {
       className="bg-card border border-primary/20 rounded-lg p-2 text-center"
     >
       <Icon className="h-4 w-4 mx-auto mb-1 text-primary" />
-      <div className="text-xs font-bold" style={{ fontFamily: 'Bebas Neue' }}>{value}</div>
+      <div className="text-xs font-bold font-display tracking-tight">{value}</div>
       <div className="text-[10px] text-muted-foreground">{label}</div>
     </motion.div>
   )

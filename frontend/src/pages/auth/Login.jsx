@@ -78,8 +78,7 @@ const Login = () => {
             </div>
           </div>
           <h1 
-            style={{ fontFamily: 'Bebas Neue' }} 
-            className="text-5xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-wider mb-2"
+            className="text-5xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-tight mb-2 font-display"
           >
             Welcome Back
           </h1>

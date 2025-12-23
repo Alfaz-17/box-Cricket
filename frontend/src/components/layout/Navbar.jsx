@@ -87,8 +87,7 @@ const Navbar = ({ onVoiceClick }) => {
               </motion.div>
               <div className="flex flex-col leading-none">
                 <span 
-                  style={{ fontFamily: 'Bebas Neue' }} 
-                  className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-wider"
+                  className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-tight font-display"
                 >
                   BookMyBox
                 </span>
@@ -112,10 +111,10 @@ const Navbar = ({ onVoiceClick }) => {
                     List Your Turf
                   </NavLink>
                    <NavLink to="/support" icon={Contact2} >
-                    Conatct us
+                    Contact us
                   </NavLink>
                    <NavLink to="/faq" icon={FileQuestion} >
-                   Faq
+                   FAQ
                   </NavLink>
                   <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   
@@ -177,10 +176,10 @@ const Navbar = ({ onVoiceClick }) => {
                     About Us
                   </NavLink>
                    <NavLink to="/support" icon={Contact2} >
-                    Conatct us
+                    Contact us
                   </NavLink>
                    <NavLink to="/faq" icon={FileQuestion} >
-                   Faq
+                   FAQ
                   </NavLink>
                   <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   
@@ -204,7 +203,7 @@ const Navbar = ({ onVoiceClick }) => {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - RESTORED */}
             <div className="flex lg:hidden items-center gap-3">
               {/* Mobile AI Button */}
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -217,7 +216,6 @@ const Navbar = ({ onVoiceClick }) => {
                 </Button>
               </motion.div>
 
-              
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button 
                   onClick={() => setSidebarOpen(!sidebarOpen)} 

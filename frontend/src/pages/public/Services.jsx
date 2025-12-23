@@ -37,8 +37,7 @@ const Services = () => {
         className="text-center space-y-4"
       >
         <h1
-          style={{ fontFamily: 'Bebas Neue' }}
-          className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
+          className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent font-display tracking-tight"
         >
           Our Services
         </h1>

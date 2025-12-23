@@ -162,7 +162,7 @@ const AdminBookings = () => {
       {/* Header */}
       <div className="px-4 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-0.5" style={{ fontFamily: 'Bebas Neue' }}>
+          <h1 className="text-3xl font-bold text-foreground mb-0.5 font-display tracking-tight">
             Bookings
           </h1>
           <p className="text-xs text-muted-foreground">Manage all your bookings</p>
@@ -278,7 +278,7 @@ const AdminBookings = () => {
                         </span>
                       )}
                     </div>
-                    <div className="text-xl md:text-2xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+                    <div className="text-xl md:text-2xl font-bold text-primary font-display tracking-tight">
                       ₹{booking.amountPaid}
                     </div>
                   </div>

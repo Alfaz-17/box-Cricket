@@ -48,7 +48,7 @@ const FeedbackSupport = () => {
         <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
           <MessageSquare className="w-8 h-8 text-primary" />
         </div>
-        <h1 style={{ fontFamily: 'Bebas Neue' }} className="text-5xl text-primary mb-2">
+        <h1 className="text-5xl text-primary mb-2 font-display tracking-tight">
           Feedback & Support
         </h1>
         <p className="text-muted-foreground text-lg">
@@ -59,7 +59,7 @@ const FeedbackSupport = () => {
       {/* Feedback Form - NOW FIRST */}
       <Card className="w-full max-w-3xl mx-auto border-primary/20 shadow-xl mb-12">
         <CardHeader className="text-center pb-2">
-          <CardTitle style={{ fontFamily: 'Bebas Neue' }} className="text-4xl text-primary">
+          <CardTitle className="text-4xl text-primary font-display tracking-tight">
             Send Us Your Feedback
           </CardTitle>
           <CardDescription className="text-lg">
@@ -139,7 +139,7 @@ const FeedbackSupport = () => {
 
       {/* Contact Info Cards - NOW SECOND */}
       <div className="text-center mb-8">
-        <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl text-foreground mb-2">
+        <h2 className="text-3xl text-foreground mb-2 font-display tracking-tight">
           Or Contact Us Directly
         </h2>
         <p className="text-muted-foreground">
@@ -153,7 +153,7 @@ const FeedbackSupport = () => {
             <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4">
               <Mail className="w-8 h-8 text-primary" />
             </div>
-            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold mb-2">
+            <h3 className="text-2xl font-bold mb-2 font-display tracking-tight">
               Email Us
             </h3>
             <a
@@ -173,7 +173,7 @@ const FeedbackSupport = () => {
             <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4">
               <Phone className="w-8 h-8 text-primary" />
             </div>
-            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold mb-2">
+            <h3 className="text-2xl font-bold mb-2 font-display tracking-tight">
               Call Us
             </h3>
             <a
@@ -193,7 +193,7 @@ const FeedbackSupport = () => {
             <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4">
               <Clock className="w-8 h-8 text-primary" />
             </div>
-            <h3 style={{ fontFamily: 'Bebas Neue' }} className="text-2xl font-bold mb-2">
+            <h3 className="text-2xl font-bold mb-2 font-display tracking-tight">
               Support Hours
             </h3>
             <p className="text-foreground font-semibold mb-1">

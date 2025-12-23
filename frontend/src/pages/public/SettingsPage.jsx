@@ -32,8 +32,7 @@ function SettingsPage() {
         </div>
         <div>
             <h1
-                style={{ fontFamily: 'Bebas Neue' }}
-                className="text-3xl sm:text-4xl font-bold"
+                className="text-3xl sm:text-4xl font-bold font-display tracking-tight"
             >
                 Settings
             </h1>

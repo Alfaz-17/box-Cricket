@@ -13,8 +13,7 @@ const AboutUs = () => {
         className="text-center space-y-4"
       >
         <h1
-          style={{ fontFamily: 'Bebas Neue' }}
-          className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
+          className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent font-display tracking-tight"
         >
           About Us
         </h1>
@@ -34,7 +33,7 @@ const AboutUs = () => {
             <div className="p-3 bg-primary/10 rounded-lg">
               <Users className="w-6 h-6 text-primary" />
             </div>
-            <h2 className="text-xl font-bold">Who We Are</h2>
+            <h2 className="text-xl font-bold font-outfit">Who We Are</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
             We are a cricket box booking platform serving Bhavnagar, Gujarat. Our service makes it easy for cricket enthusiasts, students, local teams, and corporate groups to book quality cricket boxes online. We provide a seamless booking experience for cricket turfs across Bhavnagar with instant confirmation and flexible hourly slots.
@@ -51,7 +50,7 @@ const AboutUs = () => {
             <div className="p-3 bg-secondary/10 rounded-lg">
               <Target className="w-6 h-6 text-secondary" />
             </div>
-            <h2 className="text-xl font-bold">Our Mission</h2>
+            <h2 className="text-xl font-bold font-outfit">Our Mission</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed mb-4">
             Our mission is to simplify cricket box bookings in Bhavnagar. We connect cricket players with quality cricket turfs, making it easy to book slots online anytime, anywhere. Whether you're a student practicing for matches, a local team preparing for tournaments, or a corporate group planning team-building activities, we've got you covered.
@@ -83,12 +82,12 @@ const AboutUs = () => {
   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-50 rounded-2xl" />
   <div className="relative z-10 text-center space-y-8 p-8 border border-primary/10 rounded-2xl bg-card/30 backdrop-blur-sm">
     
-    <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-foreground">
+    <h2 className="text-3xl md:text-4xl font-black italic tracking-tighter text-foreground font-display uppercase">
       OWN A <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">TURF?</span>
     </h2>
     
     <div className="max-w-3xl mx-auto">
-      <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Professional Booking Solutions for Turf Owners</h3>
+      <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground font-outfit">Professional Booking Solutions for Turf Owners</h3>
 
       <div className="text-left max-w-2xl mx-auto mb-6">
         <p className="text-lg text-muted-foreground mb-4 leading-relaxed">

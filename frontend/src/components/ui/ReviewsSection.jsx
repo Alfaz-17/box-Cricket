@@ -56,7 +56,7 @@ const ReviewsSection = ({ boxId }) => {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/5 pb-4">
-        <h2 className="text-2xl font-bold text-primary" style={{ fontFamily: 'Bebas Neue' }}>
+        <h2 className="text-2xl font-bold text-primary font-display tracking-tight">
           Reviews & Ratings
         </h2>
         {isAuthenticated && (

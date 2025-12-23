@@ -74,8 +74,7 @@ const contactInfo = [
           <MessageSquare className="w-8 h-8 text-primary" />
         </div>
         <h1
-          style={{ fontFamily: 'Bebas Neue' }}
-          className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-4"
+          className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-4 font-display tracking-tight"
         >
           Get In Touch
         </h1>
@@ -104,8 +103,7 @@ const contactInfo = [
                 <info.icon className="w-8 h-8 text-primary" />
               </motion.div>
               <h3
-                style={{ fontFamily: 'Bebas Neue' }}
-                className="text-2xl font-bold text-foreground mb-2"
+                className="text-2xl font-bold text-foreground mb-2 font-display"
               >
                 {info.title}
               </h3>
@@ -134,8 +132,7 @@ const contactInfo = [
           <div className="flex items-center gap-3 mb-6">
             <Send className="w-6 h-6 text-primary" />
             <h2
-              style={{ fontFamily: 'Bebas Neue' }}
-              className="text-3xl font-bold text-foreground"
+              className="text-3xl font-bold text-foreground font-display tracking-tight"
             >
               Send Us A Message
             </h2>
@@ -149,8 +146,7 @@ const contactInfo = [
             >
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
               <h3
-                style={{ fontFamily: 'Bebas Neue' }}
-                className="text-2xl font-bold text-foreground mb-2"
+                className="text-2xl font-bold text-foreground mb-2 font-display tracking-tight"
               >
                 Message Sent Successfully!
               </h3>
@@ -241,8 +237,7 @@ const contactInfo = [
         >
           <Clock className="w-12 h-12 text-primary mx-auto mb-4" />
           <h3
-            style={{ fontFamily: 'Bebas Neue' }}
-            className="text-2xl font-bold text-foreground mb-3"
+            className="text-2xl font-bold text-foreground mb-3 font-display tracking-tight"
           >
             Support Hours
           </h3>
