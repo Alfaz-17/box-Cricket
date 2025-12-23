@@ -1,0 +1,10 @@
+{
+  "appId": "com.bookmybox.app",
+  "appName": "BookMyBox",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://www.bookmybox.online",
+    "cleartext": true
+  }
+}

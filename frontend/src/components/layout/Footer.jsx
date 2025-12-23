@@ -69,10 +69,23 @@ export default function Footer() {
               <FooterLink to="/about-us">About Us</FooterLink>
               <FooterLink to="/services">Services</FooterLink>
               <FooterLink to="/login">Login</FooterLink>
-              <FooterLink to="/signup">Sign Up</FooterLink>
-              <FooterLink to="/my-bookings">My Bookings</FooterLink>
-              <FooterLink to="/contact-us">List Your Turf</FooterLink>
-            </ul>
+               <FooterLink to="/signup">Sign Up</FooterLink>
+               <FooterLink to="/my-bookings">My Bookings</FooterLink>
+               <FooterLink to="/contact-us">List Your Turf</FooterLink>
+               <li>
+                 <a 
+                   href="/bookmybox.apk" 
+                   download 
+                   className="text-muted-foreground hover:text-primary transition-colors flex items-center group font-semibold text-secondary"
+                 >
+                   <motion.span
+                     whileHover={{ x: 5 }}
+                     className="w-1.5 h-1.5 bg-secondary rounded-full mr-2 group-hover:scale-150 transition-transform"
+                   />
+                   Download Mobile App (APK)
+                 </a>
+               </li>
+             </ul>
           </motion.div>
 
           {/* Support */}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Clock, Calendar, Filter, TrendingUp, Users, Award, Star, ArrowRight, Zap } from 'lucide-react'
+import { Search, MapPin, Clock, Calendar, Filter, TrendingUp, Users, Award, Star, ArrowRight, Zap, Smartphone } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 import api from '../../utils/api'
@@ -142,6 +142,23 @@ const Home = () => {
               <Button className="h-14 px-10 bg-secondary hover:bg-secondary/90 text-primary-foreground font-bold text-lg uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(143,163,30,0.4)] hover:shadow-[0_0_30px_rgba(143,163,30,0.6)] hover:scale-105 transition-all">
                 Find Your Turf
               </Button>
+            </motion.div>
+
+            {/* Download App CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mt-8 flex justify-center items-center gap-2"
+            >
+              <a 
+                href="/bookmybox.apk" 
+                download 
+                className="flex items-center gap-2 text-white/80 hover:text-secondary transition-colors group px-6 py-2 rounded-full border border-white/10 hover:border-secondary/50 bg-white/5"
+              >
+                <Smartphone size={18} className="group-hover:animate-bounce" />
+                <span className="font-semibold text-sm">Download Android App</span>
+              </a>
             </motion.div>
           </motion.div>
         </div>
