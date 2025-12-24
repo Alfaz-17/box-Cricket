@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Lock, Ban, Clock } from 'lucide-react'
+import { Check, Lock, Ban, Clock, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils' // Assuming you have a cn utility, if not I'll use template literals
 import { format } from 'date-fns'
 import socket from '@/utils/soket.js'
@@ -13,29 +13,38 @@ const SlotPicker = ({
   selectedQuarter,
   onSlotSelect,
   selectedSlots = [],
-  boxId, // Add boxId prop for WebSocket room
-  onSlotsUpdate // Add callback to refresh slots from parent
+  boxId,
+  onSlotsUpdate
 }) => {
   const [slots, setSlots] = useState([])
+  const [activeSegment, setActiveSegment] = useState('Morning')
 
-  // Generate 24 1-hour slots for the day
+  const segments = {
+    Morning: { range: [6, 12], label: 'Morning', sub: '6 AM - 12 PM', icon: '🌅' },
+    Afternoon: { range: [12, 17], label: 'Afternoon', sub: '12 PM - 5 PM', icon: '☀️' },
+    Evening: { range: [17, 21], label: 'Evening', sub: '5 PM - 9 PM', icon: '🌇' },
+    Night: { range: [21, 24], label: 'Night', sub: '9 PM - 12 AM', icon: '🌙' },
+    Early: { range: [0, 6], label: 'Graveyard', sub: '12 AM - 6 AM', icon: '🌒' },
+  }
+
   useEffect(() => {
     const generatedSlots = []
     for (let i = 0; i < 24; i++) {
-      // Create date objects for formatting
       const date = new Date()
       date.setHours(i, 0, 0, 0)
-      const displayStart = format(date, 'hh:mm a') // "12:00 PM"
+      const displayStart = format(date, 'hh:mm a')
       
       const endDate = new Date()
       endDate.setHours(i + 1, 0, 0, 0)
-      const displayEnd = format(endDate, 'hh:mm a') // "01:00 PM"
+      const displayEnd = format(endDate, 'hh:mm a')
 
       generatedSlots.push({
         id: i,
-        startTime: displayStart, // "12:00 PM" - Matches backend parseDateTime
-        endTime: displayEnd,     // "01:00 PM"
+        startTime: displayStart,
+        endTime: displayEnd,
         display: `${displayStart} - ${displayEnd}`,
+        shortDisplay: format(date, 'hh:mm'),
+        period: format(date, 'a'),
         rawStart: i
       })
     }
@@ -44,27 +53,20 @@ const SlotPicker = ({
 
   const isSlotBooked = (slot) => {
     if (!selectedDate || !selectedQuarter) return false
-    
-    // Find the group for the selected quarter
-    // Backend now returns quarterId in the group
     const group = bookedSlots.find(g => g.quarterId === selectedQuarter)
     if (!group) return false
 
-    // Define slot time range
     const slotStart = new Date(selectedDate)
     slotStart.setHours(slot.id, 0, 0, 0)
     const slotEnd = new Date(slotStart)
     slotEnd.setHours(slot.id + 1, 0, 0, 0)
 
     return group.slots.some(booking => {
-       // Only count as booked if paid and confirmed
        const isPaidAndConfirmed = 
          booking.status === 'confirmed' && 
          (booking.paymentStatus === 'paid' || booking.isOffline);
-         
        if (!isPaidAndConfirmed) return false;
 
-       // Use startDateTime/endDateTime for robust overlap check
        const bStart = new Date(booking.startDateTime)
        const bEnd = new Date(booking.endDateTime)
        return bStart < slotEnd && bEnd > slotStart
@@ -73,7 +75,6 @@ const SlotPicker = ({
 
   const isSlotBlocked = (slot) => {
     if (!selectedDate || !selectedQuarter) return false
-    
     const group = blockedSlots.find(g => g.quarterId === selectedQuarter)
     if (!group) return false
 
@@ -85,113 +86,60 @@ const SlotPicker = ({
     return group.slots.some(block => {
        let bStart = new Date(block.startDateTime)
        let bEnd = new Date(block.endDateTime)
-       
-       // 🔥 Handle overnight blocking (e.g. 11PM → 2AM)
-       // If end is before or equal to start, it spans to next day
        if (bEnd <= bStart) {
          bEnd = new Date(bEnd)
          bEnd.setDate(bEnd.getDate() + 1)
        }
-       
        return bStart < slotEnd && bEnd > slotStart
     })
   }
 
-  // Check if slot is in the past
   const isPastSlot = (slot) => {
     if (!selectedDate) return false
-    
-    const now = new Date() // Current time: 2025-12-21T11:26:25+05:30
+    const now = new Date()
     const slotStart = new Date(selectedDate)
     slotStart.setHours(slot.id, 0, 0, 0)
-    
     return slotStart < now
   }
 
-  // WebSocket listeners for real-time updates
   useEffect(() => {
     if (!boxId) return
-
-    // Join the box room
     socket.emit("join-box", `box-${boxId}`)
 
-    // Listen for new bookings
-    const handleNewBooking = (data) => {
-      console.log('🔔 New booking received:', data)
-      if (onSlotsUpdate) {
-        onSlotsUpdate() // Refresh slots from parent
-      }
-    }
+    const refresh = () => onSlotsUpdate && onSlotsUpdate()
+    socket.on("new-booking", refresh)
+    socket.on("slot-blocked", refresh)
+    socket.on("slot-unblocked", refresh)
 
-    // Listen for blocked slots
-    const handleSlotBlocked = (data) => {
-      console.log('🔔 Slot blocked:', data)
-      if (onSlotsUpdate) {
-        onSlotsUpdate()
-      }
-    }
-
-    // Listen for unblocked slots
-    const handleSlotUnblocked = (data) => {
-      console.log('🔔 Slot unblocked:', data)
-      if (onSlotsUpdate) {
-        onSlotsUpdate()
-      }
-    }
-
-    socket.on("new-booking", handleNewBooking)
-    socket.on("slot-blocked", handleSlotBlocked)
-    socket.on("slot-unblocked", handleSlotUnblocked)
-
-    // Cleanup
     return () => {
-      socket.off("new-booking", handleNewBooking)
-      socket.off("slot-blocked", handleSlotBlocked)
-      socket.off("slot-unblocked", handleSlotUnblocked)
+      socket.off("new-booking", refresh)
+      socket.off("slot-blocked", refresh)
+      socket.off("slot-unblocked", refresh)
       socket.emit("leave-box", `box-${boxId}`)
     }
   }, [boxId, onSlotsUpdate])
 
   const handleSlotClick = (slot) => {
-    // Prevent clicking on booked, blocked, or past slots
     if (isSlotBooked(slot) || isSlotBlocked(slot) || isPastSlot(slot)) return
 
-    // Toggle selection logic
-    // If slot is already selected, deselect it
     if (selectedSlots.some(s => s.id === slot.id)) {
-      const newSlots = selectedSlots.filter(s => s.id !== slot.id)
-      onSlotSelect(newSlots)
+      onSlotSelect(selectedSlots.filter(s => s.id !== slot.id))
       return
     }
 
-    // If adding a new slot, ensure it's contiguous
     if (selectedSlots.length > 0) {
       const sorted = [...selectedSlots].sort((a, b) => a.id - b.id)
       const first = sorted[0]
       const last = sorted[sorted.length - 1]
       
-      // Allow extending from start or end
       if (slot.id === first.id - 1 || slot.id === last.id + 1) {
-        const newSlots = [...selectedSlots, slot].sort((a, b) => a.id - b.id)
-        onSlotSelect(newSlots)
+        onSlotSelect([...selectedSlots, slot].sort((a, b) => a.id - b.id))
       } else {
-        // If not contiguous, reset and select only the new one (or show error)
-        // For better UX, let's just select the new one and clear others
         onSlotSelect([slot])
       }
     } else {
       onSlotSelect([slot])
     }
-  }
-
-  const [activeSegment, setActiveSegment] = useState('Morning')
-
-  const segments = {
-    Morning: { range: [6, 12], label: '6am - 12pm' },
-    Afternoon: { range: [12, 17], label: '12pm - 5pm' },
-    Evening: { range: [17, 21], label: '5pm - 9pm' },
-    Night: { range: [21, 24], label: '9pm - 12am' },
-    Early: { range: [0, 6], label: '12am - 6am' },
   }
 
   const filteredSlots = slots.filter(slot => {
@@ -200,83 +148,119 @@ const SlotPicker = ({
   })
 
   return (
-    <div className="space-y-6">
-      {/* Segment Tabs */}
-      <div className="flex overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide gap-2">
-        {Object.keys(segments).map((segment) => (
+    <div className="space-y-8 select-none">
+      {/* Premium Segment Tabs */}
+      <div className="flex overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide gap-3">
+        {Object.entries(segments).map(([key, segment]) => (
           <button
-            key={segment}
-            onClick={() => setActiveSegment(segment)}
+            key={key}
+            onClick={() => setActiveSegment(key)}
             className={cn(
-              "px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border",
-              activeSegment === segment 
-                ? "bg-secondary text-secondary-foreground border-secondary shadow-lg shadow-secondary/20" 
-                : "bg-muted/10 border-border/40 text-muted-foreground hover:bg-muted/20"
+              "flex flex-col items-start min-w-[140px] p-4 rounded-2xl border transition-all duration-500",
+              activeSegment === key 
+                ? "bg-secondary text-secondary-foreground border-secondary shadow-xl shadow-secondary/20 scale-105" 
+                : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10"
             )}
           >
-            {segment}
-            <span className="block text-[8px] opacity-60 font-medium mt-0.5">{segments[segment].label}</span>
+            <span className="text-xl mb-1">{segment.icon}</span>
+            <span className="text-xs font-black uppercase tracking-widest">{segment.label}</span>
+            <span className="text-[10px] opacity-60 font-medium whitespace-nowrap">{segment.sub}</span>
           </button>
         ))}
       </div>
 
       {/* Grid of Slots */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredSlots.map((slot) => {
           const booked = isSlotBooked(slot)
           const blocked = isSlotBlocked(slot)
           const isPast = isPastSlot(slot)
-          const selected = selectedSlots.some(s => s.id === slot.id)
+          const isSelected = selectedSlots.some(s => s.id === slot.id)
           const disabled = booked || blocked || isPast
 
           return (
             <motion.button
               key={slot.id}
-              whileHover={!disabled ? { scale: 1.01, x: 2 } : {}}
-              whileTap={!disabled ? { scale: 0.99 } : {}}
+              whileHover={!disabled ? { y: -4, scale: 1.02 } : {}}
+              whileTap={!disabled ? { scale: 0.98 } : {}}
               onClick={() => handleSlotClick(slot)}
               disabled={disabled}
               className={cn(
-                "relative flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 w-full group overflow-hidden",
-                selected 
-                  ? "bg-secondary text-secondary-foreground border-secondary shadow-[0_0_20px_rgba(143,163,30,0.3)]" 
-                  : disabled
-                    ? "bg-muted/5 border-border/10 opacity-60 cursor-not-allowed grayscale"
-                    : "bg-background/40 hover:bg-background/60 border-border/40 hover:border-secondary/50"
+                "relative flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all duration-300 min-h-[140px]",
+                isSelected 
+                  ? "bg-secondary border-secondary shadow-[0_20px_40px_-10px_rgba(143,163,30,0.5)] z-10" 
+                  : booked || blocked
+                    ? "bg-red-500/5 border-red-500/20 opacity-80 cursor-not-allowed"
+                    : isPast
+                      ? "bg-muted/5 border-white/5 opacity-40 cursor-not-allowed grayscale"
+                      : "bg-white/5 border-white/10 hover:border-green-500/50 hover:bg-white/10"
               )}
             >
-              <div className="flex items-center gap-4">
-                <div className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-                  selected ? "bg-white/20" : "bg-muted/10 group-hover:bg-secondary/10"
-                )}>
-                  {selected && <Check size={20} strokeWidth={3} />}
-                  {booked && <Lock size={16} className="text-muted-foreground" />}
-                  {blocked && <Ban size={16} className="text-destructive/50" />}
-                  {!disabled && !selected && <Clock size={18} className="text-secondary/60" />}
-                </div>
-                
-                <div className="text-left">
-                  <span className={cn(
-                    "block font-bold text-lg leading-tight font-display tracking-tight",
-                    selected ? "text-secondary-foreground" : disabled ? "text-muted-foreground" : "text-foreground"
-                  )}>
-                    {slot.display}
-                  </span>
-                  <span className="text-[10px] uppercase font-bold tracking-tighter opacity-70">
-                    {booked ? 'Occupied' : blocked ? 'Maintenance' : isPast ? 'Expired' : 'Available'}
-                  </span>
-                </div>
+              {/* Status Indicator */}
+              <div className="absolute top-3 right-3 flex gap-1">
+                {isSelected && <div className="w-2 h-2 bg-black rounded-full animate-pulse" />}
+                {!disabled && !isSelected && <div className="w-1.5 h-1.5 bg-green-500/50 rounded-full" />}
+                {(booked || blocked) && <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />}
               </div>
 
-              {!disabled && !selected && (
-                <div className="w-8 h-8 rounded-full bg-secondary/0 group-hover:bg-secondary/10 flex items-center justify-center transition-all">
-                  <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-secondary" />
-                </div>
+              {/* Time Section */}
+              <div className="flex flex-col items-center gap-1">
+                <span className={cn(
+                  "text-5xl font-black font-display tracking-tight leading-none",
+                  isSelected ? "text-secondary-foreground" : booked || blocked ? "text-red-500/50" : "text-foreground"
+                )}>
+                  {slot.shortDisplay}
+                </span>
+                <span className={cn(
+                  "text-xs font-bold uppercase tracking-[0.2em] opacity-80",
+                  isSelected ? "text-secondary-foreground" : "text-muted-foreground"
+                )}>
+                  {slot.period} - {format(new Date().setHours(slot.id + 1), 'hh a')}
+                </span>
+              </div>
+
+              {/* Status Label */}
+              <div className={cn(
+                "mt-4 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
+                isSelected 
+                  ? "bg-black/20 text-black" 
+                  : booked 
+                    ? "bg-red-500/10 text-red-500" 
+                    : blocked 
+                      ? "bg-red-500/10 text-red-500" 
+                      : isPast 
+                        ? "bg-white/5 text-muted-foreground" 
+                        : "bg-green-500/10 text-green-500"
+              )}>
+                {booked ? 'Booked' : blocked ? 'Blocked' : isPast ? 'Past' : isSelected ? 'Selected' : 'Available'}
+              </div>
+
+              {/* Selection Border */}
+              {isSelected && (
+                <motion.div 
+                  layoutId="selection" 
+                  className="absolute inset-[-2px] border-4 border-secondary/50 rounded-3xl"
+                  initial={false}
+                />
               )}
             </motion.button>
           )
         })}
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10">
+        {[
+          { color: 'bg-green-500', label: 'Available' },
+          { color: 'bg-secondary', label: 'Selected' },
+          { color: 'bg-red-500', label: 'Occupied' },
+          { color: 'bg-muted', label: 'Past' },
+        ].map((item) => (
+          <div key={item.label} className="flex items-center gap-2">
+            <div className={cn("w-2 h-2 rounded-full", item.color)} />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{item.label}</span>
+          </div>
+        ))}
       </div>
     </div>
   )
