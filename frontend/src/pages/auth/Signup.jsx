@@ -4,17 +4,17 @@ import { toast } from 'react-hot-toast';
 import { UserPlus, ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { Checkbox } from '@/components/ui/Checkbox';
-import { Label } from '@/components/ui/Label';
+import { Input } from '../../components/ui/Input';
+import { Button } from '../../components/ui/Button';
+import { Checkbox } from '../../components/ui/Checkbox';
+import { Label } from '../../components/ui/Label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/Select";
+} from "../../components/ui/Select";
 import api from '../../utils/api';
 import logoIcon from '../../assets/logo-icon.svg';
 
@@ -123,309 +123,273 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-background">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-secondary/5 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full max-w-lg relative z-10"
       >
-        {/* Logo and Branding */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-center mb-8"
-        >
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-secondary/30 blur-2xl rounded-full" />
+        <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          {/* Subtle Lens Flare */}
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-white/5 rounded-full blur-3xl" />
+          
+          {/* Logo and Branding */}
+          <div className="text-center mb-10">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="inline-block relative mb-6"
+            >
+              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
               <img 
                 src={logoIcon} 
                 alt="BookMyBox Logo" 
-                className="h-20 w-20 relative z-10 drop-shadow-[0_0_20px_rgba(143,163,30,0.4)]" 
+                className="h-20 w-20 relative z-10 drop-shadow-[0_0_30px_rgba(69,85,45,0.4)]" 
               />
-            </div>
+            </motion.div>
+            <h1 className="text-5xl font-black text-white italic tracking-tighter uppercase font-display mb-1">
+              Join <span className="text-primary">The Club</span>
+            </h1>
+            <p className="text-muted-foreground font-medium text-sm tracking-widest uppercase opacity-60">
+              Create your athletic profile
+            </p>
           </div>
-          <h1 
-            className="text-5xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-tight mb-2 font-display"
-          >
-            Join The Club
-          </h1>
-          <p className="text-foreground/60 text-lg">
-            Create your account to start booking
-          </p>
-        </motion.div>
 
-        {/* Form */}
-        <motion.form
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
-          <AnimatePresence mode="wait">
-            {/* Phase 1: OTP Verification */}
-            {!isOtpVerified && (
-              <motion.div
-                key="otp-phase"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="space-y-5"
-              >
-                {/* Contact Number */}
-                <div className="space-y-2">
-                  <Label htmlFor="contactNumber" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
-                    Contact Number
-                  </Label>
-                  <div className="flex gap-3">
-                    <Input
-                      id="contactNumber"
-                      name="contactNumber"
-                      type="tel"
-                      value={formData.contactNumber}
-                      onChange={handleChange}
-                      placeholder="Enter 10-digit number"
-                      className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl transition-all ${
-                        errors.contactNumber ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
-                      }`}
-                    />
-                    <Button
-                      type="button"
-                      onClick={sendOtp}
-                      disabled={isOtpSending || !formData.contactNumber}
-                      className="h-14 px-6 rounded-xl font-bold uppercase bg-secondary hover:bg-secondary/90 whitespace-nowrap"
-                    >
-                      {isOtpSending ? 'Sending...' : 'Send OTP'}
-                    </Button>
-                  </div>
-                  {errors.contactNumber && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 font-medium ml-1">
-                      {errors.contactNumber}
-                    </motion.p>
-                  )}
-                </div>
-
-                {/* OTP Input */}
-                <div className="space-y-2">
-                  <Label htmlFor="otp" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
-                    Enter OTP
-                  </Label>
-                  <Input
-                    id="otp"
-                    name="otp"
-                    type="text"
-                    value={formData.otp}
-                    onChange={handleChange}
-                    placeholder="Enter the 6-digit code"
-                    className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl ${
-                      errors.otp ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
-                    }`}
-                  />
-                  {errors.otp && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 font-medium ml-1">
-                      {errors.otp}
-                    </motion.p>
-                  )}
-                </div>
-
-                <Button
-                  type="button"
-                  onClick={verifyOtp}
-                  className="w-full h-14 text-lg font-bold uppercase rounded-xl bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg"
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <AnimatePresence mode="wait">
+              {/* Phase 1: OTP Verification */}
+              {!isOtpVerified && (
+                <motion.div
+                  key="otp-phase"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="space-y-6"
                 >
-                  Verify & Continue
-                </Button>
-              </motion.div>
-            )}
-
-            {/* Phase 2: Account Details */}
-            {isOtpVerified && (
-              <motion.div
-                key="details-phase"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="space-y-4"
-              >
-                {/* Verified Badge */}
-                <div className="p-4 bg-secondary/10 rounded-xl flex items-center gap-3 border border-secondary/20">
-                  <CheckCircle2 className="text-secondary h-6 w-6 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-bold text-secondary">Number Verified</p>
-                    <p className="text-xs text-foreground/60">{formData.contactNumber}</p>
-                  </div>
-                </div>
-
-                {/* Name */}
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
-                    Full Name
-                  </Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl ${
-                      errors.name ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
-                    }`}
-                  />
-                  {errors.name && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 ml-1">{errors.name}</motion.p>}
-                </div>
-
-                {/* Password Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Contact Number */}
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
-                      Password
+                    <Label htmlFor="contactNumber" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 pl-1">
+                      Contact Number
                     </Label>
-                    <div className="relative">
+                    <div className="flex gap-3">
                       <Input
-                        id="password"
-                        name="password"
-                        type={showPassword ? 'text' : 'password'}
-                        value={formData.password}
+                        id="contactNumber"
+                        name="contactNumber"
+                        type="tel"
+                        value={formData.contactNumber}
                         onChange={handleChange}
-                        placeholder="Create password"
-                        className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl pr-12 ${
-                          errors.password ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
-                        }`}
+                        placeholder="Enter Contact Number"
+                        className={errors.contactNumber ? 'border-destructive/50' : ''}
                       />
-                      <button
+                      <Button
                         type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground/80"
+                        onClick={sendOtp}
+                        variant="secondary"
+                        disabled={isOtpSending || !formData.contactNumber}
+                        className="h-12 px-6"
                       >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
+                        {isOtpSending ? '...' : 'OTP'}
+                      </Button>
                     </div>
-                    {errors.password && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 ml-1">{errors.password}</motion.p>}
+                    {errors.contactNumber && (
+                      <p className="text-[10px] text-destructive font-bold uppercase tracking-wider pl-1">{errors.contactNumber}</p>
+                    )}
                   </div>
 
+                  {/* OTP Input */}
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
-                      Confirm
+                    <Label htmlFor="otp" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 pl-1">
+                      Security Code
                     </Label>
-                    <div className="relative">
-                      <Input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        placeholder="Confirm password"
-                        className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl pr-12 ${
-                          errors.confirmPassword ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground/80"
-                      >
-                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
-                    {errors.confirmPassword && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 ml-1">{errors.confirmPassword}</motion.p>}
+                    <Input
+                      id="otp"
+                      name="otp"
+                      type="text"
+                      value={formData.otp}
+                      onChange={handleChange}
+                      placeholder="6-Digit OTP"
+                      className={errors.otp ? 'border-destructive/50' : ''}
+                    />
+                    {errors.otp && (
+                      <p className="text-[10px] text-destructive font-bold uppercase tracking-wider pl-1">{errors.otp}</p>
+                    )}
                   </div>
-                </div>
 
-                {/* Role Selection */}
-                <div className="space-y-2">
-                  <Label htmlFor="role" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
-                    I am a
-                  </Label>
-                  <Select value={formData.role} onValueChange={handleSelectChange}>
-                    <SelectTrigger className="h-14 bg-background/40 backdrop-blur-sm border-2 border-foreground/10 hover:border-foreground/20 focus:border-secondary/50 focus:ring-0 rounded-xl">
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">Player (User)</SelectItem>
-                      <SelectItem value="owner">Turf Owner</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Owner Code (conditional) */}
-                {formData.role === 'owner' && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="space-y-2"
+                  <Button
+                    type="button"
+                    onClick={verifyOtp}
+                    className="w-full"
+                    size="lg"
                   >
-                    <Label htmlFor="ownerCode" className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">
-                      Owner Code
+                    Verify & Continue
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* Phase 2: Account Details */}
+              {isOtpVerified && (
+                <motion.div
+                  key="details-phase"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-5"
+                >
+                  {/* Verified Badge */}
+                  <div className="p-4 bg-primary/5 rounded-2xl flex items-center gap-4 border border-primary/20">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                       <CheckCircle2 className="text-primary h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Verified Access</p>
+                      <p className="text-base font-black text-white">{formData.contactNumber}</p>
+                    </div>
+                  </div>
+
+                  {/* Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 pl-1">
+                      Full Name
                     </Label>
                     <Input
-                      id="ownerCode"
-                      name="ownerCode"
-                      type="password"
-                      value={formData.ownerCode}
+                      id="name"
+                      name="name"
+                      value={formData.name}
                       onChange={handleChange}
-                      placeholder="Enter owner verification code"
-                      className={`h-14 bg-background/40 backdrop-blur-sm border-2 focus:border-secondary/50 focus:ring-0 rounded-xl ${
-                        errors.ownerCode ? 'border-red-500/50' : 'border-foreground/10 hover:border-foreground/20'
-                      }`}
+                      placeholder="Enter Full Name"
+                      className={errors.name ? 'border-destructive/50' : ''}
                     />
-                    {errors.ownerCode && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 ml-1">{errors.ownerCode}</motion.p>}
-                  </motion.div>
-                )}
+                    {errors.name && <p className="text-[10px] text-destructive font-bold uppercase tracking-wider pl-1">{errors.name}</p>}
+                  </div>
 
-                {/* Terms Checkbox */}
-                <div className="flex items-center space-x-2 py-2">
-                  <Checkbox
-                    id="terms"
-                    required
-                    className="rounded border-2 border-foreground/20 data-[state=checked]:bg-secondary data-[state=checked]:border-secondary"
-                  />
-                  <Label htmlFor="terms" className="text-sm font-medium text-foreground/70 cursor-pointer select-none">
-                    I agree to the <span className="text-secondary hover:underline">Terms</span> & <span className="text-secondary hover:underline">Privacy Policy</span>
-                  </Label>
-                </div>
+                  {/* Password Fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 pl-1">
+                        Security Key
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          name="password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={formData.password}
+                          onChange={handleChange}
+                          placeholder="Password"
+                          className={errors.password ? 'border-destructive/50' : ''}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
 
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  className="w-full h-14 text-lg font-bold uppercase rounded-xl bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Creating Account...
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center gap-2">
-                      Sign Up <ArrowRight size={20} strokeWidth={2.5} />
-                    </span>
-                  )}
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.form>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 pl-1">
+                        Confirm Key
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          placeholder="Confirm"
+                          className={errors.confirmPassword ? 'border-destructive/50' : ''}
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-        {/* Login Link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-center mt-8"
-        >
-          <p className="text-foreground/60">
-            Already have an account?{' '}
-            <Link
-              to="/login"
-              className="text-secondary font-bold hover:text-accent transition-colors underline decoration-2 underline-offset-4"
-            >
-              Log In
-            </Link>
-          </p>
-        </motion.div>
+                  {/* Role & Owner Code */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="role" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 pl-1">
+                        User Role
+                      </Label>
+                      <Select value={formData.role} onValueChange={handleSelectChange}>
+                        <SelectTrigger className="h-12">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="user">Player</SelectItem>
+                          <SelectItem value="owner">Owner</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {formData.role === 'owner' && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="space-y-2"
+                      >
+                        <Label htmlFor="ownerCode" className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 pl-1">
+                          Owner Code
+                        </Label>
+                        <Input
+                          id="ownerCode"
+                          name="ownerCode"
+                          type="password"
+                          value={formData.ownerCode}
+                          onChange={handleChange}
+                          placeholder="Code"
+                          className={errors.ownerCode ? 'border-destructive/50' : ''}
+                        />
+                      </motion.div>
+                    )}
+                  </div>
+
+                  {/* Terms */}
+                  <div className="flex items-center space-x-3 py-2 pl-1">
+                    <Checkbox
+                      id="terms"
+                      required
+                      className="w-5 h-5 rounded-lg border-2 border-white/10 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <Label htmlFor="terms" className="text-xs font-bold text-white/40 cursor-pointer select-none uppercase tracking-wider">
+                      Accept <span className="text-primary underline">Regulations</span>
+                    </Label>
+                  </div>
+
+                  {/* Submit */}
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Creating Account...' : 'Initialize Profile'}
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </form>
+
+          {/* Login Link */}
+          <div className="text-center mt-12 pt-8 border-t border-white/5">
+            <p className="text-xs font-bold text-white/30 uppercase tracking-widest">
+              Part of the club? {' '}
+              <Link
+                to="/login"
+                className="text-primary hover:text-accent transition-colors underline underline-offset-4 decoration-2"
+              >
+                Sign In
+              </Link>
+            </p>
+          </div>
+        </div>
       </motion.div>
     </div>
   );

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Lock, Ban, Clock, ArrowRight } from 'lucide-react'
-import { cn } from '@/lib/utils' // Assuming you have a cn utility, if not I'll use template literals
+import { Check, Lock, Ban, Clock, ArrowRight, Sunrise, Sun, Sunset, Moon, CloudMoon, ChevronLeft, ChevronRight } from 'lucide-react'
+import { cn } from '../../lib/utils'
 import { format } from 'date-fns'
-import socket from '@/utils/soket.js'
+import socket from '../../utils/soket.js'
 import { toast } from 'react-hot-toast'
 
 const SlotPicker = ({
@@ -18,14 +18,51 @@ const SlotPicker = ({
 }) => {
   const [slots, setSlots] = useState([])
   const [activeSegment, setActiveSegment] = useState('Morning')
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+  const scrollContainerRef = useRef(null)
 
   const segments = {
-    Morning: { range: [6, 12], label: 'Morning', sub: '6 AM - 12 PM', icon: '🌅' },
-    Afternoon: { range: [12, 17], label: 'Afternoon', sub: '12 PM - 5 PM', icon: '☀️' },
-    Evening: { range: [17, 21], label: 'Evening', sub: '5 PM - 9 PM', icon: '🌇' },
-    Night: { range: [21, 24], label: 'Night', sub: '9 PM - 12 AM', icon: '🌙' },
-    Early: { range: [0, 6], label: 'Graveyard', sub: '12 AM - 6 AM', icon: '🌒' },
+    Morning: { range: [6, 12], label: 'Morning', sub: '6 AM - 12 PM', Icon: Sunrise },
+    Afternoon: { range: [12, 17], label: 'Afternoon', sub: '12 PM - 5 PM', Icon: Sun },
+    Evening: { range: [17, 21], label: 'Evening', sub: '5 PM - 9 PM', Icon: Sunset },
+    Night: { range: [21, 24], label: 'Night', sub: '9 PM - 12 AM', Icon: Moon },
+    Early: { range: [0, 6], label: 'Late Night', sub: '12 AM - 6 AM', Icon: CloudMoon },
   }
+
+  const checkScroll = () => {
+    const container = scrollContainerRef.current
+    if (container) {
+      setCanScrollLeft(container.scrollLeft > 0)
+      setCanScrollRight(
+        container.scrollLeft < container.scrollWidth - container.clientWidth - 1
+      )
+    }
+  }
+
+  const scroll = (direction) => {
+    const container = scrollContainerRef.current
+    if (container) {
+      const scrollAmount = 200
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (container) {
+      checkScroll()
+      container.addEventListener('scroll', checkScroll)
+      window.addEventListener('resize', checkScroll)
+      return () => {
+        container.removeEventListener('scroll', checkScroll)
+        window.removeEventListener('resize', checkScroll)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const generatedSlots = []
@@ -148,29 +185,73 @@ const SlotPicker = ({
   })
 
   return (
-    <div className="space-y-8 select-none">
-      {/* Premium Segment Tabs */}
-      <div className="flex overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide gap-3">
-        {Object.entries(segments).map(([key, segment]) => (
+    <div className="space-y-10 select-none">
+      {/* Professional Segment Tabs with Scroll Indicators */}
+      <div className="relative">
+        {/* Left Scroll Button */}
+        {canScrollLeft && (
           <button
-            key={key}
-            onClick={() => setActiveSegment(key)}
-            className={cn(
-              "flex flex-col items-start min-w-[140px] p-4 rounded-2xl border transition-all duration-500",
-              activeSegment === key 
-                ? "bg-secondary text-secondary-foreground border-secondary shadow-xl shadow-secondary/20 scale-105" 
-                : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10"
-            )}
+            onClick={() => scroll('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-background border border-border shadow-lg flex items-center justify-center hover:bg-muted transition-colors"
+            aria-label="Scroll left"
           >
-            <span className="text-xl mb-1">{segment.icon}</span>
-            <span className="text-xs font-black uppercase tracking-widest">{segment.label}</span>
-            <span className="text-[10px] opacity-60 font-medium whitespace-nowrap">{segment.sub}</span>
+            <ChevronLeft size={16} className="text-foreground" />
           </button>
-        ))}
+        )}
+
+        {/* Right Scroll Button */}
+        {canScrollRight && (
+          <button
+            onClick={() => scroll('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-background border border-border shadow-lg flex items-center justify-center hover:bg-muted transition-colors"
+            aria-label="Scroll right"
+          >
+            <ChevronRight size={16} className="text-foreground" />
+          </button>
+        )}
+
+        {/* Left Fade Gradient */}
+        {canScrollLeft && (
+          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-[5] pointer-events-none" />
+        )}
+
+        {/* Right Fade Gradient */}
+        {canScrollRight && (
+          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-[5] pointer-events-none" />
+        )}
+
+        {/* Scrollable Tabs Container */}
+        <div 
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto pb-4 gap-3 scrollbar-hide scroll-smooth"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {Object.entries(segments).map(([key, segment]) => {
+            const IconComponent = segment.Icon
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveSegment(key)}
+                className={cn(
+                  "flex items-center gap-3 min-w-[140px] px-5 py-3 rounded-lg border transition-all duration-200 flex-shrink-0",
+                  activeSegment === key 
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm" 
+                    : "bg-card border-border text-muted-foreground hover:bg-muted hover:border-primary/20"
+                )}
+              >
+                <IconComponent size={18} className="flex-shrink-0" />
+                <div className="flex flex-col items-start">
+                  <span className="text-xs font-bold uppercase tracking-wider">{segment.label}</span>
+                  <span className="text-[10px] opacity-60 font-medium whitespace-nowrap">{segment.sub}</span>
+                </div>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Grid of Slots */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredSlots.map((slot) => {
           const booked = isSlotBooked(slot)
           const blocked = isSlotBlocked(slot)
@@ -181,80 +262,83 @@ const SlotPicker = ({
           return (
             <motion.button
               key={slot.id}
-              whileHover={!disabled ? { y: -4, scale: 1.02 } : {}}
               whileTap={!disabled ? { scale: 0.98 } : {}}
               onClick={() => handleSlotClick(slot)}
               disabled={disabled}
               className={cn(
-                "relative flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all duration-300 min-h-[140px]",
+                "group relative flex flex-col items-center justify-center p-6 rounded-lg border transition-all h-32",
                 isSelected 
-                  ? "bg-secondary border-secondary shadow-[0_20px_40px_-10px_rgba(143,163,30,0.5)] z-10" 
+                  ? "bg-primary border-primary text-primary-foreground shadow-sm" 
                   : booked || blocked
-                    ? "bg-red-500/5 border-red-500/20 opacity-80 cursor-not-allowed"
+                    ? "bg-muted/50 border-border opacity-50 cursor-not-allowed grayscale"
                     : isPast
-                      ? "bg-muted/5 border-white/5 opacity-40 cursor-not-allowed grayscale"
-                      : "bg-white/5 border-white/10 hover:border-green-500/50 hover:bg-white/10"
-              )}
+                      ? "bg-muted/20 border-border opacity-30 cursor-not-allowed"
+                      : "bg-card border-border hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                )}
             >
-              {/* Status Indicator */}
-              <div className="absolute top-3 right-3 flex gap-1">
-                {isSelected && <div className="w-2 h-2 bg-black rounded-full animate-pulse" />}
-                {!disabled && !isSelected && <div className="w-1.5 h-1.5 bg-green-500/50 rounded-full" />}
-                {(booked || blocked) && <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />}
+              {/* Status Signal Indicator - Top Right */}
+              <div className="absolute top-2 right-2">
+                {booked || blocked ? (
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-red-500/50" />
+                  </div>
+                ) : isPast ? (
+                  <div className="w-2 h-2 rounded-full bg-gray-400" />
+                ) : isSelected ? (
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-white/50" />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-green-500/50" />
+                  </div>
+                )}
               </div>
 
               {/* Time Section */}
               <div className="flex flex-col items-center gap-1">
                 <span className={cn(
-                  "text-5xl font-black font-display tracking-tight leading-none",
-                  isSelected ? "text-secondary-foreground" : booked || blocked ? "text-red-500/50" : "text-foreground"
+                  "text-2xl font-bold tracking-tight",
+                  isSelected ? "text-primary-foreground" : "text-foreground"
                 )}>
-                  {slot.shortDisplay}
+                  {slot.shortDisplay} - {slot.endTime.split(' ')[0]}
                 </span>
                 <span className={cn(
-                  "text-xs font-bold uppercase tracking-[0.2em] opacity-80",
-                  isSelected ? "text-secondary-foreground" : "text-muted-foreground"
+                  "text-[10px] font-semibold uppercase tracking-widest",
+                  isSelected ? "text-primary-foreground/70" : "text-muted-foreground"
                 )}>
-                  {slot.period} - {format(new Date().setHours(slot.id + 1), 'hh a')}
+                  {slot.period} (1 Hour Slot)
                 </span>
               </div>
-
+ 
               {/* Status Label */}
               <div className={cn(
-                "mt-4 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
+                "mt-4 px-3 py-1 rounded text-[9px] font-bold uppercase tracking-wider border",
                 isSelected 
-                  ? "bg-black/20 text-black" 
-                  : booked 
-                    ? "bg-red-500/10 text-red-500" 
-                    : blocked 
-                      ? "bg-red-500/10 text-red-500" 
-                      : isPast 
-                        ? "bg-white/5 text-muted-foreground" 
-                        : "bg-green-500/10 text-green-500"
+                  ? "bg-white/10 border-white/20 text-white" 
+                  : booked || blocked
+                    ? "bg-red-500/10 text-red-500 border-red-500/20" 
+                    : isPast 
+                      ? "bg-muted/10 text-muted-foreground border-transparent" 
+                      : "bg-green-500/10 text-green-500 border-green-500/20 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-transparent transition-colors"
               )}>
-                {booked ? 'Booked' : blocked ? 'Blocked' : isPast ? 'Past' : isSelected ? 'Selected' : 'Available'}
+                {booked ? 'Booked' : blocked ? 'Unavailable' : isPast ? 'Passed' : isSelected ? 'Selected' : 'Available'}
               </div>
-
-              {/* Selection Border */}
-              {isSelected && (
-                <motion.div 
-                  layoutId="selection" 
-                  className="absolute inset-[-2px] border-4 border-secondary/50 rounded-3xl"
-                  initial={false}
-                />
-              )}
             </motion.button>
           )
         })}
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10">
+      <div className="flex flex-wrap items-center gap-6 pt-8 border-t border-border">
         {[
-          { color: 'bg-green-500', label: 'Available' },
-          { color: 'bg-secondary', label: 'Selected' },
-          { color: 'bg-red-500', label: 'Occupied' },
-          { color: 'bg-muted', label: 'Past' },
+          { color: 'bg-primary', label: 'Available - Tap to book' },
+          { color: 'bg-secondary', label: 'Selected - Your slots' },
+          { color: 'bg-destructive', label: 'Booked - Already taken' },
+          { color: 'bg-muted', label: 'Passed - Time expired' },
         ].map((item) => (
           <div key={item.label} className="flex items-center gap-2">
             <div className={cn("w-2 h-2 rounded-full", item.color)} />

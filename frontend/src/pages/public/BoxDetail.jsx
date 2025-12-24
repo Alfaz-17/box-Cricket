@@ -209,7 +209,7 @@ const BoxDetail = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative rounded-3xl overflow-hidden shadow-2xl group mb-8"
+          className="relative rounded-xl overflow-hidden shadow-sm group mb-8 border border-border"
         >
           <div className="relative h-80 md:h-[500px]">
             <AnimatePresence mode="wait">
@@ -278,7 +278,7 @@ const BoxDetail = () => {
           {/* Left: Title, Rating, Location */}
           <div className="flex-1 w-full lg:w-auto">
             <h1
-              className="text-4xl md:text-5xl font-bold text-primary mb-4 font-display tracking-tight"
+              className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight"
             >
               {displayBox.name}
             </h1>
@@ -287,8 +287,8 @@ const BoxDetail = () => {
               {/* Rating */}
               <div className="flex items-center gap-2 bg-yellow-500/10 px-4 py-2 rounded-full border border-yellow-500/20">
                 <Star className="w-5 h-5 fill-yellow-500 text-yellow-500" />
-                <span className="font-bold text-lg">{averageRating}</span>
-                <span className="text-sm text-muted-foreground">({totalReviews} reviews)</span>
+                <span className="font-bold text-lg text-foreground">{averageRating}</span>
+                <span className="text-sm text-muted-foreground">{totalReviews} reviews</span>
               </div>
 
               {/* Location */}
@@ -306,13 +306,13 @@ const BoxDetail = () => {
           {/* Right: Book Now CTA */}
           <div className="flex flex-col items-start lg:items-end gap-3 w-full lg:w-auto">
             <div className="text-left lg:text-right">
-              <div className="text-4xl font-bold text-primary font-display tracking-tight">
+              <div className="text-4xl font-bold text-primary tracking-tight">
                 ₹{displayBox.hourlyRate}
-                <span className="text-base font-medium text-muted-foreground font-jakarta ml-1">/hour</span>
+                <span className="text-base font-medium text-muted-foreground ml-1">/ hour</span>
               </div>
               {displayBox.weekendHourlyRate && (
-                <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-[-5px]">
-                  Weekend: ₹{displayBox.weekendHourlyRate}/hr
+                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-1">
+                  Weekend Rate: ₹{displayBox.weekendHourlyRate}/hr
                 </div>
               )}
             </div>
@@ -323,9 +323,10 @@ const BoxDetail = () => {
             >
               <Button
                 onClick={() => navigate(`/box/${id}/booking`)}
-                className="w-full lg:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 py-6 text-lg font-bold shadow-lg"
+                size="lg"
+                className="w-full lg:w-auto px-10 py-7 text-lg font-bold shadow-md"
               >
-                Book Now
+                Reserve Your Slot
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </motion.div>
@@ -342,9 +343,8 @@ const BoxDetail = () => {
           className="mb-8"
         >
           <h2
-            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2 font-display tracking-tight"
+            className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2 tracking-tight"
           >
-            <Target className="w-8 h-8" />
             Available Boxes
           </h2>
           <div className="flex flex-wrap gap-3">
@@ -356,7 +356,7 @@ const BoxDetail = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.1, y: -2 }}
-                  className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 font-display tracking-wide"
+                  className="px-5 py-2.5 bg-muted text-foreground border border-border rounded-lg font-semibold shadow-sm hover:bg-muted/80 transition-all font-medium"
                 >
                   {quarter.name}
                 </motion.span>
@@ -417,20 +417,16 @@ const BoxDetail = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8"
+          className="mb-12"
         >
-          <h2 style={{ fontFamily: 'Bebas Neue' }} className="text-3xl font-bold text-primary mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-6 tracking-tight">
             Key Details
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
             <KeyDetailItem icon={Trophy} label="Weekday Rate" value={`₹${displayBox.hourlyRate}/hr`} />
             <KeyDetailItem icon={Award} label="Weekend Rate" value={displayBox.weekendHourlyRate ? `₹${displayBox.weekendHourlyRate}/hr` : `₹${displayBox.hourlyRate}/hr`} />
             <KeyDetailItem icon={Clock} label="Weekdays" value={displayBox.openingHours.weekdays} />
-            <KeyDetailItem
-              icon={Calendar}
-              label="Weekends"
-              value={displayBox.openingHours.weekends}
-            />
+            <KeyDetailItem icon={Calendar} label="Weekends" value={displayBox.openingHours.weekends} />
             <KeyDetailItem icon={Users} label="Capacity" value="10+ Players" />
           </div>
         </motion.section>
@@ -444,9 +440,8 @@ const BoxDetail = () => {
           className="mb-8"
         >
           <h2
-            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2 font-display tracking-tight"
+            className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2 tracking-tight"
           >
-            <Award className="w-8 h-8" />
             Facilities & Amenities
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -459,8 +454,8 @@ const BoxDetail = () => {
                 whileHover={{ x: 5 }}
                 className="flex items-center gap-3 p-4 rounded-lg bg-primary/5 hover:bg-primary/10 transition-all duration-300 border border-primary/10"
               >
-                <div className="bg-gradient-to-br from-primary to-secondary p-2 rounded-full flex-shrink-0">
-                  <CheckCircle2 className="w-5 h-5 text-white" />
+                <div className="bg-primary/10 p-1.5 rounded-full flex-shrink-0">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
                 </div>
                 <span className="font-medium text-foreground">{feature}</span>
               </motion.div>
@@ -476,9 +471,8 @@ const BoxDetail = () => {
           className="mb-8"
         >
           <h2
-            className="text-3xl font-bold text-primary mb-6 flex items-center gap-2 font-display tracking-tight"
+            className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2 tracking-tight"
           >
-            <MapPin className="w-8 h-8" />
             Location
           </h2>
 
@@ -516,7 +510,7 @@ const BoxDetail = () => {
             className="mb-8"
           >
             <h2
-              className="text-3xl font-bold text-primary mb-6 font-display tracking-tight"
+              className="text-2xl font-bold text-foreground mb-6 tracking-tight"
             >
               About {displayBox.name}
             </h2>
@@ -539,7 +533,7 @@ const BoxDetail = () => {
             className="mb-8"
           >
             <h2
-              className="text-3xl font-bold text-primary mb-6 font-display tracking-tight"
+              className="text-2xl font-bold text-foreground mb-6 tracking-tight"
             >
               Frequently Asked Questions
             </h2>
@@ -567,40 +561,34 @@ const BoxDetail = () => {
 }
 
 const KeyDetailItem = ({ icon: Icon, label, value }) => (
-  <div className="flex flex-col items-center justify-center p-4 bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-300">
-    <div className="bg-primary/10 p-3 rounded-full mb-3">
-      <Icon className="w-6 h-6 text-primary" />
+  <div className="flex flex-col items-center justify-center p-4 bg-card rounded-lg border border-border shadow-sm hover:border-primary/20 transition-all">
+    <div className="bg-primary/10 p-2.5 rounded-md mb-3">
+      <Icon className="w-5 h-5 text-primary" />
     </div>
-    <span className="text-sm text-muted-foreground mb-1">{label}</span>
-    <span className="font-bold text-lg text-foreground text-center">{value}</span>
+    <span className="text-xs text-muted-foreground mb-1 uppercase tracking-wider font-semibold">{label}</span>
+    <span className="font-bold text-base text-foreground text-center">{value}</span>
   </div>
 )
 
 const PricingCard = ({ item, index, variant = 'weekday' }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
+    initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ delay: index * 0.1 }}
-    whileHover={{ scale: 1.05, y: -5 }}
-    className={`p-6 bg-gradient-to-br ${variant === 'weekday' ? 'from-primary/10 to-transparent' : 'from-secondary/10 to-transparent'} rounded-xl border border-white/5 hover:border-primary/40 transition-all duration-300 shadow-md hover:shadow-xl`}
+    className="p-6 bg-card rounded-lg border border-border hover:border-primary/40 transition-all shadow-sm"
   >
     <div className="flex justify-between items-center">
       <div>
-        <div
-          className={`text-3xl font-bold ${variant === 'weekday' ? 'text-primary' : 'text-secondary'} font-display tracking-tight`}
-        >
+        <div className="text-2xl font-bold text-foreground tracking-tight">
           {item.duration} Hour{item.duration > 1 ? 's' : ''}
         </div>
-        <div className="text-sm text-muted-foreground uppercase tracking-tighter font-semibold">Duration</div>
+        <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Package Duration</div>
       </div>
       <div className="text-right">
-        <div
-          className="text-3xl font-bold bg-gradient-to-r from-green-500 to-emerald-400 bg-clip-text text-transparent"
-          style={{ fontFamily: 'Bebas Neue' }}
-        >
+        <div className="text-2xl font-bold text-primary">
           ₹{item.price}
         </div>
-        <div className="text-sm text-muted-foreground uppercase tracking-tighter font-semibold">Total Price</div>
+        <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Combo Price</div>
       </div>
     </div>
   </motion.div>

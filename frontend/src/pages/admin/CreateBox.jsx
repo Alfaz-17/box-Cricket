@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Upload, MapPin, DollarSign, Phone, List, Layers, Image as ImageIcon, Plus, X } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
-import { Label } from '@/components/ui/Label'
-import { Textarea } from '@/components/ui/Textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { Upload, MapPin, DollarSign, Phone, List, Layers, Image as ImageIcon, Plus, X, Box as BoxIcon, Info, Navigation, CreditCard, Camera } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/Card'
+import { Input } from '../../components/ui/Input'
+import { Button } from '../../components/ui/Button'
+import { Label } from '../../components/ui/Label'
+import { Textarea } from '../../components/ui/Textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/Select'
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import api from '../../utils/api'
 import MapPicker from '../../components/ui/MapPicker'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '../../lib/utils'
 
 const CreateBox = () => {
   const navigate = useNavigate()
@@ -107,390 +109,383 @@ const CreateBox = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background px-0 md:px-6 py-4 md:py-6">
-      <div className="w-full max-w-4xl mx-auto">
+    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-10">
+      <div className="max-w-4xl mx-auto space-y-10">
         {/* Header */}
-        <div className="px-4 md:px-0 pb-6 border-b border-primary/10 mb-6">
-          <h1 className="text-3xl md:text-4xl text-primary tracking-tight mb-2 font-display">
-            Create New Cricket Box
-          </h1>
-          <p className="text-muted-foreground text-sm md:text-base">
-            Fill in the details below to add a new cricket facility to your platform.
-          </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-border pb-8">
+          <div>
+            <div className="flex items-center gap-4 mb-2">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                <Plus className="text-primary w-5 h-5" />
+              </div>
+              <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                New <span className="text-primary">Box</span>
+              </h1>
+            </div>
+            <p className="text-muted-foreground text-sm font-medium">Provision a new facility into the management network</p>
+          </div>
+          <Button variant="ghost" onClick={() => navigate('/admin/boxes')} className="text-xs font-bold uppercase tracking-wider h-11 border border-border">
+            Cancel
+          </Button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8 px-4 md:px-0">
-          {/* Basic Info Section */}
-          <div className="space-y-4 bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-            <h3 className="text-lg font-semibold flex items-center gap-2 text-primary font-outfit">
-              <List size={18} /> Basic Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-12">
+          {/* Identity Section */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="h-4 w-1 bg-primary rounded-full"></div>
+              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Facility Identity</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-card border border-border p-6 rounded-lg shadow-sm">
               <div className="space-y-2">
-                <Label htmlFor="name">Box Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="e.g. Super Strikers Arena"
-                  className="bg-muted/30 border-primary/20 focus:border-primary"
-                />
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Official Name</Label>
+                <div className="relative">
+                  <BoxIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
+                  <Input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    placeholder="Cricket Box 1"
+                    className="pl-10 h-11 border-border bg-muted/20"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="mobileNumber">Mobile Number</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Support Contact</Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
                   <Input
-                    id="mobileNumber"
                     type="tel"
                     name="mobileNumber"
                     value={formData.mobileNumber}
                     onChange={handleChange}
                     required
-                    placeholder="e.g. 9876543210"
-                    className="pl-9 bg-muted/30 border-primary/20 focus:border-primary"
+                    placeholder="+91 00000 00000"
+                    className="pl-10 h-11 border-border bg-muted/20"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Operational Brief</Label>
+                <div className="relative">
+                  <Info size={14} className="absolute left-3 top-3 text-muted-foreground z-10" />
+                  <Textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows="4"
+                    required
+                    placeholder="Provide a detailed description of the facility specs, turf type, and amenities..."
+                    className="pl-10 h-32 border-border bg-muted/20 resize-none pt-2.5"
                   />
                 </div>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows="4"
-                required
-                placeholder="Describe the facility, turf quality, lighting, etc."
-                className="bg-muted/30 border-primary/20 focus:border-primary resize-none"
-              />
-            </div>
-          </div>
+          </section>
 
           {/* Location Section */}
-          <div className="space-y-4 bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-            <h3 className="text-lg font-semibold flex items-center gap-2 text-primary font-outfit">
-              <MapPin size={18} /> Location Details
-            </h3>
-            
-            <div className="h-64 w-full rounded-xl overflow-hidden border border-primary/20 relative z-0">
-              <MapPicker
-                latitude={formData.latitude}
-                longitude={formData.longitude}
-                onLocationChange={(lat, lng) =>
-                  setFormData(prev => ({
-                    ...prev,
-                    latitude: lat,
-                    longitude: lng,
-                  }))
-                }
-              />
+          <section className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="h-4 w-1 bg-primary rounded-full"></div>
+              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Geographic footprint</h2>
             </div>
-            {formData.latitude && formData.longitude && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                 <MapPin size={10} /> Selected Coordinates: {formData.latitude.toFixed(5)}, {formData.longitude.toFixed(5)}
-              </p>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="location">Area / Locality</Label>
-                <Input
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                  placeholder="e.g. Andheri West"
-                  className="bg-muted/30 border-primary/20 focus:border-primary"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Full Address</Label>
-                <Input
-                  id="address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                  placeholder="e.g. 123, Sports Complex, Main Road"
-                  className="bg-muted/30 border-primary/20 focus:border-primary"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing & Features Section */}
-          <div className="space-y-4 bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-            <h3 className="text-lg font-semibold flex items-center gap-2 text-primary font-outfit">
-              <DollarSign size={18} /> Pricing & Features
-            </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="hourlyRate">Hourly Rate (₹)</Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <div className="bg-card border border-border p-6 rounded-lg shadow-sm space-y-6">
+              <div className="h-80 w-full rounded-lg overflow-hidden border border-border relative group shadow-inner">
+                <MapPicker
+                  latitude={formData.latitude}
+                  longitude={formData.longitude}
+                  onLocationChange={(lat, lng) =>
+                    setFormData(prev => ({
+                      ...prev,
+                      latitude: lat,
+                      longitude: lng,
+                    }))
+                  }
+                />
+                <div className="absolute top-4 right-4 z-10">
+                  <div className="bg-background/90 backdrop-blur-sm px-3 py-1.5 rounded-md border border-border flex items-center gap-2 shadow-lg">
+                    <Navigation size={12} className="text-primary" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">Set Hub Position</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Area / Locality</Label>
                   <Input
-                    id="hourlyRate"
-                    type="number"
-                    name="hourlyRate"
-                    value={formData.hourlyRate}
+                    name="location"
+                    value={formData.location}
                     onChange={handleChange}
-                    min="0"
-                    step="0.01"
                     required
-                    placeholder="0.00"
-                    className="pl-9 bg-muted/30 border-primary/20 focus:border-primary"
+                    placeholder="District or Sector Name"
+                    className="h-11 border-border bg-muted/20"
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="weekendHourlyRate">Weekend Hourly Rate (₹) <span className="text-xs text-muted-foreground">(Sat-Sun)</span></Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Physical Address</Label>
                   <Input
-                    id="weekendHourlyRate"
-                    type="number"
-                    name="weekendHourlyRate"
-                    value={formData.weekendHourlyRate}
+                    name="address"
+                    value={formData.address}
                     onChange={handleChange}
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    className="pl-9 bg-muted/30 border-primary/20 focus:border-primary"
+                    required
+                    placeholder="Full street address and landmark"
+                    className="h-11 border-border bg-muted/20"
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="quarters">Number of Quarters</Label>
-                <Select 
-                  value={formData.quarters} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, quarters: value }))}
-                >
-                  <SelectTrigger className="bg-muted/30 border-primary/20 focus:ring-primary">
-                    <SelectValue placeholder="Select count" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5].map(num => (
-                      <SelectItem key={num} value={num.toString()}>{num}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
+          </section>
 
-            {/* Custom Pricing */}
-            <div className="space-y-3 p-4 bg-muted/20 rounded-xl border border-primary/10">
-              <Label className="text-primary">Custom Pricing (Optional)</Label>
-              <div className="flex gap-3 items-end">
-                <div className="space-y-1 flex-1">
-                  <Label htmlFor="duration" className="text-xs text-muted-foreground">Duration (hrs)</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    value={newPricing.duration}
-                    onChange={e => setNewPricing({ ...newPricing, duration: e.target.value })}
-                    min="1"
-                    className="h-9 bg-background"
-                  />
-                </div>
-                <div className="space-y-1 flex-1">
-                  <Label htmlFor="price" className="text-xs text-muted-foreground">Price (₹)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    value={newPricing.price}
-                    onChange={e => setNewPricing({ ...newPricing, price: e.target.value })}
-                    min="1"
-                    className="h-9 bg-background"
-                  />
-                </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => {
-                    if (newPricing.duration && newPricing.price && !formData.customPricing.find(item => item.duration === Number(newPricing.duration))) {
-                      setFormData(prev => ({
-                        ...prev,
-                        customPricing: [...prev.customPricing, { duration: Number(newPricing.duration), price: Number(newPricing.price) }],
-                      }))
-                      setNewPricing({ duration: '', price: '' })
-                    } else {
-                      toast.error('Invalid or duplicate entry')
-                    }
-                  }}
-                  className="h-9"
-                >
-                  <Plus size={16} /> Add
-                </Button>
-              </div>
-
-              {formData.customPricing.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.customPricing.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2 bg-background border border-primary/20 px-3 py-1 rounded-full text-sm">
-                      <span>{item.duration} hrs - ₹{item.price}</span>
-                      <button
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, customPricing: prev.customPricing.filter((_, i) => i !== idx) }))}
-                        className="text-destructive active:text-destructive/80 md:hover:text-destructive/80"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+          {/* Configuration Section */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="h-4 w-1 bg-primary rounded-full"></div>
+              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pricing & Capacity</h2>
             </div>
-
-
-            {/* Custom Weekend Pricing */}
-            <div className="space-y-3 p-4 bg-muted/20 rounded-xl border border-primary/10">
-              <Label className="text-primary">Weekend Custom Pricing <span className="text-xs text-muted-foreground">(Optional)</span></Label>
-              <div className="flex gap-3 items-end">
-                <div className="space-y-1 flex-1">
-                  <Label htmlFor="weekendDuration" className="text-xs text-muted-foreground">Duration (hrs)</Label>
-                  <Input
-                    id="weekendDuration"
-                    type="number"
-                    value={newWeekendPricing.duration}
-                    onChange={e => setNewWeekendPricing({ ...newWeekendPricing, duration: e.target.value })}
-                    min="1"
-                    className="h-9 bg-background"
-                  />
-                </div>
-                <div className="space-y-1 flex-1">
-                  <Label htmlFor="weekendPrice" className="text-xs text-muted-foreground">Price (₹)</Label>
-                  <Input
-                    id="weekendPrice"
-                    type="number"
-                    value={newWeekendPricing.price}
-                    onChange={e => setNewWeekendPricing({ ...newWeekendPricing, price: e.target.value })}
-                    min="1"
-                    className="h-9 bg-background"
-                  />
-                </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => {
-                    if (newWeekendPricing.duration && newWeekendPricing.price && !formData.weekendCustomPricing.find(item => item.duration === Number(newWeekendPricing.duration))) {
-                      setFormData(prev => ({
-                        ...prev,
-                        weekendCustomPricing: [...prev.weekendCustomPricing, { duration: Number(newWeekendPricing.duration), price: Number(newWeekendPricing.price) }],
-                      }))
-                      setNewWeekendPricing({ duration: '', price: '' })
-                    } else {
-                      toast.error('Invalid or duplicate entry')
-                    }
-                  }}
-                  className="h-9"
-                >
-                  <Plus size={16} /> Add
-                </Button>
-              </div>
-
-              {formData.weekendCustomPricing.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.weekendCustomPricing.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2 bg-background border border-primary/20 px-3 py-1 rounded-full text-sm">
-                      <span>{item.duration} hrs - ₹{item.price}</span>
-                      <button
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, weekendCustomPricing: prev.weekendCustomPricing.filter((_, i) => i !== idx) }))}
-                        className="text-destructive active:text-destructive/80 md:hover:text-destructive/80"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="features">Features (comma separated)</Label>
-              <Textarea
-                id="features"
-                name="features"
-                value={formData.features}
-                onChange={handleChange}
-                rows="2"
-                required
-                placeholder="e.g. Night lights, Washroom, Synthetic turf, Parking"
-                className="bg-muted/30 border-primary/20 focus:border-primary resize-none"
-              />
-            </div>
-          </div>
-
-          {/* Images Section */}
-          <div className="space-y-4 bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-            <h3 className="text-lg font-semibold flex items-center gap-2 text-primary font-outfit">
-              <ImageIcon size={18} /> Images
-            </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-card border border-border p-6 rounded-lg shadow-sm space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Base Hourly Rate</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-primary z-10">₹</span>
+                    <Input
+                      type="number"
+                      name="hourlyRate"
+                      value={formData.hourlyRate}
+                      onChange={handleChange}
+                      required
+                      placeholder="0.00"
+                      className="pl-8 h-11 border-border bg-muted/20 font-bold"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Weekend Premium</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-primary z-10">₹</span>
+                    <Input
+                      type="number"
+                      name="weekendHourlyRate"
+                      value={formData.weekendHourlyRate}
+                      onChange={handleChange}
+                      placeholder="0.00"
+                      className="pl-8 h-11 border-border bg-muted/20 font-bold"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Sub-unit Count</Label>
+                  <Select 
+                    value={formData.quarters} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, quarters: value }))}
+                  >
+                    <SelectTrigger className="h-11 border-border bg-muted/20 font-bold">
+                      <SelectValue placeholder="Units" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5, 6].map(num => (
+                        <SelectItem key={num} value={num.toString()}>{num} Unit{num > 1 ? 's' : ''}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Custom Pricing Buckets */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4 p-5 rounded-lg border border-border bg-muted/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CreditCard size={14} className="text-primary" />
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest">Base Duration Rules</h4>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Hours"
+                      value={newPricing.duration}
+                      onChange={e => setNewPricing({ ...newPricing, duration: e.target.value })}
+                      className="h-10 text-xs bg-background"
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Price"
+                      value={newPricing.price}
+                      onChange={e => setNewPricing({ ...newPricing, price: e.target.value })}
+                      className="h-10 text-xs bg-background"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => {
+                        if (newPricing.duration && newPricing.price && !formData.customPricing.find(item => item.duration === Number(newPricing.duration))) {
+                          setFormData(prev => ({
+                            ...prev,
+                            customPricing: [...prev.customPricing, { duration: Number(newPricing.duration), price: Number(newPricing.price) }],
+                          }))
+                          setNewPricing({ duration: '', price: '' })
+                        }
+                      }}
+                      className="h-10 px-4"
+                    >
+                      <Plus size={14} />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {formData.customPricing.map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-background border border-border px-2 py-1 rounded-md text-[10px] font-bold">
+                        <span>{item.duration}H @ ₹{item.price}</span>
+                        <button type="button" onClick={() => setFormData(prev => ({ ...prev, customPricing: prev.customPricing.filter((_, i) => i !== idx) }))} className="text-destructive">
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4 p-5 rounded-lg border border-border bg-muted/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CreditCard size={14} className="text-primary" />
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest">Weekend Duration Rules</h4>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Hours"
+                      value={newWeekendPricing.duration}
+                      onChange={e => setNewWeekendPricing({ ...newWeekendPricing, duration: e.target.value })}
+                      className="h-10 text-xs bg-background"
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Price"
+                      value={newWeekendPricing.price}
+                      onChange={e => setNewWeekendPricing({ ...newWeekendPricing, price: e.target.value })}
+                      className="h-10 text-xs bg-background"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => {
+                        if (newWeekendPricing.duration && newWeekendPricing.price && !formData.weekendCustomPricing.find(item => item.duration === Number(newWeekendPricing.duration))) {
+                          setFormData(prev => ({
+                            ...prev,
+                            weekendCustomPricing: [...prev.weekendCustomPricing, { duration: Number(newWeekendPricing.duration), price: Number(newWeekendPricing.price) }],
+                          }))
+                          setNewWeekendPricing({ duration: '', price: '' })
+                        }
+                      }}
+                      className="h-10 px-4"
+                    >
+                      <Plus size={14} />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {formData.weekendCustomPricing.map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-background border border-border px-2 py-1 rounded-md text-[10px] font-bold">
+                        <span>W-END {item.duration}H @ ₹{item.price}</span>
+                        <button type="button" onClick={() => setFormData(prev => ({ ...prev, weekendCustomPricing: prev.weekendCustomPricing.filter((_, i) => i !== idx) }))} className="text-destructive">
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label>Main Image</Label>
-                <div className="border-2 border-dashed border-primary/20 rounded-xl p-6 flex flex-col items-center justify-center text-center active:bg-muted/10 md:hover:bg-muted/10 transition-colors cursor-pointer relative">
-                  <input
-                    type="file"
-                    name="image"
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Specialized Features</Label>
+                <div className="relative">
+                  <List size={14} className="absolute left-3 top-3 text-muted-foreground z-10" />
+                  <Textarea
+                    name="features"
+                    value={formData.features}
                     onChange={handleChange}
-                    accept="image/*"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    rows="2"
+                    required
+                    placeholder="LED Pannel, Synthetic Turf, Mobile View, Night Access..."
+                    className="pl-10 h-24 border-border bg-muted/20 resize-none pt-2.5"
                   />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Visual Media Section */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="h-4 w-1 bg-primary rounded-full"></div>
+              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Visual Infrastructure</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Primary Display Image</Label>
+                <div className="relative h-64 border-2 border-dashed border-border rounded-lg bg-muted/10 flex flex-col items-center justify-center overflow-hidden hover:bg-muted/20 transition-all group group cursor-pointer">
+                  <input type="file" name="image" onChange={handleChange} accept="image/*" className="absolute inset-0 opacity-0 z-20 cursor-pointer" />
                   {formData.imagePreview ? (
-                    <img src={formData.imagePreview} alt="Preview" className="h-32 w-full object-cover rounded-lg" />
+                    <img src={formData.imagePreview} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
-                    <>
-                      <Upload className="h-10 w-10 text-muted-foreground mb-2" />
-                      <p className="text-sm text-muted-foreground">Click to upload main image</p>
-                    </>
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <Camera size={24} />
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Drop master asset</p>
+                    </div>
                   )}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Additional Images</Label>
-                <div className="border-2 border-dashed border-primary/20 rounded-xl p-6 flex flex-col items-center justify-center text-center active:bg-muted/10 md:hover:bg-muted/10 transition-colors cursor-pointer relative">
-                  <input
-                    type="file"
-                    name="images"
-                    onChange={handleChange}
-                    accept="image/*"
-                    multiple
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                  <div className="flex flex-wrap gap-2 justify-center">
-                      {formData.imagesPreview.length > 0 ? (
-                          formData.imagesPreview.map((preview, index) => (
-                              <img key={index} src={preview} alt={`Preview ${index}`} className="h-16 w-16 object-cover rounded-md" />
-                          ))
-                      ) : (
-                          <>
-                              <Layers className="h-10 w-10 text-muted-foreground mb-2" />
-                              <p className="text-sm text-muted-foreground">Click to upload gallery images</p>
-                          </>
-                      )}
-                  </div>
+              <div className="space-y-4">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Facility Gallery</Label>
+                <div className="relative h-64 border-2 border-dashed border-border rounded-lg bg-muted/10 flex flex-col items-center justify-center overflow-hidden hover:bg-muted/20 transition-all group group cursor-pointer">
+                  <input type="file" name="images" onChange={handleChange} accept="image/*" multiple className="absolute inset-0 opacity-0 z-20 cursor-pointer" />
+                  {formData.imagesPreview.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-2 p-4 w-full h-full overflow-y-auto">
+                      {formData.imagesPreview.map((preview, index) => (
+                        <img key={index} src={preview} alt="Gallery" className="w-full aspect-square object-cover rounded shadow-sm" />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <Layers size={24} />
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Select multiple captures</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-4 border-t border-primary/10">
-            <Button type="button" variant="outline" onClick={() => navigate('/admin/boxes')} className="w-full sm:w-auto">
-              Cancel
+          {/* Action Footer */}
+          <div className="flex flex-col sm:flex-row justify-end gap-4 pt-10 border-t border-border">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/admin/boxes')}
+              className="h-12 px-8 font-bold uppercase tracking-widest text-xs border-border"
+            >
+              Discard Changes
             </Button>
-            <Button type="submit" disabled={loading} className="w-full sm:w-auto sm:min-w-[150px]">
-              {loading ? <span className="loading loading-spinner loading-sm"></span> : 'Create Box'}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-12 px-12 font-bold uppercase tracking-widest text-xs min-w-[200px]"
+            >
+              {loading ? (
+                <div className="flex items-center gap-3">
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                  <span>CREATE...</span>
+                </div>
+              ) : (
+                'Create Box'
+              )}
             </Button>
           </div>
         </form>

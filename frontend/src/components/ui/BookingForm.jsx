@@ -1,14 +1,17 @@
 import React from 'react'
-import { Phone, Info, CheckCircle2, ArrowRight, Trophy, ExternalLink } from 'lucide-react'
+import { Phone, Info, CheckCircle2, ArrowRight, Trophy, ExternalLink, Clock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { Button } from './Button'
+import { Input } from './Input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select'
 import SlotPicker from './SlotPicker'
+import { Label } from './Label'
+import { cn } from '../../lib/utils'
+import { format } from 'date-fns'
 
 const BookingForm = ({
   displayBox,
@@ -28,139 +31,284 @@ const BookingForm = ({
   boxId,
   onSlotsUpdate,
 }) => {
+  const [showPaymentModal, setShowPaymentModal] = React.useState(false)
+
+  // Calculate pricing
+  const calculatePricing = () => {
+    if (!selectedDate || selectedSlots.length === 0) return { total: 0, advance: 300 }
+    
+    const d = new Date(selectedDate);
+    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+    const duration = selectedSlots.length;
+    const baseRate = isWeekend && displayBox.weekendHourlyRate ? displayBox.weekendHourlyRate : displayBox.hourlyRate;
+    const customArray = isWeekend && displayBox.weekendCustomPricing?.length > 0 ? displayBox.weekendCustomPricing : displayBox.customPricing;
+    const customPrice = customArray?.find(p => p.duration === duration);
+    
+    return {
+      total: customPrice ? customPrice.price : baseRate * duration,
+      advance: 300
+    }
+  }
+
+  const prices = calculatePricing()
+
   return (
-    <div className="space-y-12">
-      {/* Section 1: Booking Form */}
-      <div className="space-y-6">
-        <div className="pb-4 border-b border-border/40">
-          <h2 className="text-2xl font-bold text-foreground font-display tracking-tight">
-            Booking Details
-          </h2>
+    <div className="space-y-16">
+      {/* Payment Confirmation Modal */}
+      <AnimatePresence>
+        {showPaymentModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-md bg-card border border-border rounded-xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-foreground">Confirm Booking</h3>
+                  <button 
+                    onClick={() => setShowPaymentModal(false)}
+                    className="p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors"
+                  >
+                    <ArrowRight className="w-5 h-5 rotate-180" />
+                  </button>
+                </div>
+
+                <div className="p-4 bg-muted/30 rounded-lg space-y-3 border border-border">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Total Booking Amount</span>
+                    <span className="font-bold text-foreground">₹{prices.total}</span>
+                  </div>
+                  <div className="h-px bg-border/50" />
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">Advance Payment Required</span>
+                    <span className="font-bold text-primary text-lg">₹{prices.advance}</span>
+                  </div>
+                </div>
+
+                <div className="bg-primary/5 p-4 rounded-lg border border-primary/10">
+                  <div className="flex items-start gap-3">
+                    <Info className="w-5 h-5 text-primary mt-0.5" />
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      You are paying <span className="font-bold text-foreground">₹{prices.advance}</span> now to secure your slot. The remaining balance of <span className="font-bold text-foreground">₹{prices.total - prices.advance}</span> will be payable at the venue.
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleBooking}
+                  disabled={isProcessingBooking}
+                  className="w-full h-14 font-bold text-lg shadow-lg shadow-primary/25"
+                >
+                  {isProcessingBooking ? 'Processing Payment...' : (
+                    <div className="flex items-center gap-2">
+                       <span>Pay ₹{prices.advance} & Confirm</span>
+                       <ArrowRight className="w-5 h-5" />
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Section 1: Booking Details */}
+      <div className="relative">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+            <Trophy className="text-primary w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold text-foreground tracking-tight">
+              Booking <span className="text-primary">Details</span>
+            </h2>
+            <p className="text-xs text-muted-foreground font-medium">Complete your reservation details</p>
+          </div>
         </div>
 
-        <div className="space-y-6 pl-4 border-l-2 border-primary">
-          {/* Box, Date, Contact Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Box Selection */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                Box <span className="text-destructive">*</span>
-              </label>
-              <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
-                <SelectTrigger className="h-11 rounded-lg border-border/60 bg-background hover:border-primary/50 transition-colors">
-                  <SelectValue placeholder="Select box" />
-                </SelectTrigger>
-                <SelectContent>
-                  {displayBox.quarters?.map(quarter => (
-                    <SelectItem key={quarter._id} value={quarter._id}>
-                      {quarter.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Main Form Area */}
+          <div className="lg:col-span-8 space-y-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Box Selection */}
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block ml-1">
+                  Select Box <span className="text-red-500">*</span>
+                </Label>
+                <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
+                  <SelectTrigger className="h-12 border-border bg-card">
+                    <SelectValue placeholder="Choose a box..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {displayBox.quarters?.map(quarter => (
+                      <SelectItem key={quarter._id} value={quarter._id}>
+                        {quarter.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Date Picker */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                Date <span className="text-destructive">*</span>
-              </label>
-              <div className="relative">
-                <DatePicker
-                  selected={selectedDate}
-                  onChange={date => setSelectedDate(date)}
-                  minDate={new Date()}
-                  className="flex h-11 w-full rounded-lg border border-border/60 bg-background px-4 py-2 text-sm hover:border-primary/50 focus:border-primary focus:outline-none transition-colors"
-                  dateFormat="MMMM d, yyyy"
-                  placeholderText="Select date"
-                  wrapperClassName="w-full"
+              {/* Contact Number */}
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block ml-1">
+                  Contact Number <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="tel"
+                  value={contactNumber}
+                  onChange={e => setContactNumber(e.target.value)}
+                  placeholder="Enter Contact Number"
+                  className="h-12 border-border bg-card"
                 />
               </div>
-            </div>
 
-            {/* Contact Number */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                Contact Number <span className="text-destructive">*</span>
-              </label>
-              <Input
-                type="tel"
-                value={contactNumber}
-                onChange={e => setContactNumber(e.target.value)}
-                placeholder="10-digit mobile"
-                className="h-11 rounded-lg border-border/60 bg-background hover:border-primary/50 focus-visible:border-primary transition-colors"
-              />
-            </div>
-          </div>
-
-          {/* Selected Hours Summary */}
-          {selectedSlots.length > 0 && (
-            <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Selected</p>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {selectedSlots[0].startTime} - {selectedSlots[selectedSlots.length-1].endTime}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-primary font-display tracking-tight">
-                    {selectedSlots.length}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest font-jakarta">hour{selectedSlots.length > 1 ? 's' : ''}</p>
+              {/* Date Picker */}
+              <div className="space-y-2 md:col-span-2">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block ml-1">
+                  Reservation Date <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative group">
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={date => setSelectedDate(date)}
+                    minDate={new Date()}
+                    className="flex h-12 w-full rounded-md border border-input bg-card px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-full"
+                    dateFormat="MMMM d, yyyy"
+                    placeholderText="Select date"
+                    wrapperClassName="w-full"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/30">
+                    <CheckCircle2 size={16} />
+                  </div>
                 </div>
               </div>
             </div>
-          )}
 
-          {/* Payment Button */}
-          <motion.div whileHover={{ scale: selectedSlots.length > 0 ? 1.01 : 1 }} whileTap={{ scale: selectedSlots.length > 0 ? 0.99 : 1 }}>
-            <Button
-              onClick={() => {
-                const isDisabled = isProcessingBooking || selectedSlots.length === 0 || !contactNumber || !selectedQuarter;
-                
-                if (isDisabled) {
-                  // Show helpful message about what's missing
-                  if (!selectedQuarter) {
-                    toast.error('Please select a box first');
-                  } else if (selectedSlots.length === 0) {
-                    toast.error('Please select time slots');
-                  } else if (!contactNumber) {
-                    toast.error('Please enter your contact number');
-                  }
-                } else {
-                  handleBooking();
-                }
-              }}
-              className={`w-full h-14 bg-gradient-to-r from-primary to-secondary text-black hover:from-primary/90 hover:to-secondary/90 font-bold uppercase tracking-wide shadow-lg text-base transition-all ${
-                isProcessingBooking || selectedSlots.length === 0 || !contactNumber || !selectedQuarter ? 'opacity-50 blur-[0.5px] cursor-not-allowed' : ''
-              }`}
-              disabled={isProcessingBooking}
-            >
-              {isProcessingBooking ? 'Processing...' : (isOwner ? 'Confirm Booking' : 'Pay ₹300 & Confirm')}
-              <Trophy className="ml-2 w-5 h-5" />
-            </Button>
-          </motion.div>
+            {/* Static Booking Button - Under Date */}
+            {selectedSlots.length > 0 && selectedQuarter && contactNumber && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6"
+              >
+                <Button
+                  onClick={() => isOwner ? handleBooking() : setShowPaymentModal(true)}
+                  disabled={isProcessingBooking}
+                  className="w-full h-14 font-bold text-base"
+                >
+                  {isProcessingBooking ? 'Processing...' : (
+                    isOwner ? 'Confirm Booking' : 'Book Slots Now'
+                  )}
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Selected Hours Summary (Desktop) */}
+            <AnimatePresence>
+              {selectedSlots.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="hidden lg:block p-8 bg-card rounded-lg border border-border shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xs font-bold text-primary uppercase tracking-wider mb-2">Reservation Summary</h3>
+                      <p className="text-2xl font-bold text-foreground tracking-tight">
+                        {selectedSlots[0].startTime} — {selectedSlots[selectedSlots.length-1].endTime}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-5xl font-bold text-primary tracking-tighter leading-none mb-1">
+                        {selectedSlots.length}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Hours Selected</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Checkout Area - Hidden on mobile, shown on desktop */}
+          <div className="hidden lg:block lg:col-span-4">
+            <div className="sticky top-8 space-y-6">
+              {selectedSlots.length > 0 ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-8 bg-primary/5 border border-primary/20 rounded-lg shadow-sm"
+                >
+                  <div className="mb-6">
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">
+                      {isOwner ? "Administrative Action" : "Secured Advance"}
+                    </p>
+                    <div className="text-4xl font-bold text-foreground tracking-tight">
+                      ₹{isOwner ? prices.total : 300}
+                    </div>
+                  </div>
+
+                  {!isOwner && (
+                    <div className="p-4 bg-muted/30 rounded-lg border border-border">
+                      <div className="flex justify-between items-center text-sm mb-2">
+                        <span className="text-muted-foreground">Total Amount:</span>
+                        <span className="font-bold text-foreground text-lg">₹{prices.total}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-muted-foreground">Advance Payment:</span>
+                        <span className="font-semibold text-primary">₹300</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <Button
+                    size="lg"
+                    onClick={() => {
+                      if (!selectedQuarter) toast.error('Please select a box');
+                      else if (selectedSlots.length === 0) toast.error('Please select time slots');
+                      else if (!contactNumber) toast.error('Please provide a contact number');
+                      else if (isOwner) handleBooking();
+                      else setShowPaymentModal(true);
+                    }}
+                    className="w-full h-14 font-bold"
+                    disabled={isProcessingBooking || !selectedQuarter || selectedSlots.length === 0 || !contactNumber}
+                  >
+                    {isProcessingBooking ? 'Processing...' : (
+                      isOwner ? 'Confirm Booking' : 'Book Now'
+                    )}
+                    {!isProcessingBooking && <ArrowRight className="ml-2 h-5 w-5" />}
+                  </Button>
+                </motion.div>
+              ) : (
+                <div className="p-8 bg-muted/20 border border-dashed border-border rounded-lg flex flex-col items-center justify-center text-center py-16">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <Info className="text-muted-foreground w-6 h-6" />
+                  </div>
+                  <h4 className="text-sm font-semibold text-muted-foreground">
+                    Select your slots to proceed
+                  </h4>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Section 2: Select Time Slots */}
-      <div className="space-y-6">
-        <div className="pb-4 border-b border-border/40">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-foreground font-display tracking-tight">
-              Select Time Slots
+      {/* Section 2: Slot Picker */}
+      <div className="space-y-10">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+            <Clock className="text-primary w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold text-foreground tracking-tight">
+              Select <span className="text-primary">Time Slot</span>
             </h2>
-            {selectedSlots.length > 0 && (
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
-                <span className="text-xs font-semibold text-primary">
-                  {selectedSlots.length} slot{selectedSlots.length > 1 ? 's' : ''}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {selectedSlots[0].startTime} - {selectedSlots[selectedSlots.length-1].endTime}
-                </span>
-              </div>
-            )}
+            <p className="text-xs text-muted-foreground font-medium">Pick your preferred playing time</p>
           </div>
         </div>
 
@@ -178,159 +326,70 @@ const BookingForm = ({
               onSlotsUpdate={onSlotsUpdate}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed border-border/40 rounded-3xl bg-muted/5">
+            <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed border-border rounded-xl bg-muted/5">
               <div className="bg-primary/10 p-4 rounded-full mb-4">
                 <Info className="w-8 h-8 text-primary" />
               </div>
-              <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest text-center">Select a box to view available time slots</p>
+              <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest text-center">Select a box to view available slots</p>
             </div>
           )}
         </div>
 
-        {/* Mobile: Selected Slots Badge */}
+        {/* Mobile: Selected Slots Summary */}
         {selectedSlots.length > 0 && (
-          <div className="md:hidden flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/20">
+          <div className="md:hidden p-4 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-primary uppercase tracking-wider">Selected</p>
-              <p className="text-sm text-foreground mt-0.5">
+              <p className="text-xs font-bold text-primary uppercase tracking-wider">Reserved</p>
+              <p className="text-sm font-medium text-foreground">
                 {selectedSlots[0].startTime} - {selectedSlots[selectedSlots.length-1].endTime}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-primary font-display tracking-tight">
-                {selectedSlots.length}
-              </p>
-              <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest font-jakarta">hour{selectedSlots.length > 1 ? 's' : ''}</p>
+              <p className="text-2xl font-bold text-primary tracking-tight">{selectedSlots.length}</p>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Hour{selectedSlots.length > 1 ? 's' : ''}</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Section 3: Payment Summary */}
-      {selectedSlots.length > 0 && (
-        <div className="space-y-6">
-          <div className="pb-4 border-b border-border/40">
-            <h2 className="text-2xl font-bold text-foreground font-display tracking-tight">
-              Payment Summary
-            </h2>
-          </div>
-
-          {/* Price Summary */}
-          <div className="bg-primary/5 rounded-lg p-6 border border-primary/20 border-l-4 border-l-primary">
-            <div className="flex items-baseline justify-between">
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  {isOwner ? "Total Amount" : "Advance Payment"}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {selectedSlots.length} hour{selectedSlots.length > 1 ? 's' : ''} • {selectedSlots[0].startTime} - {selectedSlots[selectedSlots.length-1].endTime}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-4xl font-bold text-primary font-display tracking-tight text-right leading-none">
-                  ₹{isOwner ? (() => {
-                    const d = new Date(selectedDate);
-                    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-                    const duration = selectedSlots.length;
-                    const baseRate = isWeekend && displayBox.weekendHourlyRate ? displayBox.weekendHourlyRate : displayBox.hourlyRate;
-                    const customArray = isWeekend && displayBox.weekendCustomPricing?.length > 0 ? displayBox.weekendCustomPricing : displayBox.customPricing;
-                    const customPrice = customArray?.find(p => p.duration === duration);
-                    return customPrice ? customPrice.price : baseRate * duration;
-                  })() : 300}
-                </p>
-              </div>
-            </div>
-
-            {!isOwner && (
-              <p className="text-xs text-muted-foreground mt-4 pt-4 border-t border-border/20">
-                Balance payable at venue
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Section 4: Help & Policies */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-border/40 mb-12 lg:mb-0">
-        {/* Call Option */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">
-            Need Help?
+      {/* Section 3: Policies & Help */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-10 border-t border-border">
+        <div className="space-y-4">
+          <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+            <Phone size={14} className="text-primary" />
+            Support & Assistance
           </h3>
-          <p className="text-xs text-muted-foreground">
-            Call us to book or for assistance
+          <p className="text-sm text-muted-foreground">
+            Having trouble booking? Call us directly for assistance.
           </p>
           <Button
             asChild
             variant="outline"
-            size="sm"
-            className="border-primary/50 text-primary hover:bg-primary/10"
+            className="w-full sm:w-auto"
           >
-            <a href={`tel:${displayBox.mobileNumber}`} className="flex items-center gap-2">
-              <Phone size={14} />
-              {displayBox.mobileNumber || 'N/A'}
+            <a href={`tel:${displayBox.mobileNumber}`}>
+              {displayBox.mobileNumber || 'Contact Us'}
             </a>
           </Button>
         </div>
 
-        {/* Booking Policy */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">
-            Policy
+        <div className="space-y-4">
+          <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+            <Info size={14} className="text-primary" />
+            Booking Policies
           </h3>
-          <ul className="space-y-2 text-xs text-muted-foreground">
-      
-            <li className="flex items-start gap-2">
-              <CheckCircle2 size={14} className="text-primary mt-0.5 flex-shrink-0" />
-              <span>Instant WHATSAPP Message for  confirmation</span>
+          <ul className="space-y-3">
+            <li className="flex items-start gap-3 text-sm text-muted-foreground">
+              <CheckCircle2 size={16} className="text-primary flex-shrink-0 mt-0.5" />
+              <span>Instant WhatsApp confirmation upon booking.</span>
             </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 size={14} className="text-primary mt-0.5 flex-shrink-0" />
-              <span>Arrive 15 mins early</span>
+            <li className="flex items-start gap-3 text-sm text-muted-foreground">
+              <CheckCircle2 size={16} className="text-primary flex-shrink-0 mt-0.5" />
+              <span>Please arrive 15 minutes before your slot starts.</span>
             </li>
           </ul>
         </div>
       </div>
-
-      {/* Sticky Bottom CTA - Mobile Optimized */}
-      <AnimatePresence>
-        {selectedSlots.length > 0 && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-16 left-0 right-0 z-40 lg:hidden px-4 pb-4 pt-2 bg-gradient-to-t from-background via-background to-transparent"
-          >
-            <div className="bg-card/95 backdrop-blur-xl border border-secondary/30 rounded-2xl p-4 shadow-2xl flex items-center justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black text-secondary" style={{ fontFamily: 'Bebas Neue' }}>
-                    ₹{isOwner ? (() => {
-                      const d = new Date(selectedDate);
-                      const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-                      const duration = selectedSlots.length;
-                      const baseRate = isWeekend && displayBox.weekendHourlyRate ? displayBox.weekendHourlyRate : displayBox.hourlyRate;
-                      const customArray = isWeekend && displayBox.weekendCustomPricing?.length > 0 ? displayBox.weekendCustomPricing : displayBox.customPricing;
-                      const customPrice = customArray?.find(p => p.duration === duration);
-                      return customPrice ? customPrice.price : baseRate * duration;
-                    })() : 300}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Total</span>
-                </div>
-                <p className="text-[10px] text-muted-foreground line-clamp-1">{selectedSlots.length} slot{selectedSlots.length > 1 ? 's' : ''} • {selectedSlots[0].startTime}</p>
-              </div>
-              
-              <Button
-                onClick={handleBooking}
-                disabled={isProcessingBooking || !contactNumber || !selectedQuarter}
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold uppercase tracking-wider px-6 h-12 rounded-xl shadow-lg shadow-secondary/20 flex-shrink-0"
-              >
-                {isProcessingBooking ? '...' : (isOwner ? 'Confirm' : 'Pay & Book')}
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

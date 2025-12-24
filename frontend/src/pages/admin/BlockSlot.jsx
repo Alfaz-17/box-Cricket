@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { Calendar as CalendarIcon, Clock, Trash2, ShieldAlert, CheckCircle2 } from 'lucide-react'
+import { Calendar as CalendarIcon, Clock, Trash2, ShieldAlert, CheckCircle2, Box as BoxIcon, MapPin, FileText, Layout, X } from 'lucide-react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import TimePicker from '../../components/ui/TimePicker'
 import api from '../../utils/api'
 import { formatDate } from '../../utils/formatDate'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
-import { Label } from '@/components/ui/Label'
-import { Textarea } from '@/components/ui/Textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { Input } from '../../components/ui/Input'
+import { Button } from '../../components/ui/Button'
+import { Label } from '../../components/ui/Label'
+import { Textarea } from '../../components/ui/Textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/Select'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '../../lib/utils'
 
 const BlockSlot = () => {
   const [loading, setLoading] = useState(false)
@@ -133,176 +135,184 @@ const BlockSlot = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 min-h-screen">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 min-h-screen space-y-8">
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary font-display tracking-tight">
-          Block Time Slots
-        </h1>
-        <p className="text-muted-foreground text-sm md:text-base">Prevent bookings for specific times due to maintenance or other reasons.</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div>
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+              <ShieldAlert className="text-primary w-5 h-5" />
+            </div>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+              Operational <span className="text-primary">Locks</span>
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-sm font-medium">Manage facility availability by blocking specific time windows</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Block Form Section */}
-        <div className="space-y-6">
-          <div className="bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <span className="text-2xl">🚫</span>
-              <h2 className="text-2xl font-bold text-primary font-display tracking-tight">
-                Block New Slot
-              </h2>
+        <div className="lg:col-span-5 space-y-6">
+          <div className="bg-card rounded-lg border border-border p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
+                <Layout size={18} className="text-primary" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground tracking-tight">Configuration</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <span>🏏</span> Select Box
-                </Label>
-                <Select value={selectedBoxId || ''} onValueChange={handleBoxChange}>
-                  <SelectTrigger className="bg-muted/30 border-primary/20">
-                    <SelectValue placeholder="Select a box" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {boxes.map(box => (
-                      <SelectItem key={box._id} value={box._id}>
-                        {box.name || `Box ${box._id.slice(-4)}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <span>📍</span> Select Quarter
-                </Label>
-                <Select 
-                  value={selectedQuarter || ''} 
-                  onValueChange={setSelectedQuarter}
-                  disabled={!selectedBoxId || !boxes.find(b => b._id === selectedBoxId)?.quarters?.length}
-                >
-                  <SelectTrigger className="bg-muted/30 border-primary/20">
-                    <SelectValue placeholder="Select a quarter" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {boxes
-                      .find(b => b._id === selectedBoxId)
-                      ?.quarters?.map((quarter, idx) => (
-                        <SelectItem key={idx} value={quarter.name || quarter}>
-                          {quarter.name || quarter}
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Select Facility Unit</Label>
+                <div className="relative">
+                  <BoxIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
+                  <Select value={selectedBoxId || ''} onValueChange={handleBoxChange}>
+                    <SelectTrigger className="pl-10 h-11 border-border bg-muted/20">
+                      <SelectValue placeholder="Select a Box" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {boxes.map(box => (
+                        <SelectItem key={box._id} value={box._id}>
+                          {box.name}
                         </SelectItem>
-                      )) || <SelectItem value="none" disabled>No quarters available</SelectItem>}
-                  </SelectContent>
-                </Select>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <span>📅</span> Date
-                </Label>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Specific Quarter</Label>
+                <div className="relative">
+                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
+                  <Select 
+                    value={selectedQuarter || ''} 
+                    onValueChange={setSelectedQuarter}
+                    disabled={!selectedBoxId || !boxes.find(b => b._id === selectedBoxId)?.quarters?.length}
+                  >
+                    <SelectTrigger className="pl-10 h-11 border-border bg-muted/20">
+                      <SelectValue placeholder="Select a Sub-unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {boxes
+                        .find(b => b._id === selectedBoxId)
+                        ?.quarters?.map((quarter, idx) => (
+                          <SelectItem key={idx} value={quarter.name || quarter}>
+                            {quarter.name || quarter}
+                          </SelectItem>
+                        )) || <SelectItem value="none" disabled>No units available</SelectItem>}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Lock Date</Label>
                 <div className="relative">
                   <DatePicker
                     selected={formData.date}
                     onChange={date => setFormData(prev => ({ ...prev, date }))}
                     minDate={new Date()}
-                    className="flex h-10 w-full rounded-md border border-primary/20 bg-muted/30 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10"
+                    className="flex h-11 w-full rounded-md border border-border bg-muted/20 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 pl-10 transition-all"
                     dateFormat="MMMM d, yyyy"
                   />
-                  <CalendarIcon className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground pointer-events-none" />
+                  <CalendarIcon className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <span>⏰</span> Start Time
-                  </Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Start Window</Label>
                   <div className="relative">
                     <TimePicker
                       value={formData.startTime}
                       onChange={val => setFormData(prev => ({ ...prev, startTime: val }))}
                     />
-                    <Clock className="absolute right-3 top-2.5 h-5 w-5 text-muted-foreground pointer-events-none" />
+                    <Clock className="absolute right-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <span>⏰</span> End Time
-                  </Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">End Window</Label>
                   <div className="relative">
                     <TimePicker
                       value={formData.endTime}
                       onChange={val => setFormData(prev => ({ ...prev, endTime: val }))}
                     />
-                    <Clock className="absolute right-3 top-2.5 h-5 w-5 text-muted-foreground pointer-events-none" />
+                    <Clock className="absolute right-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <span>📝</span> Reason
-                </Label>
-                <Textarea
-                  rows="3"
-                  placeholder="e.g. Turf Maintenance, Private Event"
-                  value={formData.reason}
-                  onChange={e => setFormData(prev => ({ ...prev, reason: e.target.value }))}
-                  required
-                  className="bg-muted/30 border-primary/20 resize-none"
-                />
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Reason for Lockout</Label>
+                <div className="relative">
+                  <FileText size={14} className="absolute left-3 top-3 text-muted-foreground z-10" />
+                  <Textarea
+                    rows="3"
+                    placeholder="Describe maintenance or reason..."
+                    value={formData.reason}
+                    onChange={e => setFormData(prev => ({ ...prev, reason: e.target.value }))}
+                    required
+                    className="pl-10 h-24 border-border bg-muted/20 resize-none pt-2.5"
+                  />
+                </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? <span className="loading loading-spinner loading-sm"></span> : 'Block Time Slot'}
+              <Button type="submit" className="w-full h-12 font-bold uppercase tracking-wider" disabled={loading}>
+                {loading ? 'Processing...' : 'Execute Window Lock'}
               </Button>
             </form>
           </div>
         </div>
 
         {/* Blocked Slots List Section */}
-        <div className="space-y-6">
-          <div className="bg-card/30 backdrop-blur-sm rounded-xl p-4 md:p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <span className="text-2xl">✅</span>
-              <h2 className="text-2xl font-bold text-primary font-display tracking-tight">
-                Active Blocks
-              </h2>
+        <div className="lg:col-span-7 space-y-6">
+          <div className="bg-card rounded-lg border border-border p-6 shadow-sm min-h-[500px]">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
+                  <ShieldAlert size={18} className="text-primary" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground tracking-tight">Active Locks</h2>
+              </div>
+
+              {selectedBoxId && (
+                <div className="w-48">
+                  <Select value={selectedFilterQuarter} onValueChange={setSelectedFilterQuarter}>
+                    <SelectTrigger className="h-9 text-[10px] font-bold uppercase tracking-wider border-border bg-muted/20">
+                      <SelectValue placeholder="All Units" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Units</SelectItem>
+                      {boxes
+                        .find(b => b._id === selectedBoxId)
+                        ?.quarters?.map((quarter, idx) => (
+                          <SelectItem key={idx} value={quarter.name || quarter}>
+                            {quarter.name || quarter}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
 
-            {selectedBoxId && (
-              <div className="mb-6">
-                <Label className="mb-2 block">Filter by Quarter</Label>
-                <Select value={selectedFilterQuarter} onValueChange={setSelectedFilterQuarter}>
-                  <SelectTrigger className="bg-muted/30 border-primary/20">
-                    <SelectValue placeholder="Filter by quarter" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Quarters</SelectItem>
-                    {boxes
-                      .find(b => b._id === selectedBoxId)
-                      ?.quarters?.map((quarter, idx) => (
-                        <SelectItem key={idx} value={quarter.name || quarter}>
-                          {quarter.name || quarter}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
             {slotsLoading ? (
-              <div className="flex justify-center py-8">
-                <span className="loading loading-spinner text-primary"></span>
+              <div className="flex flex-col items-center justify-center py-24 opacity-30">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mb-4"></div>
+                <p className="text-xs font-bold uppercase tracking-widest">Scanning inventory...</p>
               </div>
             ) : blockedSlots.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground border-2 border-dashed border-primary/10 rounded-xl">
-                <ShieldAlert className="h-10 w-10 mx-auto mb-2 opacity-20" />
-                <p>No blocked slots found.</p>
+              <div className="flex flex-col items-center justify-center py-32 text-center">
+                <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center mb-6 border border-border opacity-30">
+                  <ShieldAlert size={32} className="text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-1">No Active Constraints</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">Facility is currently fully operational across all time windows.</p>
               </div>
             ) : (
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-6 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
                 {blockedSlots
                   .filter(
                     slotGroup =>
@@ -310,40 +320,47 @@ const BlockSlot = () => {
                       slotGroup.quarterName === selectedFilterQuarter
                   )
                   .map(slotGroup => (
-                    <div key={slotGroup._id} className="bg-muted/20 border border-primary/10 rounded-xl p-4 space-y-3">
-                      <div className="flex items-center gap-2 font-bold text-primary border-b border-primary/5 pb-2">
-                        <div className="h-2 w-2 rounded-full bg-primary"></div>
-                        BOX: {slotGroup.quarterName}
+                    <div key={slotGroup._id} className="space-y-3">
+                      <div className="flex items-center gap-3 px-1">
+                        <div className="h-4 w-1 bg-primary rounded-full"></div>
+                        <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
+                          {slotGroup.quarterName}
+                        </h4>
                       </div>
-                      <div className="space-y-3">
+                      
+                      <div className="grid grid-cols-1 gap-3">
                         {slotGroup.slots.map((timeSlot, idx) => (
-                          <div
+                          <motion.div
                             key={idx}
-                            className="bg-background/50 border border-primary/10 rounded-lg p-3 active:border-primary/30 md:hover:border-primary/30 transition-colors flex justify-between items-start gap-3"
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-muted/30 border border-border rounded-lg p-4 flex justify-between items-start gap-6 hover:bg-muted/50 transition-colors"
                           >
-                            <div className="space-y-1 text-sm">
-                              <p className="flex items-center gap-2">
-                                <CalendarIcon size={14} className="text-muted-foreground" />
-                                <span className="font-medium">{formatDate(timeSlot.date)}</span>
-                              </p>
-                              <p className="flex items-center gap-2">
-                                <Clock size={14} className="text-muted-foreground" />
-                                <span>{timeSlot.startTime} - {timeSlot.endTime}</span>
-                              </p>
-                              <p className="text-xs text-muted-foreground italic mt-1">
-                                "{timeSlot.reason || 'No reason provided'}"
-                              </p>
+                            <div className="space-y-3 flex-1">
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                                <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+                                  <CalendarIcon size={14} className="text-primary" />
+                                  {formatDate(timeSlot.date)}
+                                </div>
+                                <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+                                  <Clock size={14} className="text-primary" />
+                                  {timeSlot.startTime} - {timeSlot.endTime}
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-2 text-sm text-muted-foreground leading-relaxed leading-tight bg-background/50 p-2 rounded border border-border/50">
+                                <FileText size={14} className="mt-0.5 shrink-0 opacity-40" />
+                                <span className="text-xs italic">"{timeSlot.reason || 'No specific reason logged'}"</span>
+                              </div>
                             </div>
                             <Button
-                              variant="destructive"
-                              size="sm"
-                              className="h-8 w-8 p-0 shrink-0 rounded-full"
+                              variant="ghost"
+                              size="icon"
+                              className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md shrink-0 border border-border/50"
                               onClick={() => handleUnblock(timeSlot._id)}
-                              title="Unblock Slot"
                             >
-                              <Trash2 size={14} />
+                              <X size={16} />
                             </Button>
-                          </div>
+                          </motion.div>
                         ))}
                       </div>
                     </div>

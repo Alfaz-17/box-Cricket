@@ -3,74 +3,44 @@
 
 @layer base {
   :root {
-    /* High-Energy Neon Sports Palette - DARK MODE BASE */
-    /* Primary: Olive Green -> HSL(82 39% 30%) */
-    --primary: 82 39% 30%;
-    --primary-foreground: 0 0% 100%;
+    /* Professional SaaS Palette: Trust, Clarity, Precision */
+    --background: 150 15% 6%; /* Deep Graphite Green #0d110e */
+    --foreground: 45 20% 90%;  /* Off-white/Cream #e8e6e1 */
 
-    /* Secondary: Lime Yellow -> HSL(69 69% 38%) */
-    --secondary: 69 69% 38%;
-    --secondary-foreground: 82 39% 10%;
+    --card: 150 15% 8%; 
+    --card-foreground: 45 20% 90%;
 
-    /* Accent: Bright Highlights -> HSL(70 56% 64%) */
-    --accent: 70 56% 64%;
-    --accent-foreground: 82 39% 20%;
+    --popover: 150 15% 7%;
+    --popover-foreground: 45 20% 90%;
 
-    /* Background: Dark Stadium Vibe -> HSL(82 20% 5%) */
-    --background: 82 20% 5%; 
-    --foreground: 82 20% 90%;
+    /* Primary: Sage/Forest Green #628141 */
+    --primary: 90 33% 38%;
+    --primary-foreground: 45 20% 95%;
 
-    /* Card/Popover */
-    --card: 82 20% 8%;
-    --card-foreground: 82 20% 90%;
-    --popover: 82 20% 8%;
-    --popover-foreground: 82 20% 90%;
+    /* Secondary: Soft Slate/Moss #4a5d3a */
+    --secondary: 90 23% 30%;
+    --secondary-foreground: 45 20% 90%;
 
-    /* Muted */
-    --muted: 82 20% 15%;
-    --muted-foreground: 82 20% 60%;
+    /* Accent: Muted Gold/Sand #ebd5ab */
+    --accent: 40 55% 80%;
+    --accent-foreground: 150 15% 5%;
 
-    /* Destructive */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --muted: 150 10% 15%;
+    --muted-foreground: 45 10% 60%;
 
-    /* Border/Input/Ring */
-    --border: 82 20% 20%;
-    --input: 82 20% 20%;
-    --ring: 69 69% 38%; 
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 45 20% 98%;
 
-    --radius: 0.75rem;
+    --border: 150 10% 18%;
+    --input: 150 10% 18%;
+    --ring: 90 33% 38%;
+
+    --radius: 0.5rem; /* Clean, more formal rounding */
   }
 
   .dark {
-    /* Dark Mode - Inverted/Adjusted Sporty Theme */
-    /* Neutral: #3D4451 -> HSL: 218, 14%, 28% */
-    --background: 218 14% 15%; /* Darker neutral */
-    --foreground: 71 54% 89%; /* Light background color for text */
-
-    --card: 218 14% 20%;
-    --card-foreground: 71 54% 89%;
-    --popover: 218 14% 20%;
-    --popover-foreground: 71 54% 89%;
-
-    --primary: 82 50% 50%; /* Brighter primary for dark mode contrast */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 69 69% 48%;
-    --secondary-foreground: 0 0% 100%;
-
-    --accent: 70 56% 64%;
-    --accent-foreground: 82 39% 20%;
-
-    --muted: 218 14% 25%;
-    --muted-foreground: 218 10% 65%;
-
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 218 14% 30%;
-    --input: 218 14% 30%;
-    --ring: 82 39% 40%;
+    --background: 150 15% 6%;
+    --foreground: 45 20% 90%;
   }
 }
 
@@ -78,47 +48,29 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
-    letter-spacing: -0.01em;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  button, a, input, select, textarea {
-    @apply select-none;
-  }
-
-  input, select, textarea {
-    @apply select-text;
-  }
-
-  .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
+    letter-spacing: -0.011em;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', sans-serif;
-    @apply font-bold tracking-tight;
+    @apply font-bold tracking-tight text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
-  .font-display {
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 0.05em;
+  .font-display, .font-sport, .font-jakarta, .font-outfit {
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
-  .font-sport {
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 0.05em;
+  button, a {
+    @apply transition-all duration-200 select-none;
   }
 
-  .font-jakarta {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
-
-  .font-outfit {
-    font-family: 'Outfit', sans-serif;
+  input, select, textarea {
+    @apply select-text bg-background border-border;
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */

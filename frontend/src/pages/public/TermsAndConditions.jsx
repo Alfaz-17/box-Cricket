@@ -33,7 +33,7 @@ const TermsAndConditions = () => {
             <h2 className="text-xl font-bold">Acceptance of Terms</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-            By accessing and using <strong>BookMyBox</strong>, you accept and agree to be bound by the terms and provision of this agreement. In addition, when using these particular services, you shall be subject to any posted guidelines or rules applicable to such services.
+            By accessing and using <strong>BookMyBox</strong>, you accept and agree to be bound by the terms and BOX of this agreement. In addition, when using these particular services, you shall be subject to any posted guidelines or rules applicable to such services.
           </p>
         </div>
 

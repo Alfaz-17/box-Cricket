@@ -45,6 +45,7 @@ const BoxBooking = () => {
   const retryId = searchParams.get('retry');
 
   // Load retry booking details
+  
   useEffect(() => {
     if (retryId) {
       const fetchRetryBooking = async () => {
@@ -231,7 +232,7 @@ const BoxBooking = () => {
     <div className="min-h-screen bg-background">
       {/* Full-Width Header Section */}
       <div className="w-full border-b border-border/40">
-        <div className="max-w-[1600px] mx-auto px-6 py-4">
+        <div className="max-w-[1600px] mx-auto px-4 py-4">
           {/* Back Button */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -281,7 +282,7 @@ const BoxBooking = () => {
 
       {/* Full-Width Booking Form */}
       <div className="w-full">
-        <div className="max-w-[1600px] mx-auto px-6 py-12">
+        <div className="max-w-[1600px] mx-auto px-4 py-12">
           <AnimatePresence mode="wait">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -8,11 +8,11 @@ import api from '../../utils/api'
 
 import TimePicker from '../../components/ui/TimePicker'
 import toast from 'react-hot-toast'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Label } from '@/components/ui/Label'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
-import { BoxCardSkeleton } from '@/components/ui/SkeletonLoader'
+import { Button } from '../../components/ui/Button'
+import { Input } from '../../components/ui/Input'
+import { Label } from '../../components/ui/Label'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/Card'
+import { BoxCardSkeleton } from '../../components/ui/SkeletonLoader'
 
 const Home = () => {
   const [allBoxes, setAllBoxes] = useState([])
@@ -118,9 +118,19 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Global Background Decorations */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '3s' }} />
+      </div>
+
       {/* High-Energy Neon Sports Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden mb-12">
+      <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden mb-12 py-20">
+      {/* Hero Background Elements */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] opacity-20" />
+      </div>
         
         <div className="relative z-20 container mx-auto px-4 text-center">
           <motion.div
@@ -129,68 +139,48 @@ const Home = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="max-w-5xl mx-auto"
           >
-            {/* Badge */}
-            <motion.div 
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-block mb-6"
-            >
-              <span className="px-6 py-2 rounded-full bg-secondary/10 border border-secondary/30 text-secondary text-sm font-bold tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(143,163,30,0.3)] backdrop-blur-md">
-              Book. paly. win.
-              </span>
-            </motion.div>
+            {/* Removed High-Energy Badge */}
 
             {/* Main Heading */}
-            <h1 className="text-6xl sm:text-7xl md:text-8xl font-black italic text-white tracking-tighter leading-[0.85] mb-8 drop-shadow-2xl transform -skew-x-6 uppercase font-display">
-              <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">Cricket Box</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-secondary via-accent to-secondary animate-gradient bg-300%">in Bhavnagar</span>
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold text-foreground tracking-tight mb-6">
+              Book Cricket Boxes in <br className="hidden md:block"/> 
+              <span className="text-primary">Bhavnagar</span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto font-medium tracking-tight mb-10 border-l-2 border-secondary pl-6 text-left md:text-center md:border-l-0 md:pl-0 font-jakarta">
-              The ultimate destination for cricket enthusiasts in Bhavnagar. Discover premium turfs, check real-time availability, and book your power play in seconds.
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
+              Find and book cricket boxes instantly. Check availability, compare prices, and reserve your slot in seconds.
             </p>
 
-            {/* App-Style Search Pill */}
+            {/* Professional Search Bar */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
               className="max-w-2xl mx-auto"
             >
-              <div 
-                className="relative flex items-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-2 shadow-2xl hover:border-secondary/50 transition-all group"
-              >
-                <div className="flex-1 flex items-center pl-4">
-                  <Search className="h-5 w-5 text-secondary mr-3 flex-shrink-0" />
+              <div className="flex flex-col sm:flex-row gap-3 p-2 bg-card border border-border rounded-lg shadow-sm">
+                <div className="flex-1 flex items-center px-4 py-2 bg-muted/30 rounded-md">
+                  <Search className="h-5 w-5 text-muted-foreground mr-3" />
                   <input
                     type="text"
-                    placeholder="Search for turfs (e.g. Bhavnagar)..."
-                    className="w-full bg-transparent border-none text-white placeholder:text-white/40 focus:ring-0 text-sm sm:text-base outline-none"
+                    placeholder="Search by location or box name..."
+                    className="w-full bg-transparent border-none text-foreground placeholder:text-muted-foreground focus:ring-0 text-sm sm:text-base outline-none"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                   />
                   {searchQuery && (
-                    <button 
-                      onClick={() => setSearchQuery('')}
-                      className="p-1 hover:bg-white/10 rounded-full transition-colors mr-2"
-                    >
-                      <X className="h-4 w-4 text-white/60" />
+                    <button onClick={() => setSearchQuery('')} className="p-1 hover:bg-muted rounded-full">
+                      <X className="h-4 w-4 text-muted-foreground" />
                     </button>
                   )}
                 </div>
-                <div className="h-8 w-[1px] bg-white/10 mx-2" />
-               
                 <Button 
                   onClick={handleSearch}
-                  className="bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full px-6 py-3 font-bold uppercase tracking-wider text-sm shadow-[0_0_20px_rgba(143,163,30,0.4)]"
+                  className="h-12 px-8 font-semibold"
                 >
-                  <span className="hidden sm:inline mr-2">Search</span>
-                  <Search size={18} className="sm:hidden" />
+                  Search
                 </Button>
               </div>
-
-             
             </motion.div>
 
             {/* Download App CTA */}
@@ -230,7 +220,7 @@ const Home = () => {
       </motion.section>
 
       {/* Boxes Section - Mobile Optimized */}
-      <section id="available-boxes" className="px-4 sm:px-0">
+      <section id="available-boxes" className="container mx-auto px-4 py-12">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -349,92 +339,81 @@ const StatCard = ({ icon: Icon, value, label, color }) => {
 const FeatureItem = ({ icon: Icon, title, description, delay }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay, duration: 0.6 }}
-      className="flex flex-col sm:flex-row gap-4 sm:gap-6 group p-4 sm:p-6 rounded-2xl bg-white/5 sm:bg-transparent sm:hover:bg-white/5 transition-colors duration-300 border border-white/5 sm:border-transparent"
+      transition={{ delay }}
+      className="group p-8 rounded-xl bg-card border border-border hover:border-primary/40 transition-all shadow-sm"
     >
-      <div className="flex-shrink-0 self-start">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 flex items-center justify-center shadow-lg shadow-primary/10 sm:group-hover:shadow-primary/30 transition-all duration-300">
-          <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-        </div>
+      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 border border-primary/20">
+        <Icon className="w-6 h-6 text-primary" />
       </div>
-      <div className="text-left">
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{title}</h3>
-        <p className="text-sm sm:text-base text-white/70 leading-relaxed group-hover:text-white/90 transition-colors">{description}</p>
-      </div>
+      <h3 className="text-xl font-bold text-foreground mb-3">{title}</h3>
+      <p className="text-muted-foreground leading-relaxed">{description}</p>
     </motion.div>
   )
 }
 
-// Enhanced Box Card Component - Mobile Optimized
 const BoxCard = ({ box, index }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      whileHover={{ y: -10 }}
+      transition={{ delay: index * 0.1 }}
       className="group"
     >
-      <Card className="overflow-hidden border-border/40 bg-card/50 backdrop-blur-sm hover:border-primary/40 transition-all duration-300 hover:shadow-2xl h-full rounded-2xl">
-        {/* Image Container with Overlay */}
+      <Card className="overflow-hidden border-border bg-card hover:border-primary/40 hover:shadow-md transition-all h-full rounded-xl">
+        {/* Image Container */}
         <div className="relative h-56 overflow-hidden">
-          <motion.img
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.6 }}
+          <img
             src={
               box.image ||
               'https://images.pexels.com/photos/3628912/pexels-photo-3628912.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
             }
             alt={box.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
           
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-          
-          {/* Rating Badge */}
-          <div className="absolute top-4 left-4 backdrop-blur-md bg-black/40 px-2.5 py-1.5 rounded-full flex items-center gap-1 border border-white/10">
-            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-            <span className="text-white font-bold text-xs">4.8</span>
+          {/* Price Overlay */}
+          <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm border border-border px-3 py-1.5 rounded-md shadow-sm">
+            <span className="text-lg font-bold text-primary">₹{box.hourlyRate}</span>
+            <span className="text-[10px] text-muted-foreground ml-1 font-medium">/ slot</span>
+          </div>
+
+          {/* Rating Overlay */}
+          <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm border border-border px-2 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
+            <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+            <span className="text-xs font-bold text-foreground">4.9</span>
           </div>
         </div>
 
-        <CardContent className="p-5 flex flex-col h-[calc(100%-14rem)]">
-          <div className="flex justify-between items-start gap-4 mb-2">
-            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 flex-1">
+        <CardContent className="p-6">
+          <div className="mb-4">
+            <h3 className="text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
               {box.name}
             </h3>
-            <div className="flex flex-col items-end">
-              <span className="text-2xl font-black text-secondary leading-none font-display tracking-tight">
-                ₹{box.hourlyRate}
-              </span>
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Per Hour</span>
+            
+            <div className="flex items-center text-muted-foreground text-xs font-medium">
+              <MapPin size={14} className="mr-2 text-primary" />
+              <span className="truncate">{box.location}</span>
             </div>
           </div>
 
-          <div className="flex items-center text-muted-foreground text-xs mb-4">
-            <MapPin size={12} className="mr-1.5 text-primary flex-shrink-0" />
-            <span className="truncate">{box.location}</span>
-          </div>
-
-          <p className="text-xs text-muted-foreground/80 line-clamp-2 mb-6 leading-relaxed flex-grow">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-6 leading-relaxed">
             {box.description}
           </p>
 
-          <Link to={`/box/${box._id}`} className="block mt-auto">
-            <Button className="w-full h-11 bg-gradient-to-r from-primary/80 to-secondary hover:from-primary hover:to-secondary text-secondary-foreground font-bold uppercase tracking-wider text-xs rounded-xl shadow-lg transition-all group-hover:scale-[1.02]">
+          <Link to={`/box/${box._id}`}>
+            <Button variant="outline" className="w-full border-primary/20 hover:bg-primary/10 hover:border-primary/50">
               View Details
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </CardContent>
       </Card>
     </motion.div>
-  )
-}
+  );
+};
 
 export default Home

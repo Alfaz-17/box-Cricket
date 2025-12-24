@@ -1,25 +1,59 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
-import { Calendar, Clock, MapPin, User, Search, Phone, Filter, FileDown, FileSpreadsheet } from 'lucide-react'
+import { 
+  Calendar, 
+  Clock, 
+  User, 
+  Search, 
+  Filter, 
+  FileDown, 
+  FileSpreadsheet,
+  MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
+  MessageCircle,
+  Trash2,
+  X,
+  ArrowUpDown,
+  BookOpen
+} from 'lucide-react'
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
+} from '@tanstack/react-table'
 import api from '../../utils/api'
-import { formatDate, formatTime, formatEndTime, convertTo12Hour, formatBookingDate } from '../../utils/formatDate'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
+import { formatBookingDate, formatTime, convertTo12Hour } from '../../utils/formatDate'
+import { Input } from '../../components/ui/Input'
+import { Button } from '../../components/ui/Button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/Select'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { X } from 'lucide-react'
 import { exportToExcel, exportToPDF } from '../../utils/exportBookings'
+import { cn } from '../../lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../../components/ui/DropdownMenu'
+
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filter, setFilter] = useState('all')
-  const [selectedQuarter, setSelectedQuarter] = useState('all')
+  const [globalFilter, setGlobalFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [quarterFilter, setQuarterFilter] = useState('all')
   const [dateFilter, setDateFilter] = useState(null)
   const [boxName, setBoxName] = useState('Cricket Box')
-  const [expandedBooking, setExpandedBooking] = useState(null)
+  const [sorting, setSorting] = useState([{ id: 'date', desc: true }])
 
   useEffect(() => {
     fetchBookings()
@@ -38,34 +72,6 @@ const AdminBookings = () => {
       console.error(error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleExportExcel = () => {
-    if (filteredBookings.length === 0) {
-      toast.error('No bookings to export')
-      return
-    }
-    try {
-      exportToExcel(filteredBookings, boxName)
-      toast.success('Excel file downloaded!')
-    } catch (error) {
-      toast.error('Failed to export Excel')
-      console.error(error)
-    }
-  }
-
-  const handleExportPDF = () => {
-    if (filteredBookings.length === 0) {
-      toast.error('No bookings to export')
-      return
-    }
-    try {
-      exportToPDF(filteredBookings, boxName)
-      toast.success('PDF file downloaded!')
-    } catch (error) {
-      toast.error('Failed to export PDF')
-      console.error(error)
     }
   }
 
@@ -88,65 +94,178 @@ const AdminBookings = () => {
     }
   }
 
-  const uniqueQuarters = Array.from(
-    new Set(
-      bookings.flatMap(b =>
-        b.box && Array.isArray(b.box.quarters) ? b.box.quarters.map(q => q.name) : []
+  const uniqueQuarters = useMemo(() => {
+    const quarters = new Set(bookings.map(b => b.quarterName).filter(Boolean))
+    return Array.from(quarters)
+  }, [bookings])
+
+  const filteredData = useMemo(() => {
+    return bookings.filter(booking => {
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'upcoming' && booking.status === 'confirmed') ||
+        (statusFilter === 'archive' && booking.status === 'completed') ||
+        (statusFilter === 'cancelled' && booking.status === 'cancelled')
+      
+      const matchesQuarter = quarterFilter === 'all' || booking.quarterName === quarterFilter
+      
+      const matchesDate = !dateFilter ||
+        new Date(booking.date).toDateString() === dateFilter.toDateString()
+
+      return matchesStatus && matchesQuarter && matchesDate
+    })
+  }, [bookings, statusFilter, quarterFilter, dateFilter])
+
+  const columns = useMemo(() => [
+    {
+      accessorKey: 'user',
+      header: ({ column }) => (
+        <button className="flex items-center gap-2 hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-wider" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          Athlete <ArrowUpDown size={12} />
+        </button>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3 py-2">
+          <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center border border-primary/20">
+            <User size={14} className="text-primary" />
+          </div>
+          <div>
+            <p className="font-bold text-foreground text-sm leading-tight">{row.original.user}</p>
+            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">{row.original.contactNumber}</p>
+          </div>
+        </div>
       )
-    )
-  )
+    },
+    {
+      accessorKey: 'quarterName',
+      header: 'Box Space',
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <BookOpen size={12} className="text-primary/60" />
+          {row.original.quarterName || 'Main Box'}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'date',
+      header: 'Schedule',
+      cell: ({ row }) => (
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+            <Calendar size={12} className="text-primary" />
+            {formatBookingDate(row.original.date)}
+          </div>
+          <div className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+            <Clock size={12} className="text-primary" />
+            {convertTo12Hour(row.original.startTime)} - {formatTime(row.original.endTime)}
+          </div>
+        </div>
+      )
+    },
+    {
+      accessorKey: 'amountPaid',
+      header: 'Collection',
+      cell: ({ row }) => (
+        <div className="font-bold text-foreground text-sm">
+          ₹{row.original.amountPaid}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const status = row.original.status
+        return (
+          <div className={cn(
+            "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border",
+            status === 'confirmed' ? "bg-green-500/10 border-green-500/20 text-green-500" :
+            status === 'completed' ? "bg-blue-500/10 border-blue-500/20 text-blue-500" :
+            "bg-red-500/10 border-red-500/20 text-red-500"
+          )}>
+            {status}
+          </div>
+        )
+      }
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 py-1.5">Administrative Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <a
+                href={`https://wa.me/91${row.original.contactNumber}?text=Hi ${row.original.user}, regarding your booking on ${formatBookingDate(row.original.date)}...`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <MessageCircle size={14} className="text-green-500" />
+                <span>Contact Athlete</span>
+              </a>
+            </DropdownMenuItem>
+            {row.original.status === 'confirmed' && (
+              <DropdownMenuItem 
+                onClick={() => cancelBooking(row.original._id)}
+                className="text-red-500 focus:text-red-600 focus:bg-red-500/10 cursor-pointer"
+              >
+                <Trash2 size={14} className="mr-2" />
+                <span>Cancel Ledger Entry</span>
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    }
+  ], [bookings])
 
-  const filteredBookings = bookings.filter(booking => {
-    const matchesSearch =
-      booking.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.contactNumber.includes(searchTerm) ||
-      (booking.quarterName && booking.quarterName.toLowerCase().includes(searchTerm.toLowerCase()))
-
-    const matchesFilter =
-      filter === 'all' ||
-      (filter === 'upcoming' && booking.status === 'confirmed') ||
-      (filter === 'past' && booking.status === 'completed') ||
-      (filter === 'cancelled' && booking.status === 'cancelled')
-
-    const matchesQuarter = selectedQuarter === 'all' || booking.quarterName === selectedQuarter
-
-    const matchesDate = !dateFilter ||
-      new Date(booking.date).toDateString() === dateFilter.toDateString()
-
-    return matchesSearch && matchesFilter && matchesQuarter && matchesDate
+  const table = useReactTable({
+    data: filteredData,
+    columns,
+    state: {
+      globalFilter,
+      sorting,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   })
 
-  const getStatusEmoji = (status) => {
-    switch (status) {
-      case 'confirmed': return '🟢'
-      case 'completed': return '🔵'
-      case 'cancelled': return '🔴'
-      default: return '⚪'
+  const handleExportExcel = () => {
+    if (filteredData.length === 0) {
+      toast.error('No bookings to export')
+      return
+    }
+    try {
+      exportToExcel(filteredData, boxName)
+      toast.success('Excel file downloaded!')
+    } catch (error) {
+      toast.error('Failed to export Excel')
+      console.error(error)
     }
   }
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed': return 'text-green-600'
-      case 'completed': return 'text-blue-600'
-      case 'cancelled': return 'text-red-500'
-      default: return 'text-muted-foreground'
+  const handleExportPDF = () => {
+    if (filteredData.length === 0) {
+      toast.error('No bookings to export')
+      return
     }
-  }
-
-  const getStatusBadge = (status) => {
-    const labels = {
-      confirmed: 'Confirmed',
-      completed: 'Completed',
-      cancelled: 'Cancelled',
+    try {
+      exportToPDF(filteredData, boxName)
+      toast.success('PDF file downloaded!')
+    } catch (error) {
+      toast.error('Failed to export PDF')
+      console.error(error)
     }
-    
-    return (
-      <div className={`flex items-center gap-1.5 text-sm font-semibold capitalize ${getStatusColor(status)}`}>
-        <span>{getStatusEmoji(status)}</span>
-        <span>{labels[status] || status}</span>
-      </div>
-    )
   }
 
   if (loading) {
@@ -158,196 +277,183 @@ const AdminBookings = () => {
   }
 
   return (
-    <div className="w-full py-4 min-h-screen">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 min-h-screen space-y-8">
       {/* Header */}
-      <div className="px-4 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-0.5 font-display tracking-tight">
-            Bookings
-          </h1>
-          <p className="text-xs text-muted-foreground">Manage all your bookings</p>
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+              <BookOpen className="text-primary w-5 h-5" />
+            </div>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+              Box <span className="text-primary">Bookings</span>
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-sm font-medium">
+            Management, scheduling and fiscal oversight
+          </p>
         </div>
         
-        {/* Export Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Button
+            variant="outline"
             onClick={handleExportExcel}
-            className="h-9 px-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-sm"
-            disabled={filteredBookings.length === 0}
+            className="h-11 gap-2 border-border bg-card hover:bg-muted/50 font-bold uppercase tracking-wider text-[10px]"
+            disabled={filteredData.length === 0}
           >
-            <FileSpreadsheet size={14} className="mr-1.5" />
-            Excel
+            <FileSpreadsheet size={16} className="text-green-500" />
+            Export XLS
           </Button>
           <Button
+            variant="outline"
             onClick={handleExportPDF}
-            className="h-9 px-3 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm"
-            disabled={filteredBookings.length === 0}
+            className="h-11 gap-2 border-border bg-card hover:bg-muted/50 font-bold uppercase tracking-wider text-[10px]"
+            disabled={filteredData.length === 0}
           >
-            <FileDown size={14} className="mr-1.5" />
-            PDF
+            <FileDown size={16} className="text-red-500" />
+            Export PDF
           </Button>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="mx-4 bg-muted/30 rounded-lg p-3 mb-4 border border-border/40">
-        <div className="flex flex-col lg:flex-row gap-2">
-          {/* Search */}
+      {/* Filters Bar */}
+      <div className="p-6 bg-card rounded-lg border border-border shadow-sm">
+        <div className="flex flex-col lg:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name, phone, or space..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="pl-10 h-9 text-sm"
+              placeholder="Filter by athlete or box..."
+              value={globalFilter ?? ''}
+              onChange={e => setGlobalFilter(e.target.value)}
+              className="pl-12 h-11 border-border bg-muted/5"
             />
           </div>
 
-          {/* Status Filter */}
-          <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-full lg:w-[130px] h-9 text-sm">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="upcoming">Upcoming</SelectItem>
-              <SelectItem value="past">Past</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Quarter Filter */}
-          {uniqueQuarters.length > 0 && (
-            <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
-              <SelectTrigger className="w-full lg:w-[120px] h-9 text-sm">
-                <SelectValue placeholder="Space" />
+          <div className="flex flex-wrap lg:flex-nowrap gap-3">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[140px] h-11 border-border bg-muted/5">
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Spaces</SelectItem>
-                {uniqueQuarters.map(quarter => (
-                  <SelectItem key={quarter} value={quarter}>
-                    {quarter}
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="upcoming">Upcoming</SelectItem>
+                <SelectItem value="archive">Archive</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-          )}
 
-          {/* Date Filter */}
-          <div className="relative w-full lg:w-[150px]">
-            <Calendar size={12} className="absolute left-3 top-2.5 text-muted-foreground z-10" />
-            <DatePicker
-              selected={dateFilter}
-              onChange={date => setDateFilter(date)}
-              placeholderText="Filter by date"
-              className="w-full h-9 pl-9 pr-8 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              dateFormat="MMM d, yyyy"
-            />
-            {dateFilter && (
-              <button
-                onClick={() => setDateFilter(null)}
-                className="absolute right-2 top-2 text-muted-foreground hover:text-destructive"
-              >
-                <X size={14} />
-              </button>
+            {uniqueQuarters.length > 0 && (
+              <Select value={quarterFilter} onValueChange={setQuarterFilter}>
+                <SelectTrigger className="w-[140px] h-11 border-border bg-muted/5">
+                  <SelectValue placeholder="Box" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Boxes</SelectItem>
+                  {uniqueQuarters.map(q => (
+                    <SelectItem key={q} value={q}>{q}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
+
+            <div className="relative">
+              <Calendar size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none" />
+              <DatePicker
+                selected={dateFilter}
+                onChange={date => setDateFilter(date)}
+                placeholderText="Target Date"
+                className="h-11 pl-10 pr-10 bg-muted/5 border border-border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 w-[160px]"
+                dateFormat="MMM d, yyyy"
+              />
+              {dateFilter && (
+                <button
+                  onClick={() => setDateFilter(null)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-red-500 transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bookings List */}
-      <div className="w-full border-t-2 border-primary/30">
-        {filteredBookings.length > 0 ? (
-          <div className="divide-y-2 divide-primary/30">
-            {filteredBookings.map(booking => (
-              <div
-                key={booking._id}
-                className={`p-4 md:p-5 transition-colors ${
-                  booking.status === 'cancelled' ? 'opacity-60 grayscale-[0.5]' : 'hover:bg-muted/10'
-                }`}
-              >
-                <div className="flex flex-col gap-2">
-                  {/* Phase 1: Header - Box Name & Amount */}
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="flex items-center gap-2 text-base md:text-lg font-bold text-foreground">
-                     <span>👤</span>
-                      <span className="truncate">{booking.user}</span>
-                      {booking.quarterName && (
-                        <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full font-medium">
-                          {booking.quarterName}
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xl md:text-2xl font-bold text-primary font-display tracking-tight">
-                      ₹{booking.amountPaid}
-                    </div>
-                  </div>
+      {/* Table Section */}
+      <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-muted/50 border-b border-border">
+              {table.getHeaderGroups().map(headerGroup => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <th key={header.id} className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="divide-y divide-border">
+              <AnimatePresence>
+                {table.getRowModel().rows.length > 0 ? (
+                  table.getRowModel().rows.map(row => (
+                    <motion.tr
+                      key={row.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="hover:bg-muted/30 transition-colors group"
+                    >
+                      {row.getVisibleCells().map(cell => (
+                        <td key={cell.id} className="px-6 py-4">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </motion.tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={columns.length} className="px-6 py-24 text-center">
+                      <div className="flex flex-col items-center justify-center opacity-40">
+                        <Search size={40} className="mb-4" />
+                        <p className="text-sm font-bold uppercase tracking-widest">No entries found for this period</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </AnimatePresence>
+            </tbody>
+          </table>
+        </div>
 
-                  {/* Phase 2: Time & Date */}
-                  <div className="flex items-center gap-2 text-sm md:text-base text-muted-foreground font-medium">
-                
-                    <span>
-                      {formatBookingDate(booking.date)} • {convertTo12Hour(booking.startTime)} - {formatTime(booking.endTime)}
-                    </span>
-                  </div>
-
-                  {/* Phase 3: Status & Primary Actions */}
-                  <div className="flex items-center justify-between mt-1">
-                    {getStatusBadge(booking.status)}
-                    
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        asChild
-                        className="h-8 w-8 rounded-lg hover:bg-green-500/10 text-green-500"
-                        title="WhatsApp"
-                      >
-                        <a
-                          href={`https://wa.me/91${booking.contactNumber}?text=Hi ${booking.user}, regarding your booking on ${formatBookingDate(booking.date)}...`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                          </svg>
-                        </a>
-                      </Button>
-
-                      {booking.status === 'confirmed' && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => cancelBooking(booking._id)}
-                          className="h-8 w-8 rounded-lg hover:bg-destructive/10 text-destructive"
-                          title="Cancel"
-                        >
-                          <X size={16} />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Phase 4: Toggle Details */}
-             
-                       <a href={`tel:${booking.contactNumber}`} className="font-bold text-foreground hover:text-primary transition-colors">
-                           📞{booking.contactNumber}
-                        </a>
-
-                  
-                </div>
-              </div>
-            ))}
+        {/* Pagination */}
+        <div className="px-6 py-4 bg-muted/20 border-t border-border flex items-center justify-between">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Displaying {table.getRowModel().rows.length} of {filteredData.length} records
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronLeft size={16} />
+            </Button>
+            <span className="text-xs font-bold text-foreground mx-2">
+              {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronRight size={16} />
+            </Button>
           </div>
-        ) : (
-          <div className="py-16 text-center">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-              <Search size={32} className="text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-bold text-foreground">No Bookings Found</h3>
-            <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters</p>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   )
