@@ -87,11 +87,11 @@ const Navbar = ({ onVoiceClick }) => {
               </motion.div>
               <div className="flex flex-col leading-none">
                 <span 
-                  className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent tracking-tight font-display"
+                  className="text-xl sm:text-2xl font-bold text-primary tracking-tight font-logo"
                 >
                   BookMyBox
                 </span>
-                <span className="text-[10px] text-muted-foreground tracking-widest uppercase">Premium Turfs</span>
+                <span className="text-[10px] text-muted-foreground tracking-widest uppercase font-medium">Premium Turfs</span>
               </div>
             </Link>
 

@@ -3,37 +3,37 @@
 
 @layer base {
   :root {
-    /* Professional SaaS Palette: Trust, Clarity, Precision */
-    --background: 150 15% 6%; /* Deep Graphite Green #0d110e */
-    --foreground: 45 20% 90%;  /* Off-white/Cream #e8e6e1 */
+    /* Professional Solid Palette: Olive Drab (Favicon Match) */
+    --background: 80 10% 5%; /* Very Dark Olive-Grey */
+    --foreground: 45 20% 90%; 
 
-    --card: 150 15% 8%; 
+    --card: 80 10% 7%; 
     --card-foreground: 45 20% 90%;
 
-    --popover: 150 15% 7%;
+    --popover: 80 10% 7%;
     --popover-foreground: 45 20% 90%;
 
-    /* Primary: Sage/Forest Green #628141 */
-    --primary: 90 33% 38%;
-    --primary-foreground: 45 20% 95%;
+    /* Primary: Olive Drab #6B8E23 */
+    --primary: 80 60% 35%; 
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Soft Slate/Moss #4a5d3a */
-    --secondary: 90 23% 30%;
+    /* Secondary: Warm Neutral */
+    --secondary: 80 10% 20%;
     --secondary-foreground: 45 20% 90%;
 
-    /* Accent: Muted Gold/Sand #ebd5ab */
-    --accent: 40 55% 80%;
-    --accent-foreground: 150 15% 5%;
+    /* Accent: Subtle Highlight */
+    --accent: 80 30% 25%;
+    --accent-foreground: 45 20% 90%;
 
-    --muted: 150 10% 15%;
-    --muted-foreground: 45 10% 60%;
+    --muted: 80 5% 15%;
+    --muted-foreground: 80 5% 60%;
 
-    --destructive: 0 60% 50%;
-    --destructive-foreground: 45 20% 98%;
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 150 10% 18%;
-    --input: 150 10% 18%;
-    --ring: 90 33% 38%;
+    --border: 80 10% 20%;
+    --input: 80 10% 20%;
+    --ring: 80 60% 35%;
 
     --radius: 0.5rem; /* Clean, more formal rounding */
   }
@@ -85,19 +85,7 @@
   }
 }
 
-@keyframes gradient {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 15s ease infinite;
-}
 
 @keyframes float {
   0%, 100% {

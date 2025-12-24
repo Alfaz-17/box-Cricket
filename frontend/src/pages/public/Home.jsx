@@ -405,7 +405,7 @@ const BoxCard = ({ box, index }) => {
           </p>
 
           <Link to={`/box/${box._id}`}>
-            <Button variant="outline" className="w-full border-primary/20 hover:bg-primary/10 hover:border-primary/50">
+            <Button variant="outline" className="w-full border-primary/20 bg-primary hover:border-primary/10">
               View Details
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
