@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Calendar, Clock, MapPin, User, Phone, IndianRupee, ArrowRight, Home, Download } from 'lucide-react';
+import { CheckCircle2, ArrowRight } from 'lucide-react';
+import BookingCard from '../components/BookingCard';
 import { formatBookingDate } from '../utils/formatDate';
+import { downloadReceipt } from '../utils/downloadReceipt';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -46,6 +48,8 @@ const PaymentSuccess = () => {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
   };
+
+  /* handleDownloadReceipt removed, using imported utility */
 
   if (loading) {
     return (
@@ -90,7 +94,7 @@ const PaymentSuccess = () => {
             BOOKING CONFIRMED!
           </h1>
           <p className="text-gray-400 font-medium">
-            Your slot at <span className="text-green-500">{booking?.boxName}</span> is reserved.
+            Your slot at <span className="text-green-500">{booking?.box?.name}</span> is reserved.
           </p>
         </motion.div>
 
@@ -98,87 +102,9 @@ const PaymentSuccess = () => {
         {booking && (
           <motion.div 
             variants={itemVariants}
-            className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 mb-8 shadow-2xl overflow-hidden relative"
+            className="mb-8 w-full"
           >
-            {/* Glossy Overlay */}
-            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            
-            <div className="flex items-center justify-between border-b border-white/10 pb-6 mb-6">
-              <div>
-                <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">Booking ID</p>
-                <h3 className="text-white font-mono font-bold text-lg">{booking.bookingId}</h3>
-              </div>
-              <div className="bg-green-500/20 px-4 py-2 rounded-full border border-green-500/30">
-                <span className="text-green-500 text-sm font-bold">PAID</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <Calendar className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">Date</p>
-                    <p className="text-white font-semibold">{formatBookingDate(booking.date)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <Clock className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">Time Slot</p>
-                    <p className="text-white font-semibold">{booking.startTime} - {booking.endTime}</p>
-                    <p className="text-gray-400 text-xs font-medium">{booking.duration} hour(s)</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <MapPin className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">Location</p>
-                    <p className="text-white font-semibold">{booking.quarterName || 'Main Ground'}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <Phone className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">Contact</p>
-                    <p className="text-white font-semibold">{booking.contactNumber}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-10 pt-6 border-t border-white/10 flex items-center justify-between bg-gradient-to-r from-transparent to-white/5 p-4 rounded-2xl">
-              <div>
-                <p className="text-gray-400 text-sm font-medium">Total Amount Paid</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <IndianRupee className="w-6 h-6 text-green-500" />
-                  <span className="text-3xl font-black text-white italic font-['Bebas_Neue',_sans-serif]">
-                    {booking.amountPaid}
-                  </span>
-                </div>
-              </div>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl border border-white/10 transition-all font-bold text-sm"
-              >
-                <Download className="w-4 h-4" />
-                Receipt
-              </motion.button>
-            </div>
+            <BookingCard booking={booking} />
           </motion.div>
         )}
 

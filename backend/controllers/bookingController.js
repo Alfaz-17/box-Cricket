@@ -232,18 +232,7 @@ export const getMyBookingRecipt = async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' })
     }
 
-    res.json({
-      bookingId: booking._id,
-      boxName: booking.box.name,
-      date: booking.date,
-      startTime: booking.startTime,
-      endTime: booking.endTime,
-      duration: booking.duration,
-      amountPaid: booking.amountPaid,
-      paymentStatus: booking.paymentStatus,
-      contactNumber: booking.contactNumber,
-      quarterName: booking.quarterName,
-    })
+    res.json(booking)
   } catch (err) {
     console.error('❌ Error fetching booking receipt:', err.message)
     return res.status(500).json({ message: 'Server error' })
