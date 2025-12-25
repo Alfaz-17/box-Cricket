@@ -73,7 +73,7 @@ export const createTemporaryBooking = async (req, res) => {
       startDateTime: validatedStart,
       endDateTime: validatedEnd,
       duration,
-      amountPaid: 100, // Fixed ₹300 advance for online, full for offline
+      amountPaid: 1, // Fixed ₹300 advance for online, full for offline
       contactNumber,
       paymentStatus: isOwner ? "paid" : "pending",
       status: isOwner ? "confirmed" : "pending",

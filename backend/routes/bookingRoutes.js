@@ -13,7 +13,7 @@ const router = express.Router()
 
 router.post('/temporary-booking', protectedRoute, bookingLimiter, createTemporaryBooking)
 router.post('/cancel/:id', protectedRoute, cancelBooking)
-router.get('/report/:id', protectedRoute, getMyBookingRecipt)
+router.get('/report/:id', getMyBookingRecipt)
 router.get('/my-bookings', protectedRoute, getMyBookings)
 
 //payment routes
