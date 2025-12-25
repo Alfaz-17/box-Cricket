@@ -120,16 +120,26 @@ export const voiceCheckSlot = async (req, res) => {
     // ✅ We have all information - proceed with slot query
     console.log("✅ Complete query - checking slots");
 
-    // 3️⃣ Find all free slots
-    const result = await findAvailableSlots({
-      date: parsed.date,
-      startTime: parsed.startTime,
-      duration: parsed.duration
-    });
-    console.log("Result", result);
+    // Check for Past Time
+    const requestDateTime = moment(`${parsed.date} ${parsed.startTime}`, "YYYY-MM-DD hh:mm A");
+    const isPast = requestDateTime.isBefore(moment());
+    
+    let result = { available: false, slots: [] };
+
+    if (!isPast) {
+      // 3️⃣ Find all free slots
+      result = await findAvailableSlots({
+        date: parsed.date,
+        startTime: parsed.startTime,
+        duration: parsed.duration
+      });
+      console.log("Result", result);
+    } else {
+      console.log("⚠️ Requested time is in the past");
+    }
 
     // 4️⃣ Build Voice Response (using AI if enabled)
-    const replyText = await buildVoiceResponse({ parsed, result });
+    const replyText = await buildVoiceResponse({ parsed, result, isPast });
 
     // 📊 Build Structured Response Data
     const endTime = moment(parsed.startTime, ["h:mm A", "hh:mm A"])
@@ -142,6 +152,7 @@ export const voiceCheckSlot = async (req, res) => {
       endTime: endTime, // e.g., "10:00 PM"
       duration: parsed.duration,
       available: result.available,
+      status: isPast ? "PAST" : (result.available ? "AVAILABLE" : "BOOKED"),
       boxes: result.available && result.slots ? 
         [...new Set(result.slots.map(s => s.quarterName.replace(/-/g, "").replace(/\\s+/g, " ").trim()))] : 
         [],

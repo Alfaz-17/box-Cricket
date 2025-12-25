@@ -338,9 +338,15 @@ const TestVoiceRecorder = ({ onClose }) => {
                  >
                     <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
                         <div className="flex items-center gap-2">
-                             <div className={`w-2 h-2 rounded-full ${msg.structuredData.available ? 'bg-secondary' : 'bg-destructive'}`} />
-                             <span className="text-sm font-bold uppercase tracking-wide text-foreground">
-                                {msg.structuredData.available ? "Available" : "Booked"}
+                             <div className={`w-2 h-2 rounded-full ${
+                                msg.structuredData.status === 'PAST' ? 'bg-yellow-500' :
+                                msg.structuredData.available ? 'bg-secondary' : 'bg-destructive'
+                             }`} />
+                             <span className={`text-sm font-bold uppercase tracking-wide ${
+                                 msg.structuredData.status === 'PAST' ? 'text-yellow-500' : 'text-foreground'
+                             }`}>
+                                {msg.structuredData.status === 'PAST' ? "Time Passed" :
+                                 msg.structuredData.available ? "Available" : "Booked"}
                              </span>
                         </div>
                         <span className="text-xs font-mono text-muted-foreground bg-muted/20 px-2 py-1 rounded">

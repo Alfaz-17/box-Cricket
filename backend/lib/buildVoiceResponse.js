@@ -106,7 +106,7 @@ function generateFollowUpQuestion(parsed) {
   return "Please provide complete information.";
 }
 
-export async function buildVoiceResponse({ parsed, result }) {
+export async function buildVoiceResponse({ parsed, result, isPast }) {
   const lang = parsed.language || 'en';
   
   // 🔍 CHECK IF WE NEED MORE INFORMATION
@@ -115,7 +115,7 @@ export async function buildVoiceResponse({ parsed, result }) {
   }
   
   // ✅ We have all info, proceed with slot availability response
-  const isAvailable = result.available;
+  const isAvailable = result?.available || false;
   const requestedDate = speakableDate(parsed.date, lang);
   const requestedTime = speakableTime(parsed.startTime, lang);
   const endTime = calculateEndTime(parsed.startTime, parsed.duration);
@@ -123,10 +123,12 @@ export async function buildVoiceResponse({ parsed, result }) {
   
   // Extract box names if available
   let availabilityInfo = "";
-  if (isAvailable && result.slots && result.slots.length > 0) {
+  if (!isPast && isAvailable && result.slots && result.slots.length > 0) {
     const uniqueBoxes = [...new Set(result.slots.map(s => s.quarterName.replace(/-/g, "").replace(/\\s+/g, " ").trim()))];
     availabilityInfo = uniqueBoxes.join(", ");
   }
+
+  const status = isPast ? "PAST_TIME" : (isAvailable ? "AVAILABLE" : "NOT AVAILABLE");
 
   // Construct System Prompt for the AI
   const systemPrompt = `
@@ -138,17 +140,23 @@ export async function buildVoiceResponse({ parsed, result }) {
     - User Language: ${lang} (hi=Hindi, gu=Gujarati, en=English, ur=Urdu)
     - Available Box Names: ${availabilityInfo} (e.g., "Box 1, Box 2")
     - Requested Time: ${requestedTime} to ${requestedEndTime}
-    - Status: ${isAvailable ? "AVAILABLE" : "NOT AVAILABLE"}
+    - Status: ${status}
 
     INSTRUCTIONS:
     1. Reply ONLY in ${lang}.
     2. Adopt the 'Mota Bhai' persona: be friendly and helpful.
-    3. Start with a direct answer (e.g., "Yes mota bhai!" or "हाँ मोटा भाई!").
-    4. Clearly say WHICH boxes are free (e.g., "Box 1 aur Box 2 dono khaali hain").
-    5. Mention the time range as "${requestedTime} se ${requestedEndTime}".
-    6. Keep it under 25 words. No complex sentences.
-    7. Say "Box" (not translated).
-    8. Use "se" (from) to connect start and end times in Hindi/Gujarati.
+    3. Start with a direct answer (e.g., "Yes mota bhai!" or "No mota bhai...").
+    
+    SCENARIOS:
+    - If status is "PAST_TIME": Say 'Ye timing toh chala gaya Mota Bhai'. Then mention that '${requestedDate} ke ${requestedTime} se ${requestedEndTime} tak ki timing chali ho gayi hai'.
+    - If status is "AVAILABLE": Say WHICH boxes are free (e.g., "Box 1 aur Box 2 dono khaali hain").
+    - If status is "NOT AVAILABLE": Politely say no slots are free.
+
+    GENERAL RULES:
+    - Keep it under 25 words. No complex sentences.
+    - Say "Box" (not translated).
+    - Use "se" (from) to connect start and end times in Hindi/Gujarati.
+    - Use "timing" instead of "samay" or "waqt" for better pronunciation.
   `;
 
   try {
@@ -170,6 +178,12 @@ export async function buildVoiceResponse({ parsed, result }) {
     console.error("AI Generation Failed, falling back to template:", error);
     
     // Fallback Template Logic (Simplified)
+    if (isPast) {
+         if (lang === 'hi') return `ये टाइमिंग तो चला गया मोटा भाई। ${requestedDate} के ${requestedTime} से ${requestedEndTime} तक की टाइमिंग अब खत्म हो गयी है।`;
+         if (lang === 'gu') return `આ ટાઈમિંગ તો જતો રહ્યો છે મોટા ભાઈ. ${requestedDate} ${requestedTime} થી ${requestedEndTime} સુધીનો ટાઈમિંગ પૂરો થઈ ગયો છે.`;
+         return `Sorry Mota Bhai, this timing has passed. The slot for ${requestedDate} from ${requestedTime} to ${requestedEndTime} is over.`;
+    }
+
     if (isAvailable) {
       if (lang === 'hi') return `हाँ, ${requestedDate} को ${requestedTime} से ${requestedEndTime} तक ${availabilityInfo} उपलब्ध है।`;
       if (lang === 'gu') return `હા, ${requestedDate} ${requestedTime} થી ${requestedEndTime} સુધી ${availabilityInfo} ઉપલબ્ધ છે.`;
