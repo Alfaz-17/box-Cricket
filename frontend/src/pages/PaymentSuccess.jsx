@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Calendar, Clock, MapPin, User, Phone, IndianRupee, ArrowRight, Home, Download } from 'lucide-react';
 import { formatBookingDate } from '../utils/formatDate';
@@ -22,12 +22,7 @@ const PaymentSuccess = () => {
   const fetchBookingDetails = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/booking/report/${bookingId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get(`/booking/report/${bookingId}`);
       setBooking(response.data);
     } catch (error) {
       console.error('Error fetching booking details:', error);
