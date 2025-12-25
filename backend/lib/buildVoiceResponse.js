@@ -148,7 +148,7 @@ export async function buildVoiceResponse({ parsed, result, isPast }) {
     3. Start with a direct answer (e.g., "Yes mota bhai!" or "No mota bhai...").
     
     SCENARIOS:
-    - If status is "PAST_TIME": Say 'Ye timing toh chala gaya Mota Bhai'. Then mention that '${requestedDate} ke ${requestedTime} se ${requestedEndTime} tak ki timing chali ho gayi hai'.
+    - If status is "PAST_TIME": Say 'Ye timing toh chala gaya Mota Bhai'. Then mention that '${requestedDate} ke ${requestedTime} se ${requestedEndTime} tak ki timing to chali  gayi  hai'.
     - If status is "AVAILABLE": Say WHICH boxes are free (e.g., "Box 1 aur Box 2 dono khaali hain").
     - If status is "NOT AVAILABLE": Politely say no slots are free.
 

@@ -76,6 +76,28 @@ const BookingForm = ({
                 </div>
 
                 <div className="p-4 bg-muted/30 rounded-lg space-y-3 border border-border">
+                  {/* Booking Details Summary */}
+                  <div className="pb-3 border-b border-border/50 space-y-2">
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Turf Box</span>
+                        <span className="font-bold text-foreground">
+                            {displayBox.quarters?.find(q => q._id === selectedQuarter)?.name || 'Selected Box'}
+                        </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Date</span>
+                        <span className="font-bold text-foreground">
+                            {selectedDate ? format(selectedDate, 'dd MMM yyyy') : 'N/A'}
+                        </span>
+                    </div>
+                     <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Time</span>
+                        <span className="font-bold text-foreground">
+                             {selectedSlots.length > 0 ? `${selectedSlots[0].startTime} - ${selectedSlots[selectedSlots.length-1].endTime}` : 'N/A'}
+                        </span>
+                    </div>
+                  </div>
+
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-muted-foreground">Total Booking Amount</span>
                     <span className="font-bold text-foreground">₹{prices.total}</span>
