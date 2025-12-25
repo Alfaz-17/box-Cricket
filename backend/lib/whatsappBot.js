@@ -33,7 +33,9 @@ export async function startBot() {
       logger: P({ level: 'silent' }),
     })
 
-    sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
+    sock.ev.on('connection.update', async (update) => {
+      const { connection, lastDisconnect, qr } = update || {}
+
       if (qr) {
         console.log('📲 Scan the QR code with WhatsApp:')
         qrcode.generate(qr, { small: true })

@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import User from '../models/User.js'
 import { generateToken } from '../lib/generateToken.js'
 import dotenv from 'dotenv'
-import redis from '../lib/redis.js'
+import Otp from '../models/Otp.js' // Changed from redis import
 import { sendMessage } from '../lib/whatsappBot.js'
 dotenv.config()
 
@@ -25,21 +25,23 @@ export const sendOtp = async (req, res) => {
       return res.status(400).json({ message: 'Invalid action' })
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000) // 6-digit OTP
-    const ttl = 300 // 5 minutes
+    const otp = Math.floor(100000 + Math.random() * 900000).toString() // 6-digit OTP
+    // TTL is handled by the schema
 
-    //set otp in redis
-    await redis.set(`otp:${contactNumber}`, otp, 'EX', ttl)
+    // delete old otp if exists
+    await Otp.deleteMany({ contactNumber })
 
-   await sendMessage(`91${contactNumber}`, `Your OTP is ${otp}. It is valid for 5 minutes.`)
+    // set otp in db
+    await Otp.create({ contactNumber, otp })
 
-    // await redis.publish(
-    //   "whatsapp:send",
-    //   JSON.stringify({
-    //     number: `91${contactNumber}`,   // India numbers with +91
-    //     text: `Your OTP is ${otp}`
-    //   })
-    // );
+    console.log(`Sending OTP to 91${contactNumber}`)
+
+    try {
+      await sendMessage(`91${contactNumber}`, `Your OTP is ${otp}. It is valid for 5 minutes.`)
+    } catch (waError) {
+      console.error('WhatsApp OTP send failed:', waError.message)
+      // We don't return error here so that we can still see the OTP in server logs for testing/dev
+    }
 
     // inside backend auth or booking controller
     console.log(`OTP for ${contactNumber}: ${otp}`)
@@ -55,13 +57,14 @@ export const verifyOtp = async (req, res) => {
   try {
     const { contactNumber, otp } = req.body
 
-    // Check OTP from Redis
-    const storedOtp = await redis.get(`otp:${contactNumber}`)
-    if (!storedOtp) {
+    // Check OTP from DB
+    const storedOtpDoc = await Otp.findOne({ contactNumber })
+    
+    if (!storedOtpDoc) {
       return res.status(400).json({ message: 'OTP expired or not found' })
     }
 
-    if (storedOtp !== otp) {
+    if (storedOtpDoc.otp !== otp) {
       return res.status(400).json({ message: 'Invalid OTP' })
     }
 
@@ -95,8 +98,9 @@ export const completeSignup = async (req, res) => {
       ownerCode,
     })
     await user.save()
-    // ✅ Cleanup OTP from Redis after signup
-    await redis.del(`otp:${contactNumber}`)
+    // ✅ Cleanup OTP from DB after signup
+    await Otp.deleteMany({ contactNumber })
+    
     const token = generateToken(user._id)
     res.status(200).json({
       message: 'Signup successful',
@@ -152,12 +156,12 @@ export const forgotPas = async (req, res) => {
       return res.status(404).json({ message: 'This number is not registered' })
     }
 
-    const storedOtp = await redis.get(`otp:${contactNumber}`)
-    if (!storedOtp) {
+    const storedOtpDoc = await Otp.findOne({ contactNumber })
+    if (!storedOtpDoc) {
       return res.status(400).json({ message: 'OTP expired or not found' })
     }
 
-    if (storedOtp !== otp) {
+    if (storedOtpDoc.otp !== otp) {
       return res.status(400).json({ message: 'Invalid OTP' })
     }
 
@@ -165,8 +169,8 @@ export const forgotPas = async (req, res) => {
 
     await User.findOneAndUpdate({ contactNumber }, { password: hashedPassword })
 
-    // Optional: delete OTP from Redis
-    await redis.del(`otp:${contactNumber}`)
+    // Optional: delete OTP from DB
+    await Otp.deleteMany({ contactNumber })
 
     return res.status(200).json({ message: 'Password updated successfully' })
   } catch (error) {
