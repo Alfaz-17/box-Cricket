@@ -131,43 +131,44 @@ export async function buildVoiceResponse({ parsed, result, isPast }) {
   const status = isPast ? "PAST_TIME" : (isAvailable ? "AVAILABLE" : "NOT AVAILABLE");
 
   // Construct System Prompt for the AI
+  // Construct System Prompt for the AI
+  // Construct System Prompt for the AI
   const systemPrompt = `
-    You are a polite, friendly, and helpful cricket box booking assistant named 'Mota Bhai' from 'BookMyBox AI'.
-    Your personality is colloquial, respectful (using 'Mota bhai' when appropriate), and energetic.
-    Your goal is to inform the user about slot availability in a SHORT, SIMPLE, and NATURAL way.
-
+    You are 'Mota Bhai', a cricket box booking assistant.
+    Goal: Inform slot availability in a SHORT, DIRECT, and SIMPLE way.
+    
     CONTEXT:
-    - User Language: ${lang} (hi=Hindi, gu=Gujarati, en=English, ur=Urdu)
-    - Available Box Names: ${availabilityInfo} (e.g., "Box 1, Box 2")
-    - Requested Time: ${requestedTime} to ${requestedEndTime}
+    - Language: ${lang}
+    - Boxes: ${availabilityInfo} 
+    - Time: ${requestedTime} to ${requestedEndTime} 
+    - Date: ${requestedDate} (e.g., "today", "tomorrow", "aaj", "kal")
     - Status: ${status}
 
     INSTRUCTIONS:
     1. Reply ONLY in ${lang}.
-    2. Adopt the 'Mota Bhai' persona: be friendly and helpful.
-    3. Start with a direct answer (e.g., "Yes mota bhai!" or "No mota bhai...").
-    
-    SCENARIOS:
-    - If status is "PAST_TIME": Say 'Ye timing toh chala gaya Mota Bhai'. Then mention that '${requestedDate} ke ${requestedTime} se ${requestedEndTime} tak ki timing to chali  gayi  hai'.
-    - If status is "AVAILABLE": Say WHICH boxes are free (e.g., "Box 1 aur Box 2 dono khaali hain").
-    - If status is "NOT AVAILABLE": Politely say no slots are free.
+    2. Be friendly but keep it informative.
+    3. MANDATORY: Mention the Date ("${requestedDate}") and Time ("${requestedTime}") in your answer.
+    4. Use "Box", "Timing" (English words).
 
-    GENERAL RULES:
-    - Keep it under 25 words. No complex sentences.
-    - Say "Box" (not translated).
-    - Use "se" (from) to connect start and end times in Hindi/Gujarati.
-    - Use "timing" instead of "samay" or "waqt" for better pronunciation.
+    SCENARIOS:
+    - PAST: "Mota bhai, ${requestedDate} ${requestedTime} ka timing chala gaya."
+    - AVAILABLE: "Haan Mota bhai, ${requestedDate} ${requestedTime} ${availabilityInfo} available hai."
+    - NOT AVAILABLE: "Sorry Mota bhai, ${requestedDate} ${requestedTime} koi slot available nahi hai."
+
+    EXAMPLES:
+    - "Haan Mota bhai, aaj raat 9 baje Box 1 available hai."
+    - "Nahi Mota bhai, kal subah 10 baje slot nahi hai."
   `;
 
   try {
     const completion = await groq.chat.completions.create({
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: "Generate the voice response now." }
+        { role: "user", content: "Generate response." }
       ],
       model: "llama-3.1-8b-instant",
-      temperature: 0.7,
-      max_tokens: 100,
+      temperature: 0.5,
+      max_tokens: 60,
     });
 
     const aiResponse = completion.choices[0]?.message?.content?.trim();
@@ -177,42 +178,42 @@ export async function buildVoiceResponse({ parsed, result, isPast }) {
   } catch (error) {
     console.error("AI Generation Failed, falling back to template:", error);
     
-    // Fallback Template Logic (Simplified)
+    // Fallback Template Logic (Simple but Informative)
     if (isPast) {
-         if (lang === 'hi') return `ये टाइमिंग तो चला गया मोटा भाई। ${requestedDate} के ${requestedTime} से ${requestedEndTime} तक की टाइमिंग अब खत्म हो गयी है।`;
-         if (lang === 'gu') return `આ ટાઈમિંગ તો જતો રહ્યો છે મોટા ભાઈ. ${requestedDate} ${requestedTime} થી ${requestedEndTime} સુધીનો ટાઈમિંગ પૂરો થઈ ગયો છે.`;
-         return `Sorry Mota Bhai, this timing has passed. The slot for ${requestedDate} from ${requestedTime} to ${requestedEndTime} is over.`;
+         if (lang === 'hi') return `मोटा भाई, ${requestedDate} ${requestedTime} का टाइमिंग तो चला गया।`;
+         if (lang === 'gu') return `મોટા ભાઈ, ${requestedDate} ${requestedTime} નો ટાઈમિંગ તો જતો રહ્યો છે.`;
+         return `Mota Bhai, the time ${requestedTime} on ${requestedDate} has passed.`;
     }
 
     if (isAvailable) {
-      if (lang === 'hi') return `हाँ, ${requestedDate} को ${requestedTime} से ${requestedEndTime} तक ${availabilityInfo} उपलब्ध है।`;
-      if (lang === 'gu') return `હા, ${requestedDate} ${requestedTime} થી ${requestedEndTime} સુધી ${availabilityInfo} ઉપલબ્ધ છે.`;
-      return `Yes, ${availabilityInfo} is available on ${requestedDate} from ${requestedTime} to ${requestedEndTime}.`;
+      if (lang === 'hi') return `हाँ मोटा भाई, ${requestedDate} ${requestedTime} ${availabilityInfo} उपलब्ध है।`;
+      if (lang === 'gu') return `હા મોટા ભાઈ, ${requestedDate} ${requestedTime} ${availabilityInfo} ઉપલબ્ધ છે.`;
+      return `Yes Mota Bhai, ${availabilityInfo} is available on ${requestedDate} at ${requestedTime}.`;
     } else {
-      if (lang === 'hi') return `माफ़ कीजिये, ${requestedDate} को ${requestedTime} से ${requestedEndTime} तक कोई स्लॉट खाली नहीं है।`;
-      if (lang === 'gu') return `માફ કરશો, ${requestedDate} ${requestedTime} થી ${requestedEndTime} સુધી સ્લોટ ઉપલબ્ધ નથી.`;
-      return `Sorry, slots are not available on ${requestedDate} from ${requestedTime} to ${requestedEndTime}.`;
+      if (lang === 'hi') return `माफ़ कीजिये मोटा भाई, ${requestedDate} ${requestedTime} कोई स्लॉट खाली नहीं है।`;
+      if (lang === 'gu') return `માફ કરશો મોટા ભાઈ, ${requestedDate} ${requestedTime} કોઈ સ્લોટ ઉપલબ્ધ નથી.`;
+      return `Sorry Mota Bhai, no slots available on ${requestedDate} at ${requestedTime}.`;
     }
   }
 }
 
 const responses = {
   hi: {
-    notAvailable: "माफ़ कीजिए, उस समय के लिए कोई भी स्लॉट खाली नहीं है।",
-    available: ({ date, startTime, duration, boxString }) =>
-      `जी हाँ, ${date} को ${startTime} से ${duration} घंटे के लिए ${boxString} उपलब्ध हैं।`
+    notAvailable: "उस समय कोई स्लॉट नहीं है।",
+    available: ({ boxString }) =>
+      `हाँ, ${boxString} उपलब्ध है।`
   },
 
   gu: {
-    notAvailable: "માફ કરશો, તે સમય માટે કોઈ પણ સ્લોટ ખાલી નથી.",
-    available: ({ date, startTime, duration, boxString }) =>
-      `હા, ${date} ${startTime} થી ${duration} કલાક માટે ${boxString} ખાલી છે.`
+    notAvailable: "તે સમયે કોઈ સ્લોટ નથી.",
+    available: ({ boxString }) =>
+      `હા, ${boxString} ખાલી છે.`
   },
 
   en: {
-    notAvailable: "Sorry, there are no slots available for that time.",
-    available: ({ date, startTime, duration, boxString }) =>
-      `Yes, for ${date} at ${startTime}, ${boxString} are available for ${duration} hours.`
+    notAvailable: "No slots at that time.",
+    available: ({ boxString }) =>
+      `Yes, ${boxString} is available.`
   }
 };
 
