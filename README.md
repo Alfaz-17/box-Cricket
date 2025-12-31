@@ -1,203 +1,159 @@
-# Box Cricket Booking System (MERN)
+# 🏏 Cricket Box Booking System
 
-A **box cricket ground booking platform** with role-based features for users and owners, real-time chat, and offline/online booking management.  
-This project is **backend-focused** – I designed and implemented the complete backend architecture, APIs, and database models.
-
----
-
-## 🚀 Features
-
-### Backend Responsibilities (My Focus)
-
-- **RESTful API Development** with Express.js
-- **Role-Based Booking Flow**
-  - Users can book box online
-  - Owners can manage offline bookings for their own box(when they have offline booking so)
-  - Prevents double-booking of time slots
-- **Authentication & Authorization**
-  - Secure login/register with JWT
-  - Role-based access control (user/owner)
-  - Secure owner signup with owner code
-- **Real-time Group Chat**
-  - Implemented using Socket.IO
-  - also real time notifications
-  - Group creation ,delete, invitations, live messaging, exit fronm group
-- **Database Design (MongoDB Atlas)**
-  - Models for users, boxes ,blokedslots, bookings,review ,groups ,notification and messages
-  - Query optimizations and validations
-- **Deployment-Ready Backend**
-  - Environment variables
-  - Render-compatible
+!
+A premium, full-stack **MERN** application designed for booking cricket box venues. This project revolutionizes the booking experience with a **Voice-Activated AI Agent** that allows users to check availability and book slots simply by speaking. It also features seamless **WhatsApp integration** for OTP verification and booking confirmations.
 
 ---
 
-## 🛠 Tech Stack (Backend)
+## 🚀 Live Demo
 
-- **Node.js / Express.js**
-- **MongoDB Atlas (Mongoose ODM)**
-- **Socket.IO (WebSockets)**
-- **@whiskeysockets/baileys(whatsappBot for otp)**
-- **JWT (JSON Web Token) for authentication**
-- **Redis upsatsh (for otp store )**
-- **bullmq for background jobs(when otp send)**
-- **Zustand (frontend state – to consume APIs)**
+**Frontend URL:** 
+---https://www.bookmybox.online/
 
----
+## ✨ Key Features
 
----
+### 🤖 AI Voice Assistant
+- **"Talk-to-Book"**: Users can ask "Is there a slot available next Friday at 6 PM?" and get instant voice feedback.
+- **Natural Language Processing**: Built with **Groq SDK (Whisper Model)** for speech-to-text and **Murf AI** for realistic text-to-speech responses.
+- **Context Aware**: Remembers previous queries for a conversational experience.
 
-## 1. Authentication Routes (`/api/auth`)
+### � WhatsApp Integration
+- **Zero-Email Auth**: Sign up and login exclusively using **WhatsApp OTPs**.
+- **Instant Notifications**: Receive booking confirmations and receipts directly on WhatsApp via **@whiskeysockets/baileys**.
 
-| Method | Endpoint           | Description                        | Auth Required |
-| ------ | ------------------ | ---------------------------------- | ------------- |
-| POST   | `/verify-otp`      | Verify OTP during signup/login     | No            |
-| POST   | `/signup`          | Complete user signup               | No            |
-| POST   | `/login`           | Login and get JWT token            | No            |
-| POST   | `/forgot-password` | Send reset password email/OTP      | No            |
-| PUT    | `/update-profile`  | Update user profile                | Yes           |
-| POST   | `/me`              | Get current logged-in user profile | Yes           |
-| POST   | `/logout`          | Logout user                        | Yes           |
-| GET    | `/users`           | Get all users (admin)              | Yes           |
+### 📅 Advanced Booking System
+- **Real-Time Slots**: Live slot availability updates using **Socket.IO**.
+- **Conflict Management**: Prevents double bookings instantly.
+- **Dynamic Pricing**: Support for different pricing tiers (Weekdays vs Weekends).
 
----
+### 👮 Admin Dashboard
+- **Analytics**: View booking trends and revenue.
+- **Slot Management**: Manually block slots for maintenance or offline bookings.
+- **Box Management**: Create, edit, and manage multiple cricket turf profiles.
 
-## 2. Booking Routes (`/api/booking`)
-
-| Method | Endpoint                 | Description                       | Auth Required |
-| ------ | ------------------------ | --------------------------------- | ------------- |
-| POST   | `/temporary-booking`     | Create a temporary booking        | Yes           |
-| POST   | `/check-slot`            | Check slot availability           | Yes           |
-| POST   | `/cancel/:id`            | Cancel a booking by ID            | Yes           |
-| GET    | `/report/:id`            | Get booking receipt PDF/details   | Yes           |
-| GET    | `/my-bookings`           | Get all bookings for current user | Yes           |
-| GET    | `/owner-bookings`        | Get all bookings for an owner     | Yes           |
-| GET    | `/owner-recent-bookings` | Get owner’s recent bookings       | Yes           |
+### � Secure Payments
+- **Integrated Gateway**: Powered by **SabPaisa**.
+- **Custom Security**: Implements bespoke encryption/decryption for transaction validation.
 
 ---
 
-## 3. Box Routes (`/api/boxes`)
+## 🛠️ Technology Stack
 
-### Owner-specific
+### Frontend
+- **Framework**: React.js (Vite)
+- **Styling**: Tailwind CSS (assumed based on modern standards), CSS Modules
+- **State Management**: React Context API
+- **HTTP Client**: Axios
 
-| Method | Endpoint      | Description                 | Auth Required |
-| ------ | ------------- | --------------------------- | ------------- |
-| POST   | `/create`     | Create a new cricket box    | Yes (Owner)   |
-| PUT    | `/update/:id` | Update a box by ID          | Yes (Owner)   |
-| DELETE | `/delete/:id` | Delete a box by ID          | Yes (Owner)   |
-| GET    | `/my-box`     | Get boxes owned by the user | Yes (Owner)   |
+### Backend
+- **Runtime**: Node.js & Express.js
+- **Database**: MongoDB (Mongoose ODM)
+- **Real-time**: Socket.IO
+- **Cron Jobs**: Automated cleanup for pending bookings and temporary voice files.
 
-### Public
-
-| Method | Endpoint          | Description                     | Auth Required |
-| ------ | ----------------- | ------------------------------- | ------------- |
-| GET    | `/public`         | List all cricket boxes          | No            |
-| GET    | `/public/:id`     | Get box details by ID           | No            |
-| POST   | `/availableBoxes` | Get available boxes by criteria | No            |
-| POST   | `/support`        | Submit feedback/support request | Yes           |
-
----
-
-## 4. Group Routes (`/api/group`)
-
-| Method | Endpoint               | Description                   | Auth Required |
-| ------ | ---------------------- | ----------------------------- | ------------- |
-| POST   | `/create`              | Create a new group            | Yes           |
-| POST   | `/invite`              | Invite user to a group        | Yes           |
-| POST   | `/join`                | Join a group                  | Yes           |
-| GET    | `/myGroups`            | Get all groups of logged user | Yes           |
-| POST   | `/getMembers/:groupId` | Get group members by group ID | Yes           |
-| POST   | `/delete/:groupId`     | Delete a group by ID          | Yes           |
-| POST   | `/leave/:groupId`      | Leave a group by ID           | Yes           |
+### AI & Services
+- **Voice Transcribing**: Groq SDK (Whisper Large V3)
+- **Text-to-Speech**: Murf AI
+- **WhatsApp Bot**: Baileys
+- **Payment Gateway**: SabPaisa
 
 ---
 
-## 5. Review Routes (`/api/reviews`)
-
-| Method | Endpoint      | Description                      | Auth Required |
-| ------ | ------------- | -------------------------------- | ------------- |
-| POST   | `/create/:id` | Add a review for a box by box ID | Yes           |
-| GET    | `/:id`        | Get reviews for a box by ID      | Yes           |
-
----
-
-## 6. Notification Routes (`/api/notification`)
-
-| Method | Endpoint                              | Description                       | Auth Required |
-| ------ | ------------------------------------- | --------------------------------- | ------------- |
-| GET    | `/`                                   | Get all notifications             | Yes           |
-| POST   | `/deleteNotification/:notificationId` | Delete a notification by ID       | Yes           |
-| PUT    | `/mark-all-read`                      | Mark all notifications as read    | Yes           |
-| GET    | `/unread-count`                       | Get count of unread notifications | Yes           |
-
----
-
-## 7. Message Routes (`/api/messages`)
-
-| Method | Endpoint        | Description                   | Auth Required |
-| ------ | --------------- | ----------------------------- | ------------- |
-| POST   | `/send`         | Send a new message in a group | Yes           |
-| GET    | `/all/:groupId` | Get all messages in a group   | Yes           |
-
----
-
-## 8. Slots Routes (`/api/slots`)
-
-| Method | Endpoint                    | Description                          | Auth Required |
-| ------ | --------------------------- | ------------------------------------ | ------------- |
-| POST   | `/block-slots`              | Block a time slot (owner)            | Yes (Owner)   |
-| GET    | `/booked-blocked-slots/:id` | Get blocked & booked slots by box ID | Yes           |
-| DELETE | `/unblock/:slotId`          | Unblock a slot by slot ID            | Yes (Owner)   |
-
----
-
-### Authentication
-
-- `protectedRoute`: Requires JWT token.
-- `isOwner`: Requires owner privileges.
-
----
-
-## 🏗 System Architecture
-
-![Architecture](link-to-your-architecture-diagram.png)
-
-(Frontend on Vercel → Backend on Render → MongoDB Atlas → Socket.IO for real-time)
-
----
-
-## 📸 Screenshots / Demo
-
-_(Add screenshots or a Loom/YouTube demo video link)_
-
----
-
-## 🔗 Live Links
-
-- **Frontend**: [https://your-frontend.vercel.app](https://your-frontend.vercel.app)
-- **Backend API**: [https://your-backend.onrender.com](https://your-backend.onrender.com)
-
----
-
-## 🧪 API Documentation
-
-Postman collection link: [Postman Docs](https://link-to-postman-documentation)
-
----
-
-## How to Run Locally
+## 📂 Project Structure
 
 ```bash
-git clone https://github.com/Alfaz-17/box-Cricket.git
-cd box-Cricket/backend
-npm install
-npm run dev
-
-
-## 📂 Folder Structure
-
-box-Cricket/
-│
-├── backend/ # All backend APIs, routes, models, socket code
-├── frontend/ # React app to consume APIs
+cricket-box/
+├── backend/
+│   ├── controllers/      # Logic for Auth, Bookings, Voice, etc.
+│   ├── cron/             # Scheduled tasks (File cleanup)
+│   ├── lib/              # Integrations (WhatsApp, MongoDB, Socket)
+│   ├── models/           # Mongoose Schemas
+│   ├── routes/           # API Endpoints
+│   └── server.js         # Entry point
+├── frontend/
+│   ├── src/
+│   │   ├── pages/        # Public, User, and Admin pages
+│   │   ├── components/   # Reusable UI components
+│   │   └── utils/        # Helper functions (API conn, formatters)
+│   └── .env              # Frontend config
 └── README.md
 ```
+
+---
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
+- Node.js (v18+)
+- MongoDB Atlas URI
+- API Keys for Groq, Murf AI, and SabPaisa
+
+### 1. Backend Setup
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in the `backend` folder:
+```env
+PORT=5001
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_super_secret_key
+CLIENT_URL=http://localhost:5173
+
+# AI Services
+GROQ_API_KEY=your_groq_key
+MURF_API_KEY=your_murf_key
+
+# Payment Gateway
+SABPAISA_CLIENT_CODE=...
+SABPAISA_TRANS_USERNAME=...
+SABPAISA_TRANS_PASSWORD=...
+```
+
+Start the Server:
+```bash
+npm run dev
+```
+
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file in the `frontend` folder:
+```env
+# Point this to your backend URL (Local or Deployed)
+VITE_API_BASE_URL=http://localhost:5001
+```
+
+Start the Client:
+```bash
+npm run dev
+```
+
+---
+
+## 📡 API Overview
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| **POST** | `/api/auth/send-otp` | Sends WhatsApp OTP for login |
+| **POST** | `/api/voice/check-slot` | AI Agent slot query |
+| **GET** | `/api/boxes` | Fetch all cricket boxes |
+| **POST** | `/api/booking/book` | Create a new booking |
+| **POST** | `/api/payment/initiate` | Start payment process |
+
+---
+
+## 🖼️ Screenshots
+
+*(Placeholder: Add screenshots of the Home Page, Booking Flow, and Admin Dashboard here)*
+
+1.  **Home Page**: Clean, modern landing page with "Book Now".
+2.  **Voice Agent**: Pop-up listening interface.
+3.  **Admin Dashboard**: Revenue charts and slot blocking tools.
+
+---
+
