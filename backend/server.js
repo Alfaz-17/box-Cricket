@@ -11,6 +11,7 @@ import bookingRoutes from './routes/bookingRoutes.js'
 import reviewRoutes from './routes/reviewRoutes.js'
 import slotsRoutes from './routes/slotsRoutes.js'
 import analyticsRoutes from './routes/analyticsRoutes.js'
+import chatRoutes from './routes/chatRoutes.js'
 import voiceRoutes from './routes/voiceRoutes.js'
 import paymentRoutes from './routes/paymentRoutes.js'
 import sitemapRouter from './routes/sitemap.js'
@@ -101,6 +102,7 @@ app.use('/api/reviews', reviewRoutes)
 app.use('/api/slots', slotsRoutes)
 app.use('/api/analytics', analyticsRoutes)
 app.use("/api/voice",voiceRoutes)
+app.use("/api/chat", chatRoutes)
 app.use('/api/payment', paymentRoutes)
 app.use('/', sitemapRouter) // Sitemap route
 
