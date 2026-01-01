@@ -101,7 +101,7 @@ const SlotPicker = ({
     return group.slots.some(booking => {
        const isPaidAndConfirmed = 
          booking.status === 'confirmed' && 
-         (booking.paymentStatus === 'paid' || booking.isOffline);
+         (booking.paymentStatus === 'paid')
        if (!isPaidAndConfirmed) return false;
 
        const bStart = new Date(booking.startDateTime)

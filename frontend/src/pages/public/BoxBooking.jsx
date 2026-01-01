@@ -137,21 +137,35 @@ const BoxBooking = () => {
   const startTime = selectedSlots.length > 0 ? selectedSlots[0].startTime : ''
   const duration = selectedSlots.length
 
+  // Debug isOwner check
+  const isOwnerCheck = isAuthenticated && user?.role === 'owner' && box?.owner === user?._id;
+  useEffect(() => {
+    if (box && user) {
+        console.log('🔍 isOwner Debug:', {
+            isAuthenticated,
+            userRole: user?.role,
+            boxOwner: box?.owner,
+            userId: user?._id,
+            isOwner: isOwnerCheck
+        });
+    }
+  }, [box, user, isAuthenticated]);
+
   const handleBooking = async () => {
     if (!isAuthenticated) {
       toast.error('Please log in to book a cricket box')
       navigate('/login', { state: { from: `/box/${id}/booking` } })
-      return
+      return false
     }
 
     if (!selectedDate || !startTime || !duration || !selectedQuarter) {
       toast.error('Please select all booking details')
-      return
+      return false
     }
 
     if (!contactNumber || !/^\d{10}$/.test(contactNumber)) {
       toast.error('Enter a valid 10-digit contact number')
-      return
+      return false
     }
 
     setIsProcessingBooking(true)
@@ -182,8 +196,7 @@ const BoxBooking = () => {
         setSelectedSlots([]) // Clear selection
         setIsProcessingBooking(false)
         fetchSlots() // Refresh locked slots
-        // Optionally navigate to dashboard or stay here
-        return
+        return true // Success
       }
 
       console.log('🔵 Step 2: Initiating payment...')
@@ -204,12 +217,14 @@ const BoxBooking = () => {
 
       toast.success('Redirecting to payment gateway...')
       setSelectedSlots([]) // Clear selection
+      return true // Success
 
     } catch (error) {
       console.error('❌ Booking/Payment Error:', error)
       console.error('Error details:', error.response?.data)
       toast.error(error.response?.data?.message || error.message || 'Failed to create booking or initiate payment')
       setIsProcessingBooking(false)
+      return false // Failure
     }
   }
 

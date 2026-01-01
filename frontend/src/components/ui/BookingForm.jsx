@@ -119,7 +119,10 @@ const BookingForm = ({
                 </div>
 
                 <Button
-                  onClick={handleBooking}
+                  onClick={async () => {
+                    const success = await handleBooking()
+                    if (success) setShowPaymentModal(false)
+                  }}
                   disabled={isProcessingBooking}
                   className="w-full h-14 font-bold text-lg shadow-lg shadow-primary/25"
                 >
