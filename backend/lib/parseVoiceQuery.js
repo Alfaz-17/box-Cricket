@@ -22,14 +22,20 @@ const nextSaturday = moment().day(13).format("YYYY-MM-DD");
 // Build context information for the AI
 let contextInfo = "";
 if (conversationContext) {
+  let historyLog = "";
+  if (conversationContext.chatHistory && conversationContext.chatHistory.length > 0) {
+    historyLog = `\nRECENT CHAT HISTORY:\n` + conversationContext.chatHistory.map(msg => `${msg.role}: ${msg.content}`).join("\n");
+  }
+
   contextInfo = `
 CONVERSATION CONTEXT (Information gathered so far):
 ${conversationContext.date ? `- Date: ${conversationContext.date}` : "- Date: NOT SET"}
 ${conversationContext.startTime ? `- Time: ${conversationContext.startTime}` : "- Time: NOT SET"}
 ${conversationContext.duration ? `- Duration: ${conversationContext.duration} hours` : "- Duration: NOT SET"}
 ${conversationContext.language ? `- Language: ${conversationContext.language}` : ""}
+${historyLog}
 
-The user is continuing a conversation. Extract NEW information from their current message and merge it with the context above.
+The user is continuing a conversation. Use the RECENT CHAT HISTORY to resolve pronouns, understand context like "what about 9pm?", and extract NEW information from their current message to merge with the context above.
 `;
 }
 

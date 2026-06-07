@@ -98,10 +98,9 @@ export const voiceCheckSlot = async (req, res) => {
       const replyText = await buildVoiceResponse({ parsed, result: null });
       
       // 5️⃣ TTS (Murf)
-      const audioFileName = `voice_${Date.now()}.mp3`;
+      let audioBase64 = null;
       try {
-        await textToSpeechMurf(replyText, parsed.language, audioFileName);
-        autoDeleteFile(audioFileName); // Clean up after 60s
+        audioBase64 = await textToSpeechMurf(replyText, parsed.language, null, true);
       } catch (err) {
         console.error("TTS Failed:", err);
       }
@@ -110,7 +109,7 @@ export const voiceCheckSlot = async (req, res) => {
       return res.json({
         voiceText: text,
         replyText,
-        audioUrl: `/uploads/${audioFileName}`,
+        audioBase64,
         sessionId,
         needsMoreInfo: true,
         structuredData: null // No structured data yet
@@ -160,11 +159,10 @@ export const voiceCheckSlot = async (req, res) => {
     };
 
     // 5️⃣ TTS (Murf)
-    const audioFileName = `voice_${Date.now()}.mp3`;
+    let audioBase64 = null;
     
     try {
-      await textToSpeechMurf(replyText, parsed.language, audioFileName);
-      autoDeleteFile(audioFileName); // Clean up after 60s
+      audioBase64 = await textToSpeechMurf(replyText, parsed.language, null, true);
     } catch (err) {
       console.error("TTS Failed:", err);
     }
@@ -173,7 +171,7 @@ export const voiceCheckSlot = async (req, res) => {
     return res.json({
       voiceText: text,
       replyText,
-      audioUrl: `/uploads/${audioFileName}`,
+      audioBase64,
       sessionId,
       needsMoreInfo: false,
       structuredData // ⭐ NEW: Structured data for UI display
@@ -186,14 +184,17 @@ export const voiceCheckSlot = async (req, res) => {
     // 🛑 Graceful Error Handling (Spoken)
     try {
       const errorMsg = "Sorry, I couldn't understand that. Please try again.";
-      const audioFileName = `voice_err_${Date.now()}.mp3`;
-      await textToSpeechMurf(errorMsg, "en", audioFileName);
-      autoDeleteFile(audioFileName); // Clean up
+      let audioBase64 = null;
+      try {
+        audioBase64 = await textToSpeechMurf(errorMsg, "en", null, true);
+      } catch (ttsInnerErr) {
+        console.error("Failed to generate fallback TTS", ttsInnerErr);
+      }
       
       return res.json({
         voiceText: "Error processing request",
         replyText: errorMsg,
-        audioUrl: `/uploads/${audioFileName}`,
+        audioBase64,
         isError: true
       });
     } catch (ttsErr) {

@@ -12,7 +12,6 @@ import reviewRoutes from './routes/reviewRoutes.js'
 import slotsRoutes from './routes/slotsRoutes.js'
 import analyticsRoutes from './routes/analyticsRoutes.js'
 import chatRoutes from './routes/chatRoutes.js'
-import voiceRoutes from './routes/voiceRoutes.js'
 import paymentRoutes from './routes/paymentRoutes.js'
 import sitemapRouter from './routes/sitemap.js'
 
@@ -23,14 +22,12 @@ import cors from 'cors'
 import { initSocket } from './lib/soket.js'
 import { generalLimiter } from './middleware/rateLimiter.js'
 import mime from 'mime'
-import { startCleanupJob } from './cron/cleanupVoiceFiles.js'
 import { startPendingBookingCleanup } from './cron/cleanupPendingBookings.js'
 
 dotenv.config()
 const app = express()
 
 // Start the cleanup jobs immediately
-startCleanupJob();
 startPendingBookingCleanup();
 
 //create socket server
@@ -101,7 +98,6 @@ app.use('/api/booking', bookingRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/slots', slotsRoutes)
 app.use('/api/analytics', analyticsRoutes)
-app.use("/api/voice",voiceRoutes)
 app.use("/api/chat", chatRoutes)
 app.use('/api/payment', paymentRoutes)
 app.use('/', sitemapRouter) // Sitemap route

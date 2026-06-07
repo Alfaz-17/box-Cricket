@@ -11,7 +11,7 @@ const VOICES = {
   gu: "gu-IN-default" // Placeholder, will use Google TTS fallback
 };
 
-export async function textToSpeechMurf(text, language = "hi", explicitFileName = null) {
+export async function textToSpeechMurf(text, language = "hi", explicitFileName = null, returnBase64 = false) {
   // 1️⃣ Special handling for Gujarati (Google TTS for native pronunciation)
   if (language === "gu") {
     try {
@@ -24,6 +24,10 @@ export async function textToSpeechMurf(text, language = "hi", explicitFileName =
 
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
+
+      if (returnBase64) {
+        return buffer.toString("base64");
+      }
 
       const fileName = explicitFileName || `voice_${Date.now()}.mp3`;
       await fs.promises.writeFile(`uploads/${fileName}`, buffer);
@@ -78,6 +82,11 @@ export async function textToSpeechMurf(text, language = "hi", explicitFileName =
       // Stream endpoint returns binary data directly
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
+
+      if (returnBase64) {
+        console.log(`✅ TTS Generated (Base64 Stream)`);
+        return buffer.toString("base64");
+      }
 
       const fileName = explicitFileName || `voice_${Date.now()}.mp3`;
       await fs.promises.writeFile(`uploads/${fileName}`, buffer);

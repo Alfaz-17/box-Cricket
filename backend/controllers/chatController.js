@@ -36,7 +36,14 @@ export const textCheckSlot = async (req, res) => {
     }
 
     // 📝 Retrieve conversation context
-    const conversationContext = getSession(sessionId);
+    let conversationContext = getSession(sessionId) || {};
+    let chatHistory = conversationContext.chatHistory || [];
+    
+    // Add user message to history
+    chatHistory.push({ role: "User", content: text });
+    if (chatHistory.length > 8) chatHistory = chatHistory.slice(-8); // keep last 8 interactions
+    
+    conversationContext.chatHistory = chatHistory;
     
     // 2️⃣ Text → Intent + Time (with context)
     const parsedRaw = await parseVoiceQuery(text, conversationContext);
@@ -48,7 +55,8 @@ export const textCheckSlot = async (req, res) => {
       date: parsed.date,
       startTime: parsed.startTime,
       duration: parsed.duration,
-      language: parsed.language
+      language: parsed.language,
+      chatHistory: chatHistory
     });
 
     if (parsed.intent !== "check_slot" && parsed.intent !== "book_slot") {
@@ -64,6 +72,9 @@ export const textCheckSlot = async (req, res) => {
       // Generate follow-up question
       const replyText = await buildVoiceResponse({ parsed, result: null });
       
+      chatHistory.push({ role: "Assistant", content: replyText });
+      updateSession(sessionId, { ...getSession(sessionId), chatHistory });
+
       return res.json({
         userText: text,
         replyText,
@@ -102,10 +113,13 @@ export const textCheckSlot = async (req, res) => {
       available: result.available,
       status: isPast ? "PAST" : (result.available ? "AVAILABLE" : "BOOKED"),
       boxes: result.available && result.slots ? 
-        [...new Set(result.slots.map(s => s.quarterName.replace(/-/g, "").replace(/\\s+/g, " ").trim()))] : 
+        [...new Set(result.slots.map(s => `${s.boxName} (${s.quarterName.replace(/-/g, "").replace(/\\s+/g, " ").trim()})`))] : 
         [],
       language: parsed.language
     };
+
+    chatHistory.push({ role: "Assistant", content: replyText });
+    updateSession(sessionId, { ...getSession(sessionId), chatHistory });
 
     return res.json({
       userText: text,
