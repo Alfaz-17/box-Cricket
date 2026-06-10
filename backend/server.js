@@ -49,46 +49,7 @@ app.use(cookieParser())
 app.use(express.json({ limit: '20mb' })) // For JSON requests
 app.use(express.urlencoded({ extended: true, limit: '20mb' })) // For form submissions
 
-// Serve uploaded audio files
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-
-app.get("/uploads/voice_:id.mp3", async (req, res, next) => {
-  const filePath = path.join(__dirname, "../uploads", `voice_${req.params.id}.mp3`);
-  
-  // fs module needed for exists logic
-  const fs = await import('fs');
-
-  let attempts = 0;
-  const maxAttempts = 50; // 5 seconds (50 * 100ms)
-
-  const checkFile = () => {
-    if (fs.existsSync(filePath)) {
-      next(); // File exists, let express.static serve it
-    } else {
-      attempts++;
-      if (attempts >= maxAttempts) {
-        return res.status(404).send("Audio generation timed out");
-      }
-      setTimeout(checkFile, 100); // Wait 100ms and check again
-    }
-  };
-
-  checkFile();
-});
-
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "../uploads"), {
-    setHeaders: (res, filePath) => {
-      res.setHeader("Content-Type", mime.getType(filePath));
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "GET");
-      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    }
-  })
-);
+// Removed Voice Agent Audio Serving Logic
 
 const PORT = process.env.PORT || 5001
 
@@ -99,8 +60,13 @@ app.use('/api/reviews', reviewRoutes)
 app.use('/api/slots', slotsRoutes)
 app.use('/api/analytics', analyticsRoutes)
 app.use("/api/chat", chatRoutes)
+import { errorHandler } from './middleware/errorHandler.js';
+
 app.use('/api/payment', paymentRoutes)
 app.use('/', sitemapRouter) // Sitemap route
+
+// Use Global Error Handler (Must be after all routes)
+app.use(errorHandler);
 
 //start whatsApp chaybot
 

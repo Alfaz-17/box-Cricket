@@ -225,19 +225,26 @@ export const feedBackAndSupport = async (req, res) => {
 };
 
 // Get all cricket boxes
-export const getAllBoxes = async (req, res) => {
+export const getAllBoxes = async (req, res, next) => {
   try {
     const boxes = await CricketBox.find().select('-blockedSlots')
     res.json(boxes)
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch boxes' })
+    // Instead of res.status(500), we pass the error to our Global Handler
+    next(err)
   }
 };
 
-export const getBoxDetails = async (req, res) => {
+export const getBoxDetails = async (req, res, next) => {
   try {
     const box = await CricketBox.findById(req.params.id).select('-blockedSlots')
-    if (!box) return res.status(404).json({ message: 'Box not found' })
+    
+    if (!box) {
+      // Create a custom error and pass it
+      const error = new Error('Box not found');
+      error.statusCode = 404;
+      return next(error);
+    }
     
     // Generate SEO content
     const seoContent = generateSEOContent(box)
@@ -247,7 +254,7 @@ export const getBoxDetails = async (req, res) => {
       seo: seoContent
     })
   } catch (err) {
-    res.status(500).json({ message: 'Failed to get box details' })
+    next(err)
   }
 };
 
