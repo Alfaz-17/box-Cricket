@@ -10,6 +10,7 @@ import {
   forgotPas,
   updateProfile,
   getAllUsers,
+  googleLogin,
 } from '../controllers/authController.js'
 import { protectedRoute } from '../middleware/auth.js'
 import { validateRequest } from '../middleware/validate.js'
@@ -23,6 +24,7 @@ router.post('/signup', validateRequest(signupSchema), completeSignup)
 router.put('/update-profile', protectedRoute, updateProfile)
 router.post('/forgot-password', forgotPas)
 router.post('/login', validateRequest(loginSchema), login)
+router.post('/google', googleLogin)
 router.post('/me', protectedRoute, getMe)
 router.post('/logout', logout)
 

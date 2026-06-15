@@ -1,9 +1,12 @@
 // server.js
-import express from 'express'
-import dotenv from 'dotenv'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import authRoutes from './routes/authRoutes.js'
+import express from 'express';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import { envVars } from './utils/envValidation.js';
+import authRoutes from './routes/authRoutes.js';
 import connectMongoDB from './lib/connectMongoDB.js'
 import cookieParser from 'cookie-parser'
 import boxRoutes from './routes/boxRoutes.js'
@@ -14,9 +17,10 @@ import analyticsRoutes from './routes/analyticsRoutes.js'
 import chatRoutes from './routes/chatRoutes.js'
 import paymentRoutes from './routes/paymentRoutes.js'
 import sitemapRouter from './routes/sitemap.js'
+import { logger } from './utils/logger.js'
 
 
-import { startBot } from './lib/whatsappBot.js'
+// Removed WhatsApp import
 import http from 'http'
 import cors from 'cors'
 import { initSocket } from './lib/soket.js'
@@ -32,6 +36,12 @@ startPendingBookingCleanup();
 
 //create socket server
 const server = http.createServer(app)
+
+// 🛡️ Enterprise Security Middleware
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Allows your frontend to fetch data
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" } // Allows Google Login popup
+})); // Sets secure HTTP headers
 
 app.use(generalLimiter);
 app.use(
@@ -49,9 +59,11 @@ app.use(cookieParser())
 app.use(express.json({ limit: '20mb' })) // For JSON requests
 app.use(express.urlencoded({ extended: true, limit: '20mb' })) // For form submissions
 
+// app.use(mongoSanitize()); // Removed due to getter property conflict (Zod + Mongoose handle validation)
+
 // Removed Voice Agent Audio Serving Logic
 
-const PORT = process.env.PORT || 5001
+const PORT = envVars.PORT || 5001
 
 app.use('/api/auth', authRoutes)
 app.use('/api/boxes', boxRoutes)
@@ -75,17 +87,13 @@ app.use(errorHandler);
 await connectMongoDB();
 
 server.listen(PORT, () => {
-  console.log('server is runnning on port', PORT)
+  logger.info(`Server is running on port ${PORT}`);
 });
 
 initSocket(server)
 
-app.get("/", (req, res) => res.send("OK"));
+import { Request, Response } from 'express';
+app.get("/", (req: Request, res: Response) => res.send("OK"));
 
-startBot()
-  .then(() => {
-    console.log('WhatsApp bot started successfully')
-  })
-  .catch(err => {
-    console.error('Failed to start WhatsApp bot:', err)
-  })
+// WhatsApp bot removed
+

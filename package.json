@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch backend/server.js",
-    "start": "tsx backend/server.js",
+    "dev": "tsx watch backend/server.ts",
+    "start": "tsx backend/server.ts",
     "test": "vitest"
   },
   "type": "module",
@@ -14,7 +14,6 @@
   "description": "",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
-    "@whiskeysockets/baileys": "^6.7.18",
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "bullmq": "^5.56.4",
@@ -24,9 +23,12 @@
     "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.1.0",
     "fs": "^0.0.1-security",
+    "google-auth-library": "^10.7.0",
     "groq-sdk": "^0.37.0",
+    "helmet": "^8.2.0",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "mime": "^4.1.0",
@@ -39,6 +41,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nanoid": "^5.1.6",
     "ngrok": "^5.0.0-beta.2",
+    "nodemailer": "^9.0.0",
     "nodemon": "^3.1.11",
     "otp-generator": "^4.0.1",
     "qrcode-terminal": "^0.12.0",
@@ -49,9 +52,13 @@
     "socket.io": "^4.8.1",
     "streamifier": "^0.1.1",
     "stripe": "^18.1.0",
+    "winston": "^3.19.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/nodemailer": "^8.0.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.8"
   }
 }

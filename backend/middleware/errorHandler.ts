@@ -5,12 +5,11 @@ interface CustomError extends Error {
   statusCode?: number;
 }
 
+import { logger } from '../utils/logger.js';
+
 export const errorHandler = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
-  // Log the error for our own debugging
-  console.error(`[Error] ${err.message}`);
-  if (err.stack) {
-    console.error(err.stack);
-  }
+  // Log the error to our Winston file and console
+  logger.error(`[Error Handler] ${err.message}`, { stack: err.stack, path: req.path, method: req.method });
 
   // Set default status code if none is provided
   const statusCode = err.statusCode || 500;
