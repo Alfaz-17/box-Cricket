@@ -14,7 +14,6 @@ import bookingRoutes from './routes/bookingRoutes.js'
 import reviewRoutes from './routes/reviewRoutes.js'
 import slotsRoutes from './routes/slotsRoutes.js'
 import analyticsRoutes from './routes/analyticsRoutes.js'
-import chatRoutes from './routes/chatRoutes.js'
 import paymentRoutes from './routes/paymentRoutes.js'
 import sitemapRouter from './routes/sitemap.js'
 import { logger } from './utils/logger.js'
@@ -71,7 +70,6 @@ app.use('/api/booking', bookingRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/slots', slotsRoutes)
 app.use('/api/analytics', analyticsRoutes)
-app.use("/api/chat", chatRoutes)
 import { errorHandler } from './middleware/errorHandler.js';
 
 app.use('/api/payment', paymentRoutes)
@@ -79,9 +77,6 @@ app.use('/', sitemapRouter) // Sitemap route
 
 // Use Global Error Handler (Must be after all routes)
 app.use(errorHandler);
-
-//start whatsApp chaybot
-
 
 // Connect to MongoDB
 await connectMongoDB();
@@ -94,6 +89,3 @@ initSocket(server)
 
 import { Request, Response } from 'express';
 app.get("/", (req: Request, res: Response) => res.send("OK"));
-
-// WhatsApp bot removed
-

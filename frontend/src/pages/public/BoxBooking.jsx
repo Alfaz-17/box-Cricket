@@ -207,7 +207,7 @@ const BoxBooking = () => {
 
       console.log('✅ Payment response:', paymentResponse.data)
 
-      if (!paymentResponse.data.spURL || !paymentResponse.data.encData) {
+      if (!paymentResponse.data.paymentSessionId) {
         throw new Error('Invalid payment data received')
       }
 

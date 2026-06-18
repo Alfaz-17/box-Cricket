@@ -12,7 +12,7 @@ Empower your cricket box or turf business with the most advanced, AI-driven book
 *   **24/7 Availability**: Never miss a booking request, even during off-hours.
 
 ### 2. � Financial & Payment Handling
-*   **Automatic Payment Handling**: Fully integrated secure payment gateway (SabPaisa) that handles transactions automatically, ensuring you get paid before a slot is reserved.
+*   **Automatic Payment Handling**: Fully integrated secure payment gateway (Cashfree) that handles transactions automatically, ensuring you get paid before a slot is reserved.
 *   **Instant User Receipts**: Professional booking receipts are automatically generated and sent to customers immediately after a successful transaction.
 *   **Safe & Secure**: Industry-standard encryption for all financial data.
 

@@ -1,0 +1,33 @@
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: cricket-box-backend
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    ports:
+      - "5005:5001"
+    # The backend container needs to know your environment variables (like Mongo URI)
+    # This automatically loads them from backend/.env into the container
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      # During the build, React needs to know the API URL and Google Client ID.
+      # It pulls these values from the shell running the compose command, or defaults if not set.
+      args:
+        - VITE_API_BASE_URL=http://localhost:5005
+        - VITE_API_URL=http://localhost:5005/api
+        - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
+    container_name: cricket-box-frontend
+    ports:
+      - "5173:80" # Maps your laptop's 5173 port to the container's Nginx port 80
+    restart: unless-stopped
+    depends_on:
+      - backend

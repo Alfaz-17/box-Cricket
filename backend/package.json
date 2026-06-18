@@ -15,5 +15,8 @@
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "cashfree-pg": "^6.0.4"
+  }
 }

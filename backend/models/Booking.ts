@@ -12,9 +12,8 @@ export interface IBooking extends Document {
   duration: number;
   amountPaid: number;
   paymentStatus?: 'pending' | 'paid' | 'failed' | 'processing';
-  sabpaisaTxnId?: string;
-  sabpaisaPaymentId?: string;
-  sabpaisaResponse?: string;
+  cashfreeOrderId?: string;
+  cashfreePaymentSessionId?: string;
   contactNumber?: string;
   confirmedAt?: Date;
   cancelledAt?: Date;
@@ -43,9 +42,8 @@ const bookingSchema: Schema<IBooking> = new mongoose.Schema(
     duration: { type: Number, required: true },
     amountPaid: { type: Number, required: true, default: 500 },
     paymentStatus: { type: String, enum: ['pending', 'paid', 'failed', 'processing'] },
-    sabpaisaTxnId: { type: String },
-    sabpaisaPaymentId: { type: String },
-    sabpaisaResponse: { type: String },
+    cashfreeOrderId: { type: String },
+    cashfreePaymentSessionId: { type: String },
     contactNumber: { type: String },
     confirmedAt: { type: Date },
     cancelledAt: { type: Date },

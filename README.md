@@ -31,8 +31,8 @@ A premium, full-stack **MERN** application designed for booking cricket box venu
 - **Slot Management**: Manually block slots for maintenance or offline bookings.
 - **Box Management**: Create, edit, and manage multiple cricket turf profiles.
 
-### � Secure Payments
-- **Integrated Gateway**: Powered by **SabPaisa**.
+###  Secure Payments
+- **Integrated Gateway**: Powered by **Cashfree**.
 - **Custom Security**: Implements bespoke encryption/decryption for transaction validation.
 
 ---
@@ -55,7 +55,7 @@ A premium, full-stack **MERN** application designed for booking cricket box venu
 - **Voice Transcribing**: Groq SDK (Whisper Large V3)
 - **Text-to-Speech**: Murf AI
 - **WhatsApp Bot**: Baileys
-- **Payment Gateway**: SabPaisa
+- **Payment Gateway**: Cashfree
 
 ---
 
@@ -86,7 +86,7 @@ cricket-box/
 ### Prerequisites
 - Node.js (v18+)
 - MongoDB Atlas URI
-- API Keys for Groq, Murf AI, and SabPaisa
+- API Keys for Groq, Murf AI, and Cashfree
 
 ### 1. Backend Setup
 ```bash
@@ -106,9 +106,8 @@ GROQ_API_KEY=your_groq_key
 MURF_API_KEY=your_murf_key
 
 # Payment Gateway
-SABPAISA_CLIENT_CODE=...
-SABPAISA_TRANS_USERNAME=...
-SABPAISA_TRANS_PASSWORD=...
+CASHFREE_CLIENT_ID=...
+CASHFREE_CLIENT_SECRET=...
 ```
 
 Start the Server:

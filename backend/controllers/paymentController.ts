@@ -1,14 +1,20 @@
 import Booking from '../models/Booking.js';
-import CricketBox from '../models/CricketBox.js';
-import { encrypt, decrypt, randomStr } from '../lib/sabpaisaEncryption.js';
 import { sendEmail } from '../lib/emailService.js';
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.js';
+import { Cashfree, CFEnvironment } from "cashfree-pg";
 
 dotenv.config();
 
-export const initiateSabPaisaPayment = async (req: AuthRequest, res: Response): Promise<void> => {
+// Initialize Cashfree
+const cashfree = new Cashfree(
+  CFEnvironment.SANDBOX,
+  process.env.CASHFREE_CLIENT_ID || '',
+  process.env.CASHFREE_CLIENT_SECRET || ''
+);
+
+export const initiateCashfreePayment = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { bookingId } = req.body;
 
@@ -28,58 +34,47 @@ export const initiateSabPaisaPayment = async (req: AuthRequest, res: Response): 
       return;
     }
 
-    const clientTxnId = randomStr(20, '12345abcde');
+    const orderId = `ORDER_${bookingId}_${Date.now()}`;
     
-    booking.sabpaisaTxnId = clientTxnId;
+    booking.cashfreeOrderId = orderId;
     booking.paymentStatus = 'processing';
     await booking.save();
 
     const payerName = req.user?.name || 'Customer';
     const payerEmail = req.user?.email || 'customer@cricketbox.com';
-    const payerMobile = booking.contactNumber;
+    const payerMobile = booking.contactNumber || '9999999999';
     const amount = booking.amountPaid;
-    const clientCode = process.env.SABPAISA_CLIENT_CODE;
-    const transUserName = process.env.SABPAISA_TRANS_USERNAME;
-    const transUserPassword = process.env.SABPAISA_TRANS_PASSWORD;
-    const callbackUrl = `${process.env.BACKEND_URL}/api/payment/callback`;
-    const channelId = 'W'; 
-    const mcc = process.env.SABPAISA_MCC || '5666';
-    
-    const now = new Date();
-    const pad = (n: number) => n < 10 ? '0' + n : n;
-    const transDate = 
-      now.getFullYear() + '-' +
-      pad(now.getMonth() + 1) + '-' +
-      pad(now.getDate()) + ' ' +
-      pad(now.getHours()) + ':' +
-      pad(now.getMinutes()) + ':' +
-      pad(now.getSeconds());
 
-    const stringForRequest =
-      'payerName=' + payerName +
-      '&payerEmail=' + payerEmail +
-      '&payerMobile=' + payerMobile +
-      '&clientTxnId=' + clientTxnId +
-      '&amount=' + amount +
-      '&clientCode=' + clientCode +
-      '&transUserName=' + transUserName +
-      '&transUserPassword=' + transUserPassword +
-      '&callbackUrl=' + callbackUrl +
-      '&channelId=' + channelId +
-      '&mcc=' + mcc +
-      '&transDate=' + transDate;
+    const request = {
+      order_amount: Number(amount),
+      order_currency: "INR",
+      order_id: orderId,
+      customer_details: {
+        customer_id: req.user?._id?.toString() || 'customer_id',
+        customer_phone: payerMobile,
+        customer_name: payerName,
+        customer_email: payerEmail
+      },
+      order_meta: {
+        return_url: `${process.env.CLIENT_URL || process.env.CLIENT_URL_TEST || 'http://localhost:5173'}/payment/verify?order_id={order_id}&bookingId=${booking._id}`,
+        notify_url: `${process.env.BACKEND_URL}/api/payment/webhook` // Optional
+      }
+    };
 
-    console.log('Payment Request String:', stringForRequest);
+    cashfree.PGCreateOrder(request).then((response) => {
+      const paymentSessionId = response.data.payment_session_id;
+      
+      booking.cashfreePaymentSessionId = paymentSessionId;
+      booking.save();
 
-    const encryptedStringForRequest = encrypt(stringForRequest);
-    console.log('Encrypted Payment Request:', encryptedStringForRequest);
-
-    res.status(200).json({
-      spURL: process.env.SABPAISA_URL,
-      encData: encryptedStringForRequest,
-      clientCode: clientCode,
-      bookingId: booking._id,
-      amount: amount,
+      res.status(200).json({
+        paymentSessionId: paymentSessionId,
+        orderId: orderId,
+        bookingId: booking._id,
+      });
+    }).catch((error) => {
+      console.error('❌ Cashfree Create Order Error:', error.response?.data || error.message);
+      res.status(500).json({ message: 'Failed to create Cashfree order', error: error.message });
     });
 
   } catch (err: any) {
@@ -88,82 +83,59 @@ export const initiateSabPaisaPayment = async (req: AuthRequest, res: Response): 
   }
 };
 
-export const handleSabPaisaCallback = async (req: Request, res: Response): Promise<void> => {
+export const verifyCashfreePayment = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log('📥 Payment Callback Received');
-    console.log('Request Method:', req.method);
-    console.log('Encoded Request Body:', req.body);
-    console.log('Request Query:', req.query);
+    const { orderId, bookingId } = req.body;
 
-    const encData = req.body?.encResponse || req.query?.encResponse;
-
-    if (!encData) {
-      console.error('❌ No encResponse found in request');
-      res.redirect(`${process.env.FRONTEND_URL}/payment/failure?error=no_response_data`);
+    if (!orderId || !bookingId) {
+      res.status(400).json({ message: 'Order ID and Booking ID are required' });
       return;
     }
 
-    console.log('Encrypted Response found, decrypting...');
-
-    const decryptedResponse = decrypt(encData as string);
-    console.log('✅ Decrypted Response:', decryptedResponse);
-
-    const params = new URLSearchParams(decryptedResponse);
-    const clientTxnId = params.get('clientTxnId');
-    const sabpaisaPaymentId = params.get('sabpaisaTxnId');
-    const status = params.get('status');
-    const amount = params.get('amount');
-    const statusMessage = params.get('statusMessage');
-
-    console.log('📊 Payment Result:', { clientTxnId, sabpaisaPaymentId, status, amount, statusMessage });
-
-    const booking: any = await Booking.findOne({ sabpaisaTxnId: clientTxnId }).populate('box');
-    
+    const booking: any = await Booking.findById(bookingId).populate('box');
     if (!booking) {
-      console.error('❌ Booking not found for transaction:', clientTxnId);
-      res.redirect(`${process.env.FRONTEND_URL}/payment/failure?error=booking_not_found&txnId=${clientTxnId}`);
+      res.status(404).json({ message: 'Booking not found' });
       return;
     }
 
-    if (status === 'SUCCESS' || status === 'success') {
-      booking.paymentStatus = 'paid';
-      booking.sabpaisaPaymentId = sabpaisaPaymentId;
-      booking.sabpaisaResponse = decryptedResponse;
-      booking.confirmedAt = new Date();
-      booking.status = 'confirmed';
-      await booking.save();
+    cashfree.PGOrderFetchPayments(orderId).then(async (response) => {
+      const payments = response.data;
+      const isPaid = payments && payments.some((payment: any) => payment.payment_status === "SUCCESS");
 
-      console.log('✅ Payment successful for booking:', booking._id);
+      if (isPaid) {
+        booking.paymentStatus = 'paid';
+        booking.confirmedAt = new Date();
+        booking.status = 'confirmed';
+        await booking.save();
 
-      try {
-        if (booking.user?.email) {
-          await sendEmail(
-            booking.user.email,
-            `Booking Confirmed! - ${booking.box?.name || 'Cricket Box'}`,
-            `✅ Your booking is confirmed!\n\nBox: ${booking.box?.name || 'Cricket Box'}\nDate: ${booking.date}\nTime: ${booking.startTime} - ${booking.endTime}\nAmount: ₹${booking.amountPaid}\n\nThank you for booking with us!`
-          );
+        console.log('✅ Payment successful for booking:', booking._id);
+
+        try {
+          if (booking.user?.email) {
+            await sendEmail(
+              booking.user.email,
+              `Booking Confirmed! - ${booking.box?.name || 'Cricket Box'}`,
+              `✅ Your booking is confirmed!\n\nBox: ${booking.box?.name || 'Cricket Box'}\nDate: ${booking.date}\nTime: ${booking.startTime} - ${booking.endTime}\nAmount: ₹${booking.amountPaid}\n\nThank you for booking with us!`
+            );
+          }
+        } catch (emailErr: any) {
+          console.error('Email notification failed:', emailErr.message);
         }
-      } catch (emailErr: any) {
-        console.error('Email notification failed:', emailErr.message);
+
+        res.status(200).json({ success: true, message: 'Payment verified successfully' });
+      } else {
+        booking.paymentStatus = 'failed';
+        await booking.save();
+        res.status(400).json({ success: false, message: 'Payment failed or not completed' });
       }
-
-      res.redirect(`${process.env.FRONTEND_URL}/payment/success?bookingId=${booking._id}`);
-      return;
-
-    } else {
-      booking.paymentStatus = 'failed';
-      booking.sabpaisaResponse = decryptedResponse;
-      await booking.save();
-
-      console.log('❌ Payment failed for booking:', booking._id, 'Reason:', statusMessage);
-
-      res.redirect(`${process.env.FRONTEND_URL}/payment/failure?bookingId=${booking._id}&reason=${encodeURIComponent(statusMessage || 'Payment failed')}`);
-      return;
-    }
+    }).catch((error) => {
+      console.error('❌ Cashfree Verify Payment Error:', error.response?.data || error.message);
+      res.status(500).json({ message: 'Failed to verify Cashfree payment', error: error.message });
+    });
 
   } catch (err: any) {
-    console.error('❌ Error in payment callback handler:', err);
-    res.redirect(`${process.env.FRONTEND_URL}/payment/failure?error=server_error&message=${encodeURIComponent(err.message)}`);
+    console.error('❌ Error in payment verification handler:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
@@ -181,8 +153,8 @@ export const getPaymentStatus = async (req: Request, res: Response): Promise<voi
       bookingId: booking._id,
       paymentStatus: booking.paymentStatus,
       amountPaid: booking.amountPaid,
-      sabpaisaTxnId: booking.sabpaisaTxnId,
-      sabpaisaPaymentId: booking.sabpaisaPaymentId,
+      cashfreeOrderId: booking.cashfreeOrderId,
+      cashfreePaymentSessionId: booking.cashfreePaymentSessionId,
     });
 
   } catch (err: any) {

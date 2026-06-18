@@ -79,7 +79,7 @@ export const createTemporaryBooking = async (req: AuthRequest, res: Response): P
       paymentStatus: isOwner ? "paid" : "pending",
       status: isOwner ? "confirmed" : "pending",
       isOffline: isOwner,
-      method: isOwner ? "offline" : "sabpaisa",
+      method: isOwner ? "offline" : "cashfree",
       bookedBy: req.user?._id,
       confirmedAt: isOwner ? new Date() : undefined,
     });

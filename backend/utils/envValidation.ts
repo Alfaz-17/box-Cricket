@@ -8,6 +8,8 @@ const envSchema = z.object({
   MONGO_URI: z.string().min(1, "MongoDB URI is required for the database to connect."),
   JWT_SECRET: z.string().min(10, "JWT Secret must be at least 10 characters long for security."),
   CLIENT_URL: z.string().url("CLIENT_URL must be a valid URL"),
+  CASHFREE_CLIENT_ID: z.string().optional(),
+  CASHFREE_CLIENT_SECRET: z.string().optional(),
   // Include other vital keys here...
 });
 

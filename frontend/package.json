@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.7",
     "@fontsource/inter": "^5.2.6",
     "@fontsource/mulish": "^5.2.6",
     "@fontsource/poppins": "^5.2.6",
