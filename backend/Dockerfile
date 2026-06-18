@@ -22,3 +22,12 @@ EXPOSE 5001
 
 # STEP 7: Start the backend server using the root package.json start script.
 CMD ["npm", "start"]
+
+
+
+
+
+
+
+
+

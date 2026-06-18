@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Check, Lock, Ban, Clock, ArrowRight, Sunrise, Sun, Sunset, Moon, CloudMoon, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { format } from 'date-fns'
-import socket from '../../utils/soket.js'
+import socket from '../../utils/socket.js'
 import { toast } from 'react-hot-toast'
 
 const SlotPicker = ({

@@ -11,7 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import AuthContext from '../../context/AuthContext'
 import { Button } from '@/components/ui/Button'
 import api from '../../utils/api.js'
-import socket from "../../utils/soket.js";
+import socket from "../../utils/socket.js";
 import AnimatedShaderBackground from '../../components/ui/AnimatedShaderBackground'
 import PaymentGateway from '../../components/PaymentGateway'
 

@@ -2,8 +2,8 @@
 services:
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: cricket-box-backend
     dns:
       - 8.8.8.8
@@ -24,7 +24,8 @@ services:
       args:
         - VITE_API_BASE_URL=http://localhost:5005
         - VITE_API_URL=http://localhost:5005/api
-        - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
+        - VITE_GOOGLE_CLIENT_ID=411070843179-9fu6m897s3dc51mmv1gc2d10q1vjn6he.apps.googleusercontent.com
+
     container_name: cricket-box-frontend
     ports:
       - "5173:80" # Maps your laptop's 5173 port to the container's Nginx port 80

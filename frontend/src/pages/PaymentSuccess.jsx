@@ -129,18 +129,7 @@ const PaymentSuccess = () => {
           </motion.button>
         </motion.div>
 
-        {/* Info Box */}
-        <motion.div 
-          variants={itemVariants}
-          className="mt-10 bg-blue-500/10 border border-blue-500/20 rounded-2xl p-5 text-center flex items-center gap-4 justify-center"
-        >
-          <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
-            <span className="text-xl">📱</span>
-          </div>
-          <p className="text-sm text-blue-200 font-medium">
-            Check your WhatsApp for the booking confirmation message.
-          </p>
-        </motion.div>
+
       </motion.div>
     </div>
   );

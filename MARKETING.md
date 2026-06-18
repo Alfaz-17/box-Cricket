@@ -8,7 +8,7 @@ Empower your cricket box or turf business with the most advanced, AI-driven book
 
 ### 1. 🤖 AI & Automation Suite
 *   **AI Voice Agent for Slot Checking**: Our virtual assistant handles calls 24/7, understands natural language, and lets customers check slot availability and book via voice—no manual intervention needed!
-*   **WhatsApp Booking Confirmation**: Instantly send automated WhatsApp messages to customers as soon as their booking is confirmed, including all details and a location link.
+
 *   **24/7 Availability**: Never miss a booking request, even during off-hours.
 
 ### 2. � Financial & Payment Handling
@@ -32,7 +32,7 @@ Empower your cricket box or turf business with the most advanced, AI-driven book
 | Feature | Your Advantage |
 | :--- | :--- |
 | **AI Voice Agent** | Saves hours of phone handling time every day. |
-| **WhatsApp Alerts** | High customer satisfaction with instant confirmations. |
+
 | **Auto-Payments** | Zero hassle of manual tracking or payment disputes. |
 | **Owner Reports** | Complete transparency of your business performance. |
 

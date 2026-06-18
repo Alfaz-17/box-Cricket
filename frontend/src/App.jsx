@@ -11,7 +11,7 @@ import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ScrollToTop from './components/layout/ScrollToTop';
 import AnimatedShaderBackground from './components/ui/AnimatedShaderBackground';
-import TestVoiceRecorder from './components/TestVoiceRecorder';
+
 
 // Public pages
 import Home from './pages/public/Home'
@@ -73,7 +73,6 @@ function App() {
   const [user, setUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [isVoiceOpen, setIsVoiceOpen] = useState(false)
 
 
   // Initialize Theme (Default to Dark)
@@ -147,34 +146,8 @@ function App() {
         
           {/* Content Wrapper */}
           <div className="relative z-10 flex flex-col min-h-screen bg-transparent text-foreground transition-colors duration-300">
-            <Navbar onVoiceClick={() => setIsVoiceOpen(true)} />
+            <Navbar />
             
-            <AnimatePresence>
-              {isVoiceOpen && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-                >
-                  <motion.div 
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="relative w-full max-w-md"
-                  >
-                    <button 
-                      onClick={() => setIsVoiceOpen(false)}
-                      className="absolute -top-12 right-0 text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-full backdrop-blur-md"
-                    >
-                      <X size={20} />
-                    </button>
-                    <TestVoiceRecorder onClose={() => setIsVoiceOpen(false)} />
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
 
             <main className="flex-grow">
               {loading ? (

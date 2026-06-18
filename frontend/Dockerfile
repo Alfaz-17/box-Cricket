@@ -32,6 +32,7 @@ FROM nginx:alpine
 # Copy our custom Nginx config (so React Router doesn't break on refresh)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+
 # Copy the built files from STAGE 1 into Nginx's public folder
 COPY --from=builder /app/dist /usr/share/nginx/html
 

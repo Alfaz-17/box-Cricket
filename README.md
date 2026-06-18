@@ -1,7 +1,7 @@
 # 🏏 Cricket Box Booking System
 
 !
-A premium, full-stack **MERN** application designed for booking cricket box venues. This project revolutionizes the booking experience with a **Voice-Activated AI Agent** that allows users to check availability and book slots simply by speaking. It also features seamless **WhatsApp integration** for OTP verification and booking confirmations.
+A premium, full-stack **MERN** application designed for booking cricket box venues. This project revolutionizes the booking experience with a **Voice-Activated AI Agent** that allows users to check availability and book slots simply by speaking.
 
 ---
 
@@ -16,10 +16,6 @@ A premium, full-stack **MERN** application designed for booking cricket box venu
 - **"Talk-to-Book"**: Users can ask "Is there a slot available next Friday at 6 PM?" and get instant voice feedback.
 - **Natural Language Processing**: Built with **Groq SDK (Whisper Model)** for speech-to-text and **Murf AI** for realistic text-to-speech responses.
 - **Context Aware**: Remembers previous queries for a conversational experience.
-
-### � WhatsApp Integration
-- **Zero-Email Auth**: Sign up and login exclusively using **WhatsApp OTPs**.
-- **Instant Notifications**: Receive booking confirmations and receipts directly on WhatsApp via **@whiskeysockets/baileys**.
 
 ### 📅 Advanced Booking System
 - **Real-Time Slots**: Live slot availability updates using **Socket.IO**.
@@ -54,7 +50,7 @@ A premium, full-stack **MERN** application designed for booking cricket box venu
 ### AI & Services
 - **Voice Transcribing**: Groq SDK (Whisper Large V3)
 - **Text-to-Speech**: Murf AI
-- **WhatsApp Bot**: Baileys
+
 - **Payment Gateway**: Cashfree
 
 ---
@@ -66,7 +62,7 @@ cricket-box/
 ├── backend/
 │   ├── controllers/      # Logic for Auth, Bookings, Voice, etc.
 │   ├── cron/             # Scheduled tasks (File cleanup)
-│   ├── lib/              # Integrations (WhatsApp, MongoDB, Socket)
+│   ├── lib/              # Integrations (MongoDB, Socket)
 │   ├── models/           # Mongoose Schemas
 │   ├── routes/           # API Endpoints
 │   └── server.js         # Entry point
@@ -138,7 +134,7 @@ npm run dev
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **POST** | `/api/auth/send-otp` | Sends WhatsApp OTP for login |
+| **POST** | `/api/auth/send-otp` | Sends OTP for login |
 | **POST** | `/api/voice/check-slot` | AI Agent slot query |
 | **GET** | `/api/boxes` | Fetch all cricket boxes |
 | **POST** | `/api/booking/book` | Create a new booking |

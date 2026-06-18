@@ -23,7 +23,7 @@ import {
 import AuthContext from '../../context/AuthContext';
 import logoIcon from '../../assets/logo-icon.svg';
 
-const Sidebar = ({ isOpen, onClose, onVoiceClick }) => {
+const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useContext(AuthContext);

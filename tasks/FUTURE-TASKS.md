@@ -34,7 +34,7 @@ These tasks are **saved for when you have time** to implement:
 - [ ] List on IndiaMART
 - [ ] Create Facebook Business Page
 - [ ] Create Instagram Business account
-- [ ] Set up WhatsApp Business
+
 
 ### Priority 3: Future Plans (Month 2-3)
 - [ ] Write blog posts about cricket in Bhavnagar

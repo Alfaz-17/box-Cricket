@@ -404,10 +404,7 @@ const BookingForm = ({
             Booking Policies
           </h3>
           <ul className="space-y-3">
-            <li className="flex items-start gap-3 text-sm text-muted-foreground">
-              <CheckCircle2 size={16} className="text-primary flex-shrink-0 mt-0.5" />
-              <span>Instant WhatsApp confirmation upon booking.</span>
-            </li>
+
             <li className="flex items-start gap-3 text-sm text-muted-foreground">
               <CheckCircle2 size={16} className="text-primary flex-shrink-0 mt-0.5" />
               <span>Please arrive 15 minutes before your slot starts.</span>

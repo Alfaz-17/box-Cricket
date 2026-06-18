@@ -13,7 +13,7 @@ import BookedSlots from '../../components/ui/BookedSlots.jsx';
 import BlockedSlots from '../../components/ui/BlockedSlots.jsx';
 import ReviewsSection from '../../components/ui/ReviewsSection';
 import api from '../../utils/api.js';
-import socket from '../../utils/soket.js';
+import socket from '../../utils/socket.js';
 import AuthContext from '../../context/AuthContext';
 
 /**

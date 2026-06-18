@@ -3,3 +3,5 @@ frontend
 logs
 *.log
 .env
+.git
+
