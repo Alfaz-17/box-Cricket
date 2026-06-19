@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { findAvailableSlots } from '../lib/findAvailableSlots.js';
-import CricketBox from '../models/CricketBox.js';
-import Booking from '../models/Booking.js';
-import BlockedSlot from '../models/BlockedSlot.js';
+import { findAvailableSlots } from '../src/lib/findAvailableSlots.js';
+import CricketBox from '../src/models/CricketBox.js';
+import Booking from '../src/models/Booking.js';
+import BlockedSlot from '../src/models/BlockedSlot.js';
 
 // Mock the Mongoose models
-vi.mock('../models/CricketBox.js');
-vi.mock('../models/Booking.js');
-vi.mock('../models/BlockedSlot.js');
+vi.mock('../src/models/CricketBox.js');
+vi.mock('../src/models/Booking.js');
+vi.mock('../src/models/BlockedSlot.js');
 
 describe('findAvailableSlots', () => {
   beforeEach(() => {

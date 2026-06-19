@@ -6,10 +6,8 @@ Empower your cricket box or turf business with the most advanced, AI-driven book
 
 ## 🚀 Key Features & Services for Owners
 
-### 1. 🤖 AI & Automation Suite
-*   **AI Voice Agent for Slot Checking**: Our virtual assistant handles calls 24/7, understands natural language, and lets customers check slot availability and book via voice—no manual intervention needed!
-
-*   **24/7 Availability**: Never miss a booking request, even during off-hours.
+### 1. ⚡ Automated Booking System
+*   **24/7 Availability**: Customers can check slot availability and book 24/7 via the user-friendly interface. Never miss a booking request, even during off-hours!
 
 ### 2. � Financial & Payment Handling
 *   **Automatic Payment Handling**: Fully integrated secure payment gateway (Cashfree) that handles transactions automatically, ensuring you get paid before a slot is reserved.
@@ -31,7 +29,7 @@ Empower your cricket box or turf business with the most advanced, AI-driven book
 
 | Feature | Your Advantage |
 | :--- | :--- |
-| **AI Voice Agent** | Saves hours of phone handling time every day. |
+| **24/7 Self-Service Booking** | Saves hours of phone handling time every day. |
 
 | **Auto-Payments** | Zero hassle of manual tracking or payment disputes. |
 | **Owner Reports** | Complete transparency of your business performance. |

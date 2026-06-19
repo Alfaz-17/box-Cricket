@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseDateTime } from '../lib/parseDateTime.js';
+import { parseDateTime } from '../src/lib/parseDateTime.js';
 
 describe('parseDateTime', () => {
   it('should correctly parse a valid date and time string', () => {
