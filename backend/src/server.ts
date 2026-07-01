@@ -48,6 +48,8 @@ app.use(
     origin: [
       process.env.CLIENT_URL,
       process.env.CLIENT_URL_TEST,
+      "https://bookmybox.online",
+      "https://www.bookmybox.online",
       "http://localhost:5173",  // optional local dev
     ].filter(Boolean),
   })
