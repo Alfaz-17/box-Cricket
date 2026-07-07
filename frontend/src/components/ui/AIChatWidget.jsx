@@ -47,9 +47,11 @@ const AIChatWidget = () => {
     setIsLoading(true);
 
     try {
+      // Filter out the initial local greeting — Gemini requires history to start with a user message
+      const chatHistory = history.filter((_, i) => i > 0);
       const response = await api.post('/ai/chat', {
         message: text,
-        history: history, // send current history
+        history: chatHistory,
       });
 
       if (response.data?.success) {
@@ -62,12 +64,22 @@ const AIChatWidget = () => {
       }
     } catch (error) {
       console.error('❌ Chat error:', error);
-      setErrorMsg('Could not connect to the assistant.');
+      const status = error?.response?.status;
+      const serverMsg = error?.response?.data?.message;
+
+      let errorText;
+      if (status === 429) {
+        errorText = serverMsg || 'You have reached the daily limit of 5 AI chat queries. Please try again tomorrow.';
+      } else {
+        errorText = "Sorry, I'm having trouble connecting to the booking service right now. Please try again later.";
+      }
+
+      setErrorMsg(errorText);
       setHistory((prev) => [
         ...prev,
         {
           sender: 'ai',
-          text: "Sorry, I'm having trouble connecting to the booking service right now. Please verify your network and check that the server is running.",
+          text: errorText,
           isError: true,
         },
       ]);

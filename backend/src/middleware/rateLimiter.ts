@@ -22,3 +22,14 @@ export const bookingLimiter = rateLimit({
 });
 
 // Note: voiceLimiter has been removed since the voice agent was completely stripped out.
+
+export const aiChatLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 5, // 5 requests per IP per day
+  message: {
+    success: false,
+    message: 'You have reached the daily limit of 5 AI chat queries. Please try again tomorrow.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
