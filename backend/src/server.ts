@@ -15,6 +15,7 @@ import reviewRoutes from './routes/reviewRoutes.js'
 import slotsRoutes from './routes/slotsRoutes.js'
 import analyticsRoutes from './routes/analyticsRoutes.js'
 import paymentRoutes from './routes/paymentRoutes.js'
+import aiRoutes from './routes/aiRoutes.js'
 import sitemapRouter from './routes/sitemap.js'
 import { logger } from './utils/logger.js'
 
@@ -27,6 +28,9 @@ import { generalLimiter } from './middleware/rateLimiter.js'
 import mime from 'mime'
 import { startPendingBookingCleanup } from './cron/cleanupPendingBookings.js'
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config()
 const app = express()
 
@@ -77,6 +81,7 @@ app.use('/api/booking', bookingRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/slots', slotsRoutes)
 app.use('/api/analytics', analyticsRoutes)
+app.use('/api/ai', aiRoutes)
 import { errorHandler } from './middleware/errorHandler.js';
 
 app.use('/api/payment', paymentRoutes)

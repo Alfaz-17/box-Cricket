@@ -11,6 +11,7 @@ import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import ScrollToTop from './components/layout/ScrollToTop';
 import AnimatedShaderBackground from './components/ui/AnimatedShaderBackground';
+import AIChatWidget from './components/ui/AIChatWidget';
 
 
 // Public pages
@@ -45,8 +46,6 @@ import BlockSlot from './pages/admin/BlockSlot'
 import api from './utils/api'
 import ContactUs from './pages/public/ContactUs'
 import AboutUs from './pages/public/AboutUs'
-import Policies from './pages/public/Policies'
-import Services from './pages/public/Services'
 
 
 const ProtectedRoute = ({ children, role }) => {
@@ -167,8 +166,6 @@ function App() {
                   <Route path="/faq" element={<FAQSection />} />
                    <Route path="/support" element={<ContactUs />} />
                    <Route path="/about-us" element={<AboutUs />} />
-                   <Route path="/policies" element={<Policies />} />
-                   <Route path="/services" element={<Services />} />
                   
                   {/* Payment Routes */}
                   <Route path="/payment/success" element={<PaymentSuccess />} />
@@ -257,6 +254,7 @@ function App() {
               )}
             </main>
             <Footer />
+            <AIChatWidget />
             <Toaster position="top-right" />
           </div>
         </div>
