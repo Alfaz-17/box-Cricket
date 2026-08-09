@@ -90,7 +90,7 @@ const SlotPicker = ({
 
   const isSlotBooked = (slot) => {
     if (!selectedDate || !selectedQuarter) return false
-    const group = bookedSlots.find(g => g.quarterId === selectedQuarter)
+    const group = bookedSlots.find(g => String(g.quarterId) === String(selectedQuarter))
     if (!group) return false
 
     const slotStart = new Date(selectedDate)
@@ -101,7 +101,7 @@ const SlotPicker = ({
     return group.slots.some(booking => {
        const isPaidAndConfirmed = 
          booking.status === 'confirmed' && 
-         (booking.paymentStatus === 'paid')
+         (booking.paymentStatus === 'paid' || booking.isOffline)
        if (!isPaidAndConfirmed) return false;
 
        const bStart = new Date(booking.startDateTime)
