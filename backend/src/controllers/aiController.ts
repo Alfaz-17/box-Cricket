@@ -15,7 +15,7 @@ export const chatWithGemini = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    // 1. Authenticate user optionally
+    // 1. Authenticate user optionallyy
     let userId = null;
     let userName = 'Guest';
     let userBookings: any[] = [];
