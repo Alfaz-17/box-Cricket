@@ -43,7 +43,7 @@ export const chatWithGemini = async (req: Request, res: Response): Promise<void>
             .limit(10);
         }
       } catch (err) {
-        // Token invalid, ignore and proceed as guest
+          // Token invalid, ignore and proceed as guest
       }
     }
 
