@@ -68,7 +68,7 @@ export const chatWithGemini = async (req: Request, res: Response): Promise<void>
 
     // 3. Fetch upcoming booked and blocked slots for the next 14 days
 
-    
+
     const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const bookings = await Booking.find({
       status: { $in: ['confirmed', 'pending', 'completed'] },
@@ -78,6 +78,10 @@ export const chatWithGemini = async (req: Request, res: Response): Promise<void>
     const blockedSlots = await BlockedSlot.find({
       date: { $gte: todayStr }
     }).select('boxId quarterName date startTime endTime reason');
+
+
+
+    
 
     const occupiedSlotsSummary = [
       ...bookings.map((b: any) => ({
