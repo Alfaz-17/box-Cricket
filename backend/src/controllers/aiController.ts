@@ -65,6 +65,7 @@ export const chatWithGemini = async (req: Request, res: Response): Promise<void>
         quarters: (box.quarters || []).map((q: any) => ({ name: q.name, id: q._id }))
       };
     });
+    this is not jus like to save mo
 
     // 3. Fetch upcoming booked and blocked slots for the next 14 days
     const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
