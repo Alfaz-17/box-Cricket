@@ -1,11 +1,43 @@
+# Dependencies
 node_modules/
+**/node_modules/
 
-.DS_Store
-
-frontend/.env
-**/.env
-**/logs/
-**/*.log
-
-.vercel
+# Environment Variables
+.env
 .env*
+!*.env.example
+**/.env
+**/.env*
+!**/*.env.example
+
+# Build & Dist Artifacts
+dist/
+**/dist/
+build/
+**/build/
+.vercel/
+
+# Logs & Debugging
+logs/
+**/logs/
+*.log
+**/*.log
+*_lint.txt
+*_log.txt
+*lint*.json
+.txt
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.user
+
+# Capacitor / Mobile App Native Builds
+bookmybox-app/android/.gradle/
+bookmybox-app/android/.idea/
+bookmybox-app/android/app/build/
+bookmybox-app/android/build/
+bookmybox-app/android/local.properties
