@@ -1,0 +1,15 @@
+# Backend Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build Output
+dist/
+build/
